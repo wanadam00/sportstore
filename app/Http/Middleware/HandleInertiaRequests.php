@@ -50,6 +50,8 @@ class HandleInertiaRequests extends Middleware
             //         return null;
             //     }
             // ],
+            'cart' => new CartResource(Cart::getProductsAndCartItems()),
+
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
