@@ -143,4 +143,13 @@ class CheckoutController extends Controller
             throw new NotFoundHttpException();
         }
     }
+
+    public function cancel(Request $request)
+    {
+        // Logic to handle cancellation
+        // You can add any necessary logic here, such as logging or notifying the user
+
+        // Redirecting back to the checkout page or a specific route
+        return redirect()->route('dashboard')->with('message', 'Checkout was cancelled.');
+    }
 }

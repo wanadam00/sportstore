@@ -30,9 +30,45 @@ class UserController extends Controller
         ]);
         }
         else {
-            return Inertia::render('Dashboard');
+            return Inertia::render('Dashboard/Dashboard');
 
         }
 
+    }
+
+    // public function index()
+    // {
+    //     if (Gate::allows('isUser')) {
+    //         $products = Product::with('brand', 'category', 'product_images')->orderBy('id','desc')->limit(8)->get();
+    //         return Inertia::render('User/Index', [
+    //         'products'=>$products,
+    //         'canLogin' => app('router')->has('login'),
+    //         'canRegister' => app('router')->has('register'),
+    //         'laravelVersion' => Application::VERSION,
+    //         'phpVersion' => PHP_VERSION,
+    //     ]);
+    //     }
+    //     elseif (Gate::allows('isGuest')) {
+    //         $products = Product::with('brand', 'category', 'product_images')->orderBy('id','desc')->limit(8)->get();
+    //         // Render a view for guest users, or perform an action
+    //         return Inertia::render('Welcome', [
+    //             'products'=>$products,
+    //         ]);
+    //     }
+    //     else {
+    //         $products = Product::with('brand', 'category', 'product_images')->orderBy('id','desc')->limit(8)->get();
+    //         return Inertia::render('Dashboard', [
+    //             'products'=>$products,
+    //         ]);
+
+    //     }
+
+    // }
+    public function getWelcomeProducts()
+    {
+        return Product::with('brand', 'category', 'product_images')
+            ->orderBy('id', 'desc')
+            ->limit(8)
+            ->get();
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\User\ProductListController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\CartController;
@@ -12,14 +13,13 @@ use Illuminate\Support\Facades\Gate;
 
 use Inertia\Inertia;
 
-// Route::get('/', function () {
-//     return Inertia::render('Welcome', [
-//         'canLogin' => Route::has('login'),
-//         'canRegister' => Route::has('register'),
-//         'laravelVersion' => Application::VERSION,
-//         'phpVersion' => PHP_VERSION,
-//     ]);
-// });
+Route::get('/', function (UserController $userController) {
+    $products = $userController->getWelcomeProducts();
+    return Inertia::render('Welcome', [
+        'products' => $products,
+        // You can add other data here if needed
+    ]);
+})->name('welcome');
 
 // Route::get('/dashboard',[DashboardController::class,'index'])->middleware(['auth', 'verified'])->name('dashboard');
 // Route::get('/admin', function () {
@@ -29,7 +29,7 @@ use Inertia\Inertia;
 
 //     abort(403, 'Unauthorized action.');
 // });
-Route::get('/dashboard', [UserController::class,'index'])->name('dashboard');
+// Route::get('/dashboard', [UserController::class,'index'])->name('dashboard');
 // Route::get('/main',[DashboardController::class,'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::prefix('cart')->controller(CartController::class)->group(function () {
@@ -49,6 +49,7 @@ Route::prefix('cart')->controller(CartController::class)->group(function () {
 //routes for products list and filter
 Route::prefix('product')->controller(ProductListController::class)->group(function ()  {
     Route::get('/','list')->name('products.list');
+    Route::get('/view/{id}','view')->name('products.view');
 
 });
 
@@ -57,7 +58,7 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    // Route::get('/dashboard', [UserController::class,'index'])->name('dashboard');
+    Route::get('/dashboard', [UserController::class,'index'])->name('dashboard');
     // Route::get('/dashboard', function () {
     //     return Inertia::render('Dashboard');
     // })->name('dashboard');
@@ -70,4 +71,10 @@ Route::middleware([
     Route::put('/products/update/{id}',[ProductController::class,'update'])->name('products.update');
     Route::delete('/products/image/{id}',[ProductController::class,'deleteImage'])->name('products.image.delete');
     Route::delete('/products/destory/{id}',[ProductController::class,'destory'])->name('products.destory');
+
+    Route::get('/brands', [BrandController::class, 'index'])->name('brands.index');
+    Route::post('/brands/store',[BrandController::class,'store'])->name('brands.store');
+    Route::put('/brands/update/{id}',[BrandController::class,'update'])->name('brands.update');
+    Route::delete('/brands/image/{id}',[BrandController::class,'deleteImage'])->name('brands.image.delete');
+    Route::delete('/brands/destory/{id}',[BrandController::class,'destory'])->name('brands.destory');
 });

@@ -55,7 +55,10 @@ function submit() {
         }
     })
 }
-
+const capitalizeInitialWords = (str) => {
+    if (!str) return '';
+    return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+};
 </script>
 <template>
     <UserLayouts>
@@ -96,7 +99,7 @@ function submit() {
                                         alt="Apple Watch">
                                 </td>
                                 <td class="px-6 py-4 font-semibold text-gray-900 dark:text-white">
-                                    {{ product.name }}
+                                    {{ capitalizeInitialWords(product.name) }}
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center space-x-3">

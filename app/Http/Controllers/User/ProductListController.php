@@ -23,10 +23,30 @@ class ProductListController extends Controller
         return Inertia::render(
             'User/ProductList',
             [
-                'categories'=>$categories,
-                'brands'=>$brands,
+                'categories' => $categories,
+                'brands' => $brands,
                 'products' => ProductResource::collection($filterProducts)
             ]
         );
+    }
+
+    public function view($id)
+    {
+        // Retrieve the product along with its relationships
+        // $products = Product::with('category', 'brand', 'product_images')->findOrFail($id);
+        // $filterProducts = $products->filtered()->paginate(9)->withQueryString();
+
+        // $categories = Category::get();
+        // $brands = Brand::get();
+
+        // return Inertia::render('User/ProductView', [
+        //     'categories' => $categories,
+        //     'brands' => $brands,
+        //     'products' => ProductResource::collection($filterProducts)
+        // ]);
+        $product = Product::findOrFail($id); // Fetch the product by ID
+    return Inertia::render('User/ProductView', [
+        'product' => $product,
+    ]);
     }
 }

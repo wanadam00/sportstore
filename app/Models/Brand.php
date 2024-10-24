@@ -23,6 +23,10 @@ class Brand extends Model
         return $this->hasMany(Product::class);
     }
 
+    public function brand_images()
+    {
+        return $this->hasMany(BrandImage::class);
+    }
 
     public function getSlugOptions(): SlugOptions
     {

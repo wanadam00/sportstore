@@ -29,5 +29,9 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('isUser', function ($user) {
             return !$user->isAdmin;  // Check if user is a regular user
         });
+
+        Gate::define('isGuest', function ($user = null) {
+            return is_null($user);  // Check if user is not authenticated (guest)
+        });
     }
 }
