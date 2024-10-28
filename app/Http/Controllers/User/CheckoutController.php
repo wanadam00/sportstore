@@ -138,7 +138,7 @@ class CheckoutController extends Controller
                 $order->save();
             }
 
-            return redirect()->route('dashboard');
+            return redirect()->route('welcome');
         } catch (\Exception $e) {
             throw new NotFoundHttpException();
         }
@@ -150,6 +150,6 @@ class CheckoutController extends Controller
         // You can add any necessary logic here, such as logging or notifying the user
 
         // Redirecting back to the checkout page or a specific route
-        return redirect()->route('dashboard')->with('message', 'Checkout was cancelled.');
+        return redirect()->route('welcome')->with('message', 'Checkout was cancelled.');
     }
 }

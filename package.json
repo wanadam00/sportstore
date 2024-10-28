@@ -23,8 +23,16 @@
     "dependencies": {
         "@headlessui/vue": "^1.7.23",
         "@heroicons/vue": "^2.1.5",
+        "apexcharts": "^3.54.1",
+        "chart.js": "^4.4.5",
         "element-plus": "^2.8.5",
         "flowbite": "^2.5.2",
-        "vue-sweetalert2": "^5.0.11"
+        "leaflet": "^1.9.4",
+        "leaflet.awesome-markers": "^2.0.5",
+        "preline": "^2.5.1",
+        "vue-chartjs": "^5.3.1",
+        "vue-sweetalert2": "^5.0.11",
+        "vue3-apexcharts": "^1.7.0",
+        "vue3-leaflet": "^1.0.50"
     }
 }

@@ -23,6 +23,11 @@ class Category extends Model
         return $this->hasMany(Product::class);
     }
 
+    public function category_images()
+    {
+        return $this->hasMany(CategoryImage::class);
+    }
+
     public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()

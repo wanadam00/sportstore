@@ -11,6 +11,7 @@ export default {
         "./resources/views/**/*.blade.php",
         "./resources/js/**/*.vue",
         "./node_modules/flowbite/**/*.js",
+        './node_modules/preline/dist/*.js', // Add this line
     ],
 
     theme: {
@@ -21,5 +22,5 @@ export default {
         },
     },
 
-    plugins: [forms, typography, require("flowbite/plugin")],
+    plugins: [forms, typography, require("flowbite/plugin"), require('preline/plugin')],
 };

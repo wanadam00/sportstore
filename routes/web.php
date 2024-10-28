@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\User\ProductListController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\CartController;
@@ -15,8 +16,12 @@ use Inertia\Inertia;
 
 Route::get('/', function (UserController $userController) {
     $products = $userController->getWelcomeProducts();
+    $brands = $userController->getAllBrands();
+    $categories = $userController->getAllCategories();
     return Inertia::render('Welcome', [
         'products' => $products,
+        'brands' => $brands,
+        'categories' => $categories,
         // You can add other data here if needed
     ]);
 })->name('welcome');
@@ -50,8 +55,12 @@ Route::prefix('cart')->controller(CartController::class)->group(function () {
 Route::prefix('product')->controller(ProductListController::class)->group(function ()  {
     Route::get('/','list')->name('products.list');
     Route::get('/view/{id}','view')->name('products.view');
-
+    // Route::get('/category','category')->name('products.category');
+    // Route::get('/contact','contact')->name('products.contact');
 });
+
+Route::get('/contact', [ProductListController::class, 'contact'])->name('products.contact');
+Route::post('/contact/store', [ProductListController::class, 'store'])->name('products.contact.store');
 
 Route::middleware([
     'auth:sanctum',
@@ -77,4 +86,10 @@ Route::middleware([
     Route::put('/brands/update/{id}',[BrandController::class,'update'])->name('brands.update');
     Route::delete('/brands/image/{id}',[BrandController::class,'deleteImage'])->name('brands.image.delete');
     Route::delete('/brands/destory/{id}',[BrandController::class,'destory'])->name('brands.destory');
+
+    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+    Route::post('/categories/store',[CategoryController::class,'store'])->name('categories.store');
+    Route::put('/categories/update/{id}',[CategoryController::class,'update'])->name('categories.update');
+    Route::delete('/categories/image/{id}',[CategoryController::class,'deleteImage'])->name('categories.image.delete');
+    Route::delete('/categories/destory/{id}',[CategoryController::class,'destory'])->name('categories.destory');
 });

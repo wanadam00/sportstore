@@ -4,6 +4,8 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\Category;
+use App\Models\Brand;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -21,8 +23,12 @@ class UserController extends Controller
     {
         if (Gate::allows('isUser')) {
             $products = Product::with('brand', 'category', 'product_images')->orderBy('id','desc')->limit(8)->get();
+            $brands = Brand::with('brand_images')->orderBy('id','desc')->get();
+            $categories = Category::with('category_images')->orderBy('id','desc')->get();
             return Inertia::render('User/Index', [
             'products'=>$products,
+            'brands'=>$brands,
+            'categories'=>$categories,
             'canLogin' => app('router')->has('login'),
             'canRegister' => app('router')->has('register'),
             'laravelVersion' => Application::VERSION,
@@ -70,5 +76,15 @@ class UserController extends Controller
             ->orderBy('id', 'desc')
             ->limit(8)
             ->get();
+    }
+
+    public function getAllBrands()
+    {
+        return Brand::with('brand_images')->get(); // Fetch all brands
+    }
+
+    public function getAllCategories()
+    {
+        return Category::with('category_images')->get(); // Fetch all categories
     }
 }

@@ -1,5 +1,18 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+import { Link, router } from "@inertiajs/vue3";
+
+// const { props } = usePage();
+// const categories = props.categories;
+
+const props = defineProps({
+    categories: Array,
+    brands: Array,
+    // product: Array,
+});
+const categories = props.categories;
+const brands = props.brands;
 
 const images = [
     '/images/adidas/side.avif',
@@ -78,8 +91,8 @@ onMounted(() => {
         <!-- <div class="py-16 bg-gray-100">
             <h2 class="text-3xl font-bold text-center mb-8">Top Products</h2>
             <div class="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 px-4"> -->
-                <!-- Product Card -->
-                <!-- <div class="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <!-- Product Card -->
+        <!-- <div class="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
                     <img src="/images/product-1.jpg" class="w-full h-64 object-cover rounded-t-lg">
                     <div class="p-4">
                         <h3 class="font-bold text-lg mb-2">Nike Air Zoom Pegasus 37</h3>
@@ -89,21 +102,28 @@ onMounted(() => {
                     </div>
                 </div> -->
 
-                <!-- Repeat similar product cards... -->
-            <!-- </div>
+        <!-- Repeat similar product cards... -->
+        <!-- </div>
         </div> -->
-
-        <!-- Brands Section -->
-        <div class="py-16 bg-white">
-            <h2 class="text-3xl font-bold text-center mb-8">Featured Brands</h2>
+        <!-- Category Section -->
+        <div class="pt-16 pb-10 bg-white">
+            <h2 class="text-3xl font-bold text-center mb-8">Category</h2>
             <div class="container mx-auto flex flex-wrap justify-center gap-8">
-                <img src="/images/brands/nike-logo.png" alt="Nike" class="h-12">
-                <img src="/images/brands/adidas-logo.png" alt="Adidas" class="h-12">
-                <img src="/images/brands/puma-logo.png" alt="Puma" class="h-12">
-                <!-- <img src="/images/brands/underarmour-logo.png" alt="Under Armour" class="h-12"> -->
-                <!-- Add more brand logos -->
+                <div v-for="category in categories" :key="category.id" class="group relative">
+                    <img v-if="category.category_images?.length > 0" :src="`/${category.category_images[0].image}`"
+                        :alt="category.imageAlt"
+                        class="h-20 w-20 object-contain object-center lg:h-20 lg:w-20 rounded-full" />
+                    <img v-else
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
+                        :alt="category.imageAlt"
+                        class="h-20 w-20 object-contain object-center lg:h-20 lg:w-20 rounded-full" />
+                    <div class="text-gray-900 text-md text-center title-font font-medium mt-1">{{ category.name }}</div>
+                    <!-- <img src="/images/brands/underarmour-logo.png" alt="Under Armour" class="h-12"> -->
+                    <!-- Add more brand logos -->
+                </div>
             </div>
         </div>
+        <!-- Brands Section -->
 
         <!-- Testimonials Section -->
         <!-- <div class="py-16 bg-gray-100">
@@ -115,8 +135,8 @@ onMounted(() => {
                     <h3 class="font-bold text-lg">John Doe</h3>
                 </div> -->
 
-                <!-- Repeat similar testimonials... -->
-            <!-- </div>
+        <!-- Repeat similar testimonials... -->
+        <!-- </div>
         </div> -->
 
         <!-- Newsletter Signup -->
@@ -135,11 +155,11 @@ onMounted(() => {
     </section>
 </template>
 
-<script>
+<!-- <script>
 export default {
     name: 'SportShopHomepage'
 }
-</script>
+</script> -->
 
 <style scoped>
 /* Add any custom styles */

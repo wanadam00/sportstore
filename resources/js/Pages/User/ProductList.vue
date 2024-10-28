@@ -154,7 +154,7 @@ function updateFilteredProducts() {
                     <div class="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-24">
                         <h1 class="text-4xl font-bold tracking-tight text-gray-900">New Arrivals</h1>
 
-                        <div class="flex items-center">
+                        <!-- <div class="flex items-center">
                             <Menu as="div" class="relative inline-block text-left">
                                 <div>
                                     <MenuButton
@@ -194,7 +194,7 @@ function updateFilteredProducts() {
                                 <span class="sr-only">Filters</span>
                                 <FunnelIcon class="h-5 w-5" aria-hidden="true" />
                             </button>
-                        </div>
+                        </div> -->
                     </div>
 
                     <section aria-labelledby="products-heading" class="pb-24 pt-6">

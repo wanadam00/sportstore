@@ -1,9 +1,11 @@
 <script setup>
 import UserLayouts from './Layouts/UserLayouts.vue';
 import { usePage } from '@inertiajs/vue3';
+import { Link, router } from "@inertiajs/vue3";
+
 
 const { props } = usePage();
-const product = props.product;
+const product = props.products;
 
 // Function to handle adding the product to the cart
 const addToCart = (product) => {
@@ -22,49 +24,61 @@ const addToCart = (product) => {
         },
     });
 };
+const capitalizeInitialWords = (str) => {
+    if (!str) return '';
+    return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+};
 </script>
 <template>
     <UserLayouts>
         <section class="text-gray-600 body-font overflow-hidden">
             <div class="container px-5 py-24 mx-auto">
                 <div class="lg:w-4/5 mx-auto flex flex-wrap">
-                    <img alt="ecommerce" class="lg:w-1/2 w-full lg:h-auto h-64 object-cover object-center rounded"
-                        src="https://dummyimage.com/400x400">
+                    <div class="lg:w-1/2 w-full flex justify-center">
+                        <img v-if="product.product_images.length > 0" :src="`/${product.product_images[0].image}`"
+                            :alt="product.imageAlt" class="h-400 w-400 object-cover object-center" />
+
+                        <img v-else
+                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
+                            :alt="product.imageAlt" class="h-400 w-400 object-cover object-center" />
+                    </div>
+
                     <div class="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0">
-                        <h2 class="text-sm title-font text-gray-500 tracking-widest">BRAND NAME</h2>
-                        <h1 class="text-gray-900 text-3xl title-font font-medium mb-1">{{ product.name }}</h1>
+                        <h2 class="text-sm title-font text-gray-500 tracking-widest">{{ capitalizeInitialWords(product.brand ?
+                            product.brand.name : 'Unknown Brand') }}</h2>
+                        <h1 class="text-gray-900 text-3xl title-font font-medium mb-1">{{ capitalizeInitialWords(product.name) }}</h1>
                         <div class="flex mb-4">
                             <span class="flex items-center">
                                 <svg fill="currentColor" stroke="currentColor" stroke-linecap="round"
-                                    stroke-linejoin="round" stroke-width="2" class="w-4 h-4 text-indigo-500"
+                                    stroke-linejoin="round" stroke-width="2" class="w-4 h-4 text-yellow-500"
                                     viewBox="0 0 24 24">
                                     <path
                                         d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z">
                                     </path>
                                 </svg>
                                 <svg fill="currentColor" stroke="currentColor" stroke-linecap="round"
-                                    stroke-linejoin="round" stroke-width="2" class="w-4 h-4 text-indigo-500"
+                                    stroke-linejoin="round" stroke-width="2" class="w-4 h-4 text-yellow-500"
                                     viewBox="0 0 24 24">
                                     <path
                                         d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z">
                                     </path>
                                 </svg>
                                 <svg fill="currentColor" stroke="currentColor" stroke-linecap="round"
-                                    stroke-linejoin="round" stroke-width="2" class="w-4 h-4 text-indigo-500"
+                                    stroke-linejoin="round" stroke-width="2" class="w-4 h-4 text-yellow-500"
                                     viewBox="0 0 24 24">
                                     <path
                                         d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z">
                                     </path>
                                 </svg>
                                 <svg fill="currentColor" stroke="currentColor" stroke-linecap="round"
-                                    stroke-linejoin="round" stroke-width="2" class="w-4 h-4 text-indigo-500"
+                                    stroke-linejoin="round" stroke-width="2" class="w-4 h-4 text-yellow-500"
                                     viewBox="0 0 24 24">
                                     <path
                                         d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z">
                                     </path>
                                 </svg>
                                 <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                    stroke-width="2" class="w-4 h-4 text-indigo-500" viewBox="0 0 24 24">
+                                    stroke-width="2" class="w-4 h-4 text-yellow-500" viewBox="0 0 24 24">
                                     <path
                                         d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z">
                                     </path>
@@ -105,13 +119,13 @@ const addToCart = (product) => {
                                 <button
                                     class="border-2 border-gray-300 ml-1 bg-gray-700 rounded-full w-6 h-6 focus:outline-none"></button>
                                 <button
-                                    class="border-2 border-gray-300 ml-1 bg-indigo-500 rounded-full w-6 h-6 focus:outline-none"></button>
+                                    class="border-2 border-gray-300 ml-1 bg-green-500 rounded-full w-6 h-6 focus:outline-none"></button>
                             </div>
                             <div class="flex ml-6 items-center">
                                 <span class="mr-3">Size</span>
                                 <div class="relative">
                                     <select
-                                        class="rounded border appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 text-base pl-3 pr-10">
+                                        class="rounded border appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-500 text-base pl-3 pr-10">
                                         <option>SM</option>
                                         <option>M</option>
                                         <option>L</option>
@@ -128,9 +142,9 @@ const addToCart = (product) => {
                                 </div>
                             </div>
                         </div>
-                        <div class="flex">
+                        <div class="flex mt-6">
                             <span class="title-font font-medium text-2xl text-gray-900">RM {{ product.price }}</span>
-                            <div class="bg-blue-700 p-2 rounded-full">
+                            <!-- <div class="bg-blue-700 p-2 rounded-full">
                                 <a @click="addToCart(product)">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white">
@@ -138,11 +152,12 @@ const addToCart = (product) => {
                                             d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                                     </svg>
                                 </a>
-                            </div>
+                            </div> -->
                             <a @click="addToCart(product)"
-                                class="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">Add To Cart</a>
+                                class="flex ml-auto text-white bg-yellow-500 border-0 py-2 px-6 focus:outline-none hover:bg-yellow-600 rounded">Add
+                                To Cart</a>
                             <button
-                                class="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4">
+                                class="rounded-full w-10 h-10 bg-black p-0 border-0 inline-flex items-center justify-center text-yellow-500 ml-4">
                                 <svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     class="w-5 h-5" viewBox="0 0 24 24">
                                     <path
@@ -158,9 +173,10 @@ const addToCart = (product) => {
     </UserLayouts>
 </template>
 <!-- <template>
-    <UserLayouts>
+    <User Layouts>
         <div class="container mx-auto p-4">
             <h1 class="text-2xl font-bold mb-4">{{ product.name }}</h1>
+            <p class="text-lg font-semibold">Brand: {{ product.brand ? product.brand.name : 'Unknown Brand' }}</p>
             <div class="flex">
                 <img :src="product.image_url" alt="Product Image" class="w-1/2 h-auto rounded-lg shadow-lg" />
                 <div class="ml-4">
@@ -173,7 +189,7 @@ const addToCart = (product) => {
                 </div>
             </div>
         </div>
-    </UserLayouts>
+    </User Layouts>
 </template>
 
 <script setup>
