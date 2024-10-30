@@ -20,6 +20,7 @@ class ProductResource extends JsonResource
             'slug' => $this->slug,
             'description' => $this->description,
             'price' => $this->price,
+            'promo_price' => $this->promo_price,
             'quantity' => $this->quantity,
             'status' => $this->status,
             'created_at' => $this->created_at,
@@ -31,8 +32,8 @@ class ProductResource extends JsonResource
             'category' => new CategoryResource($this->whenLoaded('category')),
             'brand_id' => $this->brand_id,
             'brand' => new BrandResource($this->whenLoaded('brand')),
-
-
+            'service_id' => $this->service_id,
+            'service' => new ServiceResource($this->whenLoaded('service')),
         ];
     }
 }

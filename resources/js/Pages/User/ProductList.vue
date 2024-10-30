@@ -30,20 +30,26 @@ const sortOptions = [
 
 
 const filterPrices = useForm({
-    prices: [0, 100000]
-})
-//method for price filter
+    prices: [0, 100000], // Original price range
+    promoPrices: [0, 100000] // Promotional price range
+});
+
+// Method for price filter
 const priceFilter = () => {
     filterPrices.transform((data) => ({
         ...data,
         prices: {
             from: filterPrices.prices[0],
             to: filterPrices.prices[1]
+        },
+        promoPrices: {
+            from: filterPrices.promoPrices[0],
+            to: filterPrices.promoPrices[1]
         }
     })).get('product', {
         preserveState: true,
         replace: true
-    })
+    });
 }
 
 const mobileFiltersOpen = ref(false)
@@ -130,11 +136,11 @@ function updateFilteredProducts() {
                                             </h3>
                                             <DisclosurePanel class="pt-6">
                                                 <div class="space-y-6">
-                                                    <div v-for="(option, optionIdx) in section.options" :key="option.value"
-                                                        class="flex items-center">
+                                                    <div v-for="(option, optionIdx) in section.options"
+                                                        :key="option.value" class="flex items-center">
                                                         <input :id="`filter-mobile-${section.id}-${optionIdx}`"
-                                                            :name="`${section.id}[]`" :value="option.value" type="checkbox"
-                                                            :checked="option.checked"
+                                                            :name="`${section.id}[]`" :value="option.value"
+                                                            type="checkbox" :checked="option.checked"
                                                             class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
                                                         <label :for="`filter-mobile-${section.id}-${optionIdx}`"
                                                             class="ml-3 min-w-0 flex-1 text-gray-500">{{ option.label
@@ -211,7 +217,6 @@ function updateFilteredProducts() {
                                             class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
                                             From
                                         </label>
-
                                         <input type="number" id="filters-price-from" placeholder="Min price"
                                             v-model="filterPrices.prices[0]"
                                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" />
@@ -221,7 +226,6 @@ function updateFilteredProducts() {
                                             class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
                                             To
                                         </label>
-
                                         <input type="number" id="filters-price-to" v-model="filterPrices.prices[1]"
                                             placeholder="Max price"
                                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" />
@@ -229,9 +233,32 @@ function updateFilteredProducts() {
                                     <SecondaryButtonVue class="self-end" @click="priceFilter()">
                                         Ok
                                     </SecondaryButtonVue>
-
-
                                 </div>
+
+                                <!-- Promotional Price Filters -->
+                                <!-- <div class="flex items-center justify-between space-x-3 mt-4">
+                                    <div class="basis-1/3">
+                                        <label for="filters-promo-price-from"
+                                            class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
+                                            Promo From
+                                        </label>
+                                        <input type="number" id="filters-promo-price-from" placeholder="Min promo price"
+                                            v-model="filterPrices.promoPrices[0]"
+                                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" />
+                                    </div>
+                                    <div class="basis-1/3">
+                                        <label for="filters-promo-price-to"
+                                            class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
+                                            Promo To
+                                        </label>
+                                        <input type="number" id="filters-promo-price-to"
+                                            v-model="filterPrices.promoPrices[1]" placeholder="Max promo price"
+                                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" />
+                                    </div>
+                                    <SecondaryButtonVue class="self-end" @click="promoPriceFilter()">
+                                        Ok
+                                    </SecondaryButtonVue>
+                                </div> -->
 
 
                                 <!-- end -->
@@ -278,11 +305,12 @@ function updateFilteredProducts() {
                                         <div class="space-y-4">
                                             <div v-for="category in categories" :key="category.id"
                                                 class="flex items-center">
-                                                <input :id="`filter-${category.id}`" :value="category.id" type="checkbox"
-                                                    v-model="selectedCategories"
+                                                <input :id="`filter-${category.id}`" :value="category.id"
+                                                    type="checkbox" v-model="selectedCategories"
                                                     class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
-                                                <label :for="`filter-${category.id}`" class="ml-3 text-sm text-gray-600">{{
-                                                    category.name }}</label>
+                                                <label :for="`filter-${category.id}`"
+                                                    class="ml-3 text-sm text-gray-600">{{
+                                                        category.name }}</label>
                                             </div>
                                         </div>
                                     </DisclosurePanel>
@@ -302,4 +330,5 @@ function updateFilteredProducts() {
             </div>
         </div>
 
-    </UserLayouts></template>
+    </UserLayouts>
+</template>

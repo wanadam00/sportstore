@@ -20,6 +20,7 @@ class Product extends Model
         'published',
         'inStock',
         'price',
+        'promo_price',
         'created_by',
         'updated_by',
         'deleted_by',
@@ -47,6 +48,11 @@ class Product extends Model
     {
         return $this->belongsTo(Brand::class);
     }
+
+    public function service()
+    {
+        return $this->belongsTo(Service::class);
+    }
     public function cartItems()
     {
         return $this->hasMany(CartItem::class);
@@ -60,6 +66,9 @@ class Product extends Model
             ->when(request('brands'), function (Builder $q) {
                 $q->whereIn('brand_id', request('brands'));
             })
+            ->when(request('services'), function (Builder $q) {
+                $q->whereIn('service_id', request('services'));
+            })
             ->when(request('categories'), function (Builder $q) {
                 $q->whereIn('category_id', request('categories'));
             })
@@ -67,6 +76,12 @@ class Product extends Model
                 $q->whereBetween('price', [
                     request('prices.from', 0),
                     request('prices.to', 100000),
+                ]);
+            })
+            ->when(request('promo_prices'), function (Builder $q) {
+                $q->whereBetween('price', [
+                    request('promo_prices.from', 0),
+                    request('promo_prices.to', 100000),
                 ]);
             });
 

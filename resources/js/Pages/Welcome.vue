@@ -9,6 +9,8 @@ const props = defineProps({
     products: Array,
     categories: Array,
     brands: Array,
+    services: Array,
+    products: Array,
 });
 
 // Limit the products to the first 4
@@ -17,7 +19,7 @@ const limitedProducts = props.products.slice(0, 4);
 <template>
     <UserLayouts>
         <!-- here section  -->
-        <Hero :categories="categories"></Hero>
+        <Hero :categories="categories" :services="services" :products="products"></Hero>
         <!-- end -->
         <div class="bg-white">
             <div class="mx-auto max-w-2xl px-4 pb-8 sm:px-6 sm:pb-8 lg:max-w-7xl lg:px-8">

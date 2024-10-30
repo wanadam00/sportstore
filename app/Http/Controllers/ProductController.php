@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
+use App\Models\Service;
 use App\Models\Category;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
@@ -18,16 +19,18 @@ class ProductController extends Controller
 
         // $products = Product::get();
         // return Inertia::render('Product/Index');
-        $products = Product::with('category', 'brand', 'product_images')->get();
+        $products = Product::with('category', 'brand', 'service', 'product_images')->get();
         $brands = Brand::get();
         $categories = Category::get();
+        $services = Service::get();
 
         return Inertia::render(
             'Product/Index',
             [
                 'products' => $products,
                 'brands' => $brands,
-                'categories' => $categories
+                'categories' => $categories,
+                'services' => $services,
             ]
         );
     }
@@ -40,10 +43,12 @@ class ProductController extends Controller
         $product = new Product;
         $product->name = $request->name;
         $product->price = $request->price;
+        $product->promo_price = $request->promo_price;
         $product->quantity = $request->quantity;
         $product->description = $request->description;
         $product->category_id = $request->category_id;
         $product->brand_id = $request->brand_id;
+        $product->service_id = $request->service_id;
         $product->save();
 
         //check if product has images upload
@@ -74,10 +79,12 @@ class ProductController extends Controller
         // dd($product);
         $product->name = $request->name;
         $product->price = $request->price;
+        $product->promo_price = $request->promo_price;
         $product->quantity = $request->quantity;
         $product->description = $request->description;
         $product->category_id = $request->category_id;
         $product->brand_id = $request->brand_id;
+        $product->service_id = $request->service_id;
         // Check if product images were uploaded
         if ($request->hasFile('product_images')) {
             $productImages = $request->file('product_images');

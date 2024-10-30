@@ -18,18 +18,19 @@ const form = reactive({
     address1: null,
     state: null,
     city: null,
-    zipcode: null,
-    country_code: null,
-    type: null,
+    postcode: null,
+    // country_code: null,
+    // type: null,
 
 })
-const formFilled = computed(()=>{
-   return (form.address1 !== null &&
-    form.state !== null &&
-    form.city !== null &&
-    form.zipcode !== null &&
-    form.country_code !== null &&
-    form.type !== null )
+const formFilled = computed(() => {
+    return (form.address1 !== null &&
+        form.state !== null &&
+        form.city !== null &&
+        form.postcode !== null
+        // form.country_code !== null
+        // form.type !== null
+    )
 })
 
 
@@ -58,6 +59,36 @@ function submit() {
 const capitalizeInitialWords = (str) => {
     if (!str) return '';
     return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+};
+
+// Function to handle checkout based on address
+const checkAddressBeforeCheckout = () => {
+    if (!props.userAddress || !props.userAddress.address1) {
+        promptAddAddress();
+    } else if (formFilled.value) {
+        submit();
+    } else {
+        Swal.fire({
+            title: 'Incomplete Address',
+            text: 'Please complete your address details to proceed.',
+            icon: 'warning',
+            confirmButtonText: 'Complete Address',
+        });
+    }
+};
+
+// Function to prompt user to add address
+const promptAddAddress = () => {
+    Swal.fire({
+        title: 'Address Required',
+        text: 'Please add your address to proceed with checkout.',
+        icon: 'warning',
+        confirmButtonText: 'Add Address',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            router.visit('/user/address');
+        }
+    });
 };
 </script>
 <template>
@@ -110,8 +141,8 @@ const capitalizeInitialWords = (str) => {
                                             <span class="sr-only">Quantity button</span>
                                             <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                                 fill="none" viewBox="0 0 18 2">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                    stroke-width="2" d="M1 1h16" />
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
                                             </svg>
                                         </button>
                                         <div>
@@ -126,8 +157,8 @@ const capitalizeInitialWords = (str) => {
                                             <span class="sr-only">Quantity button</span>
                                             <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                                 fill="none" viewBox="0 0 18 18">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                    stroke-width="2" d="M9 1v16M1 9h16" />
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
                                             </svg>
                                         </button>
                                     </div>
@@ -151,15 +182,15 @@ const capitalizeInitialWords = (str) => {
 
                     <div v-if="userAddress">
                         <h2 class="text-gray-900 text-lg mb-1 font-medium title-font">Shipping Address</h2>
-                        <p class="leading-relaxed mb-5 text-gray-600">{{ userAddress.address1 }} , {{ userAddress.city }}, {{
-                            userAddress.zipcode }}</p>
+                        <p class="leading-relaxed mb-5 text-gray-600">{{ capitalizeInitialWords(userAddress.address1) }}
+                            , {{ capitalizeInitialWords(userAddress.city) }}, {{ capitalizeInitialWords(userAddress.postcode) }}</p>
                         <p class="leading-relaxed mb-5 text-gray-600">or you can add new below</p>
 
                     </div>
 
-                  <div v-else>
-                    <p class="leading-relaxed mb-5 text-gray-600"> Add shipping address to continue</p>
-                  </div>
+                    <div v-else>
+                        <p class="leading-relaxed mb-5 text-gray-600"> Add shipping address to continue</p>
+                    </div>
 
 
 
@@ -180,20 +211,25 @@ const capitalizeInitialWords = (str) => {
                                 class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
                         </div>
                         <div class="relative mb-4">
-                            <label for="email" class="leading-7 text-sm text-gray-600">Zipcode</label>
-                            <input type="text" id="email" name="zipcode" v-model="form.zipcode"
+                            <label for="email" class="leading-7 text-sm text-gray-600">Postcode</label>
+                            <input type="text" id="email" name="postcode" v-model="form.postcode"
                                 class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
                         </div>
                         <div class="relative mb-4">
-                            <label for="email" class="leading-7 text-sm text-gray-600">Country Code</label>
-                            <input type="text" id="email" name="countrycode" v-model="form.country_code"
+                            <label for="email" class="leading-7 text-sm text-gray-600">Country</label>
+                            <input type="text" id="email" name="countryname" v-model="form.country_name"
                                 class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
                         </div>
-                        <div class="relative mb-4">
+                        <!-- <div class="relative mb-4">
+                            <label for="code" class="leading-7 text-sm text-gray-600">Country Code</label>
+                            <input type="number" id="code" name="countrycode" v-model="form.country_code"
+                                class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                        </div> -->
+                        <!-- <div class="relative mb-4">
                             <label for="email" class="leading-7 text-sm text-gray-600">Address type</label>
                             <input type="text" id="email" name="type" v-model="form.type"
                                 class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
-                        </div>
+                        </div> -->
 
 
 
@@ -210,4 +246,5 @@ const capitalizeInitialWords = (str) => {
                 </div>
             </div>
         </section>
-    </UserLayouts></template>
+    </UserLayouts>
+</template>

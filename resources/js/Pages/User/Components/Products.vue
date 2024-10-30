@@ -25,16 +25,25 @@ const capitalizeInitialWords = (str) => {
     if (!str) return '';
     return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
 };
+
+// Function to determine the image class based on dimensions
+const getImageClass = (width, height) => {
+    return width > height ? 'h-full w-full object-fill object-center rounded-md'
+                          : 'h-full w-full object-contain object-center rounded-md';
+};
 </script>
 <template>
     <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
         <div v-for="product in products" :key="product.id" class="group relative">
-            <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-xl bg-transparent lg:aspect-none lg:h-80 transition duration-300 ease-in-out transform hover:-translate-y-2 hover:shadow-xl">
+            <div
+                class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-xl bg-transparent lg:aspect-none lg:h-80 transition duration-300 ease-in-out transform hover:-translate-y-2 hover:shadow-xl">
                 <img v-if="product.product_images.length > 0" :src="`/${product.product_images[0].image}`"
-                    :alt="product.imageAlt" class="h-full w-full object-contain object-center lg:h-full lg:w-full rounded-xl" />
+                    :alt="product.imageAlt"
+                    :class="getImageClass(product.product_images[0].width, product.product_images[0].height)" />
                 <img v-else
                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
-                    :alt="product.imageAlt" class="h-full w-full object-contain object-center lg:h-full lg:w-full rounded-xl" />
+                    :alt="product.imageAlt"
+                    :class="getImageClass(product.product_images[0].width, product.product_images[0].height)" />
 
                 <!-- add to cart icon -->
                 <div
@@ -74,10 +83,17 @@ const capitalizeInitialWords = (str) => {
                         {{ capitalizeInitialWords(product.name) }}
                     </h3>
                     <p class="text-sm font-medium text-gray-900">
-                        RM {{ product.price }}
+                        <span v-if="product.promo_price" class="line-through text-gray-500">
+                            RM {{ product.price }}
+                        </span>
+                        <span v-else>
+                            RM {{ product.price }}
+                        </span>
+                        <span v-if="product.promo_price" class="text-red-600 font-bold">
+                            RM {{ product.promo_price }}
+                        </span>
                     </p>
                 </div>
-
             </div>
         </div>
     </div>

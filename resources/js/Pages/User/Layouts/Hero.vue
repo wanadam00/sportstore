@@ -9,37 +9,66 @@ import { Link, router } from "@inertiajs/vue3";
 const props = defineProps({
     categories: Array,
     brands: Array,
-    // product: Array,
+    services: Array,
+    products: Array,
 });
 const categories = props.categories;
 const brands = props.brands;
+const services = props.services;
 
-const images = [
-    '/images/adidas/side.avif',
-    '/images/nike/white-side.webp',
-    '/images/puma/brown-side.avif',
-    // '/images/other-brand/side.avif',
-    // Add more images here...
-];
+// const images = [
+//     '/images/adidas/side.avif',
+//     '/images/nike/white-side.webp',
+//     '/images/puma/brown-side.avif',
+//     // '/images/other-brand/side.avif',
+//     // Add more images here...
+// ];
 
 const currentImage = ref('');
+const imageOpacity = ref(1); // Opacity for fade effect
 
 // Function to change the background image
 const changeBackgroundImage = () => {
-    const randomIndex = Math.floor(Math.random() * images.length);
-    currentImage.value = images[randomIndex];
+    // Create an array to hold all product images
+    const images = props.products.flatMap(product =>
+        product.product_images.map(image => `/${image.image}`) // Adjust this based on your image path
+    );
+
+    // Check if there are images available
+    if (images.length > 0) {
+        const randomIndex = Math.floor(Math.random() * images.length);
+
+        // Fade out
+        imageOpacity.value = 0;
+
+        // Change image after a short delay to allow fade out
+        setTimeout(() => {
+            currentImage.value = images[randomIndex];
+            // Fade in
+            imageOpacity.value = 1;
+        }, 500); // Match this delay with the fade-out duration
+    }
 };
 
 // Set the initial background image and start the interval
 onMounted(() => {
     changeBackgroundImage(); // Set initial background image
-    setInterval(changeBackgroundImage, 2000); // Change image every 5 seconds
+    setInterval(changeBackgroundImage, 5000); // Change image every 5 seconds
 });
+const capitalizeInitialWords = (str) => {
+    if (!str) return '';
+    return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+};
+// Function to determine the image class based on dimensions
+const getImageClass = (width, height) => {
+    return width > height ? 'h-full w-full object-fill object-center transition-transform duration-1000 ease-in-out transform group-hover:scale-110 rounded-md'
+        : 'h-full w-full object-cover object-center transition-transform duration-1000 ease-in-out transform group-hover:scale-110 rounded-md';
+};
 </script>
 <template>
     <section class="bg-gray-100 dark:bg-gray-900">
         <!-- Hero Section -->
-        <div class="relative bg-cover bg-center h-screen" :style="{ backgroundImage: `url(${currentImage})` }">
+        <div class="relative bg-cover bg-center h-screen transition-opacity duration-1000" :style="{ backgroundImage: `url(${currentImage})`, opacity: imageOpacity }">
             <div class="absolute inset-0 bg-black opacity-50"></div>
             <div class="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-6">
                 <h1 class="text-5xl font-extrabold mb-4 tracking-tight">Gear Up For Your Next Adventure</h1>
@@ -106,7 +135,7 @@ onMounted(() => {
         <!-- </div>
         </div> -->
         <!-- Category Section -->
-        <div class="pt-16 pb-10 bg-white">
+        <!-- <div class="pt-16 pb-10 bg-white">
             <h2 class="text-3xl font-bold text-center mb-8">Category</h2>
             <div class="container mx-auto flex flex-wrap justify-center gap-8">
                 <div v-for="category in categories" :key="category.id" class="group relative">
@@ -118,8 +147,48 @@ onMounted(() => {
                         :alt="category.imageAlt"
                         class="h-20 w-20 object-contain object-center lg:h-20 lg:w-20 rounded-full" />
                     <div class="text-gray-900 text-md text-center title-font font-medium mt-1">{{ category.name }}</div>
-                    <!-- <img src="/images/brands/underarmour-logo.png" alt="Under Armour" class="h-12"> -->
-                    <!-- Add more brand logos -->
+                    <img src="/images/brands/underarmour-logo.png" alt="Under Armour" class="h-12">
+                    Add more brand logos
+                </div>
+            </div>
+        </div> -->
+        <!-- <div class="pt-16 pb-10 bg-white">
+            <h2 class="text-3xl font-bold text-center mb-8">Service</h2>
+            <div class="container mx-auto flex flex-col sm:flex-row justify-center gap-8">
+                <div v-for="service in services" :key="service.id" class="group flex flex-col items-center relative">
+                    <div class="overflow-hidden h-96 w-64 sm:h-96 sm:w-64 rounded-md">
+                        <img v-if="service.service_images?.length > 0" :src="`/${service.service_images[0].image}`"
+                            :alt="service.imageAlt"
+                            class="h-full w-full object-cover object-center transition-transform duration-1000 ease-in-out transform group-hover:scale-110 rounded-md" />
+                        <img v-else
+                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
+                            :alt="service.imageAlt"
+                            class="h-full w-full object-cover object-center transition-transform duration-1000 ease-in-out transform group-hover:scale-110 rounded-md" />
+                    </div>
+                    <div
+                        class=" uppercase absolute bottom-6 left-28 sm:bottom-6 sm:left-6 text-gray-900 text-md title-font font-thin tracking-wider bg-white bg-opacity-90 p-2 rounded-md shadow-md">
+                        {{ capitalizeInitialWords(service.name) }}
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        <div class="pt-16 pb-10 bg-white">
+            <h2 class="text-3xl font-bold text-center mb-8">Service</h2>
+            <div class="container mx-auto flex flex-col sm:flex-row justify-center gap-8">
+                <div v-for="service in services" :key="service.id" class="group flex flex-col items-center relative">
+                    <div class="overflow-hidden h-96 w-64 sm:h-96 sm:w-64 rounded-md">
+                        <img v-if="service.service_images?.length > 0" :src="`/${service.service_images[0].image}`"
+                            :alt="service.imageAlt"
+                            :class="getImageClass(service.service_images[0].width, service.service_images[0].height)" />
+                        <img v-else
+                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
+                            :alt="service.imageAlt"
+                            :class="getImageClass(service.service_images[0].width, service.service_images[0].height)" />
+                    </div>
+                    <div
+                        class="uppercase absolute bottom-6 left-28 sm:bottom-6 sm:left-6 text-gray-900 text-sm title-font font-thin tracking-widest bg-white bg-opacity-90 p-2 rounded-md shadow-md">
+                        {{ capitalizeInitialWords(service.name) }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -161,6 +230,22 @@ export default {
 }
 </script> -->
 
-<style scoped>
-/* Add any custom styles */
+<style>
+/* Default background size for smaller screens */
+.relative {
+    /* background-size: 180%; */
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Zoom out effect for large screens */
+@media (min-width: 1024px) {
+
+    /* Adjust the min-width as needed */
+    .relative {
+        background-size: 60%;
+        /* Change this value to zoom out more or less */
+        padding-top: 10px;
+    }
+}
 </style>

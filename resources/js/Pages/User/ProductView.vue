@@ -111,7 +111,7 @@ const capitalizeInitialWords = (str) => {
                             </span>
                         </div>
                         <p class="leading-relaxed">{{ product.description }}</p>
-                        <div class="flex mt-6 items-center pb-5 border-b-2 border-gray-100 mb-5">
+                        <!-- <div class="flex mt-6 items-center pb-5 border-b-2 border-gray-100 mb-5">
                             <div class="flex">
                                 <span class="mr-3">Color</span>
                                 <button
@@ -141,7 +141,7 @@ const capitalizeInitialWords = (str) => {
                                     </span>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="flex mt-6">
                             <span class="title-font font-medium text-2xl text-gray-900">RM {{ product.price }}</span>
                             <!-- <div class="bg-blue-700 p-2 rounded-full">

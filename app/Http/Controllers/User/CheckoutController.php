@@ -70,10 +70,11 @@ class CheckoutController extends Controller
             $address = new UserAddress();
             $address->address1 = $newAddress['address1'];
             $address->state = $newAddress['state'];
-            $address->zipcode = $newAddress['zipcode'];
+            $address->postcode = $newAddress['postcode'];
             $address->city = $newAddress['city'];
-            $address->country_code = $newAddress['country_code'];
-            $address->type = $newAddress['type'];
+            // $address->country_code = $newAddress['country_code'];
+            $address->country_name = $newAddress['country_name'];
+            // $address->type = $newAddress['type'];
             $address->user_id = Auth::user()->id;
             $address->save();
         }

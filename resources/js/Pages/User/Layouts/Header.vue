@@ -1,10 +1,14 @@
 <script setup>
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link, usePage, router } from '@inertiajs/vue3';
 import { computed } from 'vue'
 const canLogin = usePage().props.canLogin;
 const canRegister = usePage().props.canRegister;
 const auth = usePage().props.auth;
 const cart = computed(() => usePage().props.cart);
+const logout = async () => {
+    await router.post(route('logout'));
+    window.location.reload();
+};
 </script>
 <template>
     <nav class="bg-white border-gray-200 dark:bg-gray-900 fixed top-0 left-0 w-full z-50">
@@ -15,8 +19,8 @@ const cart = computed(() => usePage().props.cart);
                 <path stroke-linecap="round" stroke-linejoin="round"
                     d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
             </svg> -->
-            <img src="/images/ss-logo.png" alt="Sport Shop Logo" class="size-10 mr-4" />
-            <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Sport Shop</span>
+            <img src="/images/global-crop.png" alt="Sport Shop Logo" class="w-28 h-12 object-contain" />
+            <!-- <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Sport Shop</span> -->
             </Link>
             <div v-if="canLogin" class="flex items-center md:order-2">
                 <div class="mr-4">
@@ -79,10 +83,12 @@ const cart = computed(() => usePage().props.cart);
 
 
                         <li>
-                            <Link :href="route('logout')" method="post"
-                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
-                            Sign
-                            out</Link>
+                            <form @submit.prevent="logout">
+                                <Button
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
+                                    Sign
+                                    out</Button>
+                            </form>
                         </li>
                     </ul>
                 </div>

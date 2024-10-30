@@ -18,7 +18,24 @@ class Order extends Model
         'updated_by'
     ];
 
-    function order_items()  {
+    function order_items()
+    {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+    // Define relationship to OrderItem
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class); // 'order_id' is the foreign key in the order_items table
+    }
+
+    public function userAddress()
+    {
+        return $this->belongsTo(UserAddress::class);
     }
 }
