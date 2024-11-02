@@ -5,9 +5,17 @@ const canLogin = usePage().props.canLogin;
 const canRegister = usePage().props.canRegister;
 const auth = usePage().props.auth;
 const cart = computed(() => usePage().props.cart);
+// Logout function
 const logout = async () => {
-    await router.post(route('logout'));
-    window.location.reload();
+    await router.post(route('logout'), {}, {
+        onSuccess: () => {
+            // Redirect to the login page or another page after successful logout
+            router.visit(route('welcome'));
+        },
+        onError: (errors) => {
+            console.error(errors);
+        }
+    });
 };
 </script>
 <template>
@@ -80,15 +88,19 @@ const logout = async () => {
                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
                             Dashboard</Link>
                         </li>
-
-
                         <li>
-                            <form @submit.prevent="logout">
-                                <Button
-                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
-                                    Sign
-                                    out</Button>
-                            </form>
+                            <Link :href="route('user.orders.index')"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
+                            My Orders</Link>
+                        </li>
+                        <li>
+                            <!-- <Link :href="route('logout')" method="post" as="button"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
+                            Sign Out</Link> -->
+                            <button @click="logout"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
+                                Sign
+                                out</button>
                         </li>
                     </ul>
                 </div>

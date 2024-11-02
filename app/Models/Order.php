@@ -15,7 +15,10 @@ class Order extends Model
         'session_id',
         'user_address_id',
         'created_by',
-        'updated_by'
+        'updated_by',
+        'estimated_delivery_date',
+        'tracking_number',
+        'shipment_status',
     ];
 
     function order_items()

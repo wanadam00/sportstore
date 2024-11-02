@@ -19,8 +19,8 @@ class CheckoutController extends Controller
     public function store(Request $request)
     {
         $user = $request->user();
-        $carts = $request->carts;
-        $products = $request->products;
+        $carts = $request->carts ?? []; // Ensure carts is an array
+        $products = $request->products ?? []; // Ensure products is an array
 
         $mergedData = [];
 
@@ -32,6 +32,11 @@ class CheckoutController extends Controller
                     $mergedData[] = array_merge($cartItem, ["name" => $product["name"], 'price' => $product['price']]);
                 }
             }
+        }
+
+        // Check if mergedData is empty
+        if (empty($mergedData)) {
+            return redirect()->back()->with('error', 'No items to purchase.');
         }
 
         //stripe payment
@@ -51,7 +56,10 @@ class CheckoutController extends Controller
                 ];
         }
 
-
+        // Check if lineItems is empty
+        if (empty($lineItems)) {
+            return redirect()->back()->with('error', 'No valid line items for payment.');
+        }
 
         $checkout_session = $stripe->checkout->sessions->create([
             'line_items' =>  $lineItems,
@@ -120,6 +128,52 @@ class CheckoutController extends Controller
         }
         return Inertia::location($checkout_session->url);
     }
+
+    public function retryPayment(Request $request, $orderId)
+    {
+        $user = $request->user();
+        $order = Order::where('id', $orderId)
+            ->where('status', 'unpaid')
+            ->where('created_by', $user->id)
+            ->first();
+
+        if (!$order) {
+            return redirect()->back()->with('error', 'Order not found or already paid.');
+        }
+
+        // Retrieve order items
+        $orderItems = $order->orderItems; // Assuming you have a relationship set up in your Order model
+        $lineItems = [];
+
+        foreach ($orderItems as $item) {
+            $lineItems[] = [
+                'price_data' => [
+                    'currency' => 'myr',
+                    'product_data' => [
+                        'name' => ucwords(strtolower($item->product->name)),
+                    ],
+                    'unit_amount' => (int)($item->unit_price * 100),
+                ],
+                'quantity' => $item->quantity,
+            ];
+        }
+
+        // Stripe payment session
+        $stripe = new \Stripe\StripeClient(env('STRIPE_KEY'));
+        $checkout_session = $stripe->checkout->sessions->create([
+            'line_items' => $lineItems,
+            'mode' => 'payment',
+            'success_url' => route('checkout.success') . '?session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url' => route('checkout.cancel'),
+        ]);
+
+        // Update the order with the new session ID for tracking
+        $order->session_id = $checkout_session->id;
+        $order->save();
+
+        return Inertia::location($checkout_session->url);
+    }
+
 
     public function success(Request $request)
     {

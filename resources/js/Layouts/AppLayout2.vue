@@ -6,7 +6,7 @@
         <!-- Sidebar -->
         <Sidebar2 />
         <!-- end -->
-        <main class="p-4 md:ml-64 h-auto pt-20">
+        <main class="p-4 md:ml-64 h-auto pt-14">
 
             <slot />
         </main>

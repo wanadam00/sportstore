@@ -27,7 +27,7 @@ class UserController extends Controller
             $brands = Brand::with('brand_images')->orderBy('id', 'desc')->get();
             $categories = Category::with('category_images')->orderBy('id', 'desc')->get();
             $services = Service::with('service_images')->orderBy('id', 'desc')->get();
-            return Inertia::render('User/Index', [
+            return Inertia::render('Welcome', [
                 'products' => $products,
                 'brands' => $brands,
                 'categories' => $categories,

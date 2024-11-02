@@ -4,6 +4,8 @@ import vue from '@vitejs/plugin-vue';
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import { visualizer } from 'rollup-plugin-visualizer'
+
 
 export default defineConfig({
     plugins: [
@@ -24,6 +26,10 @@ export default defineConfig({
           }),
         Components({
         resolvers: [ElementPlusResolver()],
+        }),
+        visualizer({
+            open: true, // Automatically open the report in your browser
+            filename: 'bundle-analysis.html', // Specify the output file name
         }),
     ],
 });

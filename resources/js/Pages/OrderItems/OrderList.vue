@@ -9,6 +9,43 @@ defineProps({
 
 const orderItems = usePage().props.orderItems;
 const categories = usePage().props.categories;
+const showUpdateModal = ref(false);
+const currentOrder = ref({});
+const estimatedDelivery = ref('');
+const trackingNumber = ref('');
+const shipmentStatus = ref('pending');
+
+// Open modal and set current order details
+const openUpdateModal = (orderItem) => {
+    currentOrder.value = orderItem;
+    estimatedDelivery.value = orderItem.estimated_delivery_date; // Assuming backend returns tracking number
+    trackingNumber.value = orderItem.tracking_number || ''; // Assuming backend returns tracking number
+    shipmentStatus.value = orderItem.shipment_status || 'pending';
+    showUpdateModal.value = true;
+};
+
+// Close modal
+const closeUpdateModal = () => {
+    showUpdateModal.value = false;
+};
+
+// Submit updated shipment info
+const submitUpdateShipment = () => {
+    router.put(`/orders/update-shipment/${currentOrder.value.order_id}`, {
+        estimated_delivery_date: estimatedDelivery.value,
+        tracking_number: trackingNumber.value,
+        shipment_status: shipmentStatus.value,
+    }, {
+        onSuccess: () => {
+            showUpdateModal.value = false;
+            Swal.fire('Updated!', 'Shipment information has been updated.', 'success');
+        },
+        onError: (errors) => {
+            console.log(errors);
+            Swal.fire('Error!', 'Failed to update shipment information.', 'error');
+        }
+    });
+};
 
 
 //delete product method
@@ -50,7 +87,7 @@ const groupedOrderItems = computed(() => {
     const grouped = {};
 
     orderItems.forEach((item) => {
-        const { order_id, quantity, unit_price } = item;
+        const { order_id, quantity, unit_price, product_name, user_name, order_status } = item;
 
         if (!grouped[order_id]) {
             // If the group doesn't exist, initialize it
@@ -88,7 +125,8 @@ function viewOrderDetails(orderId) {
                 <div
                     class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
                     <div class="w-full md:w-1/2">
-                        <form class="flex items-center">
+                        <div class="text-lg font-semibold">Order List</div>
+                        <!-- <form class="flex items-center">
                             <label for="simple-search" class="sr-only">Search</label>
                             <div class="relative w-full">
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -103,7 +141,7 @@ function viewOrderDetails(orderId) {
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                     placeholder="Search" required="">
                             </div>
-                        </form>
+                        </form> -->
                     </div>
                     <div
                         class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
@@ -208,43 +246,125 @@ function viewOrderDetails(orderId) {
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
                                 <th scope="col" class="px-4 py-3">Order ID</th>
-                                <th scope="col" class="px-4 py-3">Product ID</th>
+                                <th scope="col" class="px-4 py-3">Customer</th>
                                 <th scope="col" class="px-4 py-3">Quantity</th>
-                                <th scope="col" class="px-4 py-3">Unit Price</th>
+                                <th scope="col" class="px-4 py-3">Total Price</th>
                                 <th scope="col" class="px-4 py-3">Product Name</th>
-                                <th scope="col" class="px-4 py-3">Order Status</th>
-                                <th scope="col" class="px-4 py-3">
-                                    <span class="sr-only">Actions</span>
-                                </th>
+                                <th scope="col" class="px-4 py-3">Payment Status</th>
+                                <th scope="col" class="px-4 py-3">Shipment Status</th>
+                                <th scope="col" class="px-4 py-3"><span class="sr-only">Actions</span></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="(orderItem, index) in groupedOrderItems" :key="orderItem.order_id"
-                                class="border-b dark:border-gray-700">
+                                class="hover:bg-gray-200">
                                 <th scope="row"
                                     class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                    {{ orderItem.order_id }}
+                                    #{{ orderItem.order_id }}
                                 </th>
-                                <td class="px-4 py-3">{{ orderItem.product_id }}</td>
+                                <td class="px-4 py-3">{{ orderItem.user_name }}</td> <!-- Display User Name -->
                                 <td class="px-4 py-3">{{ orderItem.total_quantity }}</td>
                                 <td class="px-4 py-3">RM {{ orderItem.total_price.toFixed(2) }}</td>
-                                <td class="px-4 py-3">{{ capitalizeInitialWords(orderItem.product.name || 'N/A') }}</td>
+                                <td class="px-4 py-3">{{ capitalizeInitialWords(orderItem.product_name || 'N/A') }}</td>
                                 <td class="px-4 py-3">
                                     <span :class="{
-                                        'px-3 py-2 text-xs font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800': orderItem.order.status === 'paid',
-                                        'px-3 py-2 text-xs font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800': orderItem.order.status === 'unpaid'
+                                        'px-3 py-2 text-xs font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800': orderItem.order_status === 'paid',
+                                        'px-3 py-2 text-xs font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800': orderItem.order_status === 'unpaid'
                                     }" class="inline-flex items-center px-2 py-1 rounded-full text-sm font-medium">
-                                        {{ capitalizeInitialWords(orderItem.order.status || 'N/A') }}
+                                        {{ capitalizeInitialWords(orderItem.order_status || 'N/A') }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span :class="{
+                                        'px-3 py-2 text-xs font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800': orderItem.shipment_status === 'shipped',
+                                        'px-3 py-2 text-xs font-medium text-center text-white bg-orange-500 rounded-lg hover:bg-orange-600 focus:ring-4 focus:outline-none focus:ring-orange-300 dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-800': orderItem.shipment_status === 'pending',
+                                        'px-3 py-2 text-xs font-medium text-center text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800': orderItem.shipment_status === 'to_ship',
+                                        'px-3 py-2 text-xs font-medium text-center text-white bg-yellow-500 rounded-lg hover:bg-yellow-600 focus:ring-4 focus:outline-none focus:ring-yellow-300 dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800': orderItem.shipment_status === 'delivered',
+                                    }" class="inline-flex items-center px-2 py-1 rounded-full text-sm font-medium">
+                                        {{ capitalizeInitialWords(orderItem.shipment_status || 'N/A') }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 flex items-center justify-end">
-                                    <button @click.stop="viewOrderDetails(orderItem.order_id)"
-                                        class="text-blue-600 hover:underline">View Details</button>
+                                    <button :id="`${orderItem.order_id}-button`"
+                                        :data-dropdown-toggle="`${orderItem.order_id}`"
+                                        class="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100"
+                                        type="button">
+                                        <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+                                        </svg>
+                                    </button>
+                                    <!-- Dropdown for each order item -->
+                                    <div :id="`${orderItem.order_id}`"
+                                        class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
+                                        <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
+                                            :aria-labelledby="`${orderItem.order_id}-button`">
+                                            <li>
+                                                <a href="#" @click="viewOrderDetails(orderItem.order_id)"
+                                                    class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                                    View Details
+                                                </a>
+                                            </li>
+                                            <li v-if="orderItem.order_status === 'paid'">
+                                                <a href="#" @click="openUpdateModal(orderItem)"
+                                                    class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                                    Update Shipment
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <!-- Update button -->
+                                    <!-- <button @click="openUpdateModal(orderItem)"
+                                        class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-600">
+                                        Update Shipment
+                                    </button> -->
+
                                 </td>
                             </tr>
-
                         </tbody>
                     </table>
+                </div>
+                <!-- Modal for Updating Shipment -->
+                <div v-if="showUpdateModal"
+                    class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md">
+                        <h2 class="text-lg font-semibold mb-4">Update Shipment for Order #{{
+                            currentOrder.order_id }}</h2>
+
+                        <!-- Tracking Number Input -->
+                        <label class="block mb-3">
+                            <span class="text-gray-700 dark:text-gray-300">Tracking Number</span>
+                            <input v-model="trackingNumber" type="text"
+                                class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md" />
+                        </label>
+
+                        <!-- Shipment Status Selector -->
+                        <label class="block mb-3">
+                            <span class="text-gray-700 dark:text-gray-300">Shipment Status</span>
+                            <select v-model="shipmentStatus"
+                                class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md">
+                                <option value="pending">Pending</option>
+                                <option value="to_ship">To Ship</option>
+                                <option value="shipped">Shipped</option>
+                                <option value="delivered">Delivered</option>
+                            </select>
+                        </label>
+
+                        <!-- Estimated Delivery Date Input -->
+                        <label class="block mb-3">
+                            <span class="text-gray-700 dark:text-gray-300">Estimated Delivery Date</span>
+                            <input v-model="estimatedDelivery" type="date"
+                                class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md" />
+                        </label>
+
+                        <!-- Action Buttons -->
+                        <div class="flex justify-end space-x-2">
+                            <button @click="submitUpdateShipment"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg">Save</button>
+                            <button @click="closeUpdateModal" class="px-4 py-2 bg-gray-300 rounded-lg">Cancel</button>
+                        </div>
+                    </div>
                 </div>
                 <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4"
                     aria-label="Table navigation">

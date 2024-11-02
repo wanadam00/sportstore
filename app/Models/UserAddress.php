@@ -22,14 +22,21 @@ class UserAddress extends Model
         'type',
     ];
 
-    function user() {
+    function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-        public function getFullAddressAttribute()
+    public function orders()
     {
-        return "{$this->address1}, " .
-               ($this->address2 ? "{$this->address2}, " : "") .
-               "{$this->city}, {$this->state}, {$this->postcode}, {$this->country_name}";
+        return $this->hasMany(Order::class);
     }
+
+    public function getFullAddressAttribute()
+    {
+        return "<br>{$this->address1}<br>" .
+               ($this->address2 ? "{$this->address2}<br>" : "") .
+               "{$this->city} {$this->state}<br>{$this->postcode} {$this->country_name}";
+    }
+
 }

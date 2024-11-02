@@ -53,26 +53,26 @@
                     <div class="grid gap-6 grid-cols-2 md:grid-cols-4 lg:grid-cols-4 sm:gap-8">
                         <!-- Stats -->
                         <div class="bg-white rounded-lg border p-4 shadow-sm">
-                            <p class="text-3xl font-semibold text-blue-600">99.95%</p>
+                            <p class="text-3xl font-semibold text-yellow-500">99.95%</p>
                             <p class="mt-1 text-gray-500 dark:text-neutral-500">Total sales</p>
                         </div>
                         <!-- End Stats -->
 
                         <!-- Stats -->
                         <div class="bg-white rounded-lg border p-4 shadow-sm">
-                            <p class="text-3xl font-semibold text-blue-600">2,000+</p>
+                            <p class="text-3xl font-semibold text-yellow-500">2,000+</p>
                             <p class="mt-1 text-gray-500 dark:text-neutral-500">Sales Growth</p>
                         </div>
                         <!-- End Stats -->
 
                         <!-- Stats -->
                         <div class="bg-white rounded-lg border p-4 shadow-sm">
-                            <p class="text-3xl font-semibold text-blue-600">85%</p>
+                            <p class="text-3xl font-semibold text-yellow-500">85%</p>
                             <p class="mt-1 text-gray-500 dark:text-neutral-500">Average Order Value (AOV)</p>
                         </div>
 
                         <div class="bg-white rounded-lg border p-4 shadow-sm">
-                            <p class="text-3xl font-semibold text-blue-600">85%</p>
+                            <p class="text-3xl font-semibold text-yellow-500">85%</p>
                             <p class="mt-1 text-gray-500 dark:text-neutral-500">Total Orders</p>
                         </div>
                         <!-- End Stats -->
@@ -87,7 +87,7 @@
         <div class="max-w w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
             <div class="flex justify-between mb-5">
                 <div>
-                    <h5 class="leading-none text-3xl font-bold text-gray-900 dark:text-white pb-2">$12,423</h5>
+                    <h5 class="leading-none text-3xl font-bold text-yellow-500 dark:text-white pb-2">$12,423</h5>
                     <p class="text-base font-normal text-gray-500 dark:text-gray-400">Sales this week</p>
                 </div>
                 <div
@@ -105,7 +105,7 @@
                 class="grid grid-cols-1 items-center border-gray-200 border-t dark:border-gray-700 justify-between mt-5">
                 <div class="flex justify-between items-center pt-5">
                     <!-- Button -->
-                    <button id="dropdownDefaultButton" data-dropdown-toggle="lastDaysdropdown"
+                    <!-- <button id="dropdownDefaultButton" data-dropdown-toggle="lastDaysdropdown"
                         data-dropdown-placement="bottom"
                         class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 text-center inline-flex items-center dark:hover:text-white"
                         type="button">
@@ -115,9 +115,9 @@
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="m1 1 4 4 4-4" />
                         </svg>
-                    </button>
+                    </button> -->
                     <!-- Dropdown menu -->
-                    <div id="lastDaysdropdown"
+                    <!-- <div id="lastDaysdropdown"
                         class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
                         <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
                             aria-labelledby="dropdownDefaultButton">
@@ -145,16 +145,16 @@
                                     90 days</a>
                             </li>
                         </ul>
-                    </div>
-                    <a href="#"
-                        class="uppercase text-sm font-semibold inline-flex items-center rounded-lg text-blue-600 hover:text-blue-700 dark:hover:text-blue-500  hover:bg-gray-100 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 px-3 py-2">
+                    </div> -->
+                    <!-- <a href="#"
+                        class="uppercase text-sm font-semibold inline-flex items-center rounded-lg text-yellow-500 hover:text-yellow-700 hover:bg-gray-100 px-3 py-2">
                         Sales Report
                         <svg class="w-2.5 h-2.5 ms-1.5 rtl:rotate-180" aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="m1 9 4-4-4-4" />
                         </svg>
-                    </a>
+                    </a> -->
                 </div>
             </div>
         </div>
@@ -175,12 +175,12 @@ const options = {
         {
             name: "Developer Edition",
             data: [1500, 1418, 1456, 1526, 1356, 1256],
-            color: "#1A56DB",
+            color: "#7EACB5",
         },
         {
             name: "Designer Edition",
             data: [643, 413, 765, 412, 1423, 1731],
-            color: "#7E3BF2",
+            color: "#C96868",
         },
     ],
     chart: {

@@ -8,6 +8,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\User\ProductListController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\CartController;
+use App\Http\Controllers\User\UserOrderController;
 use App\Http\Controllers\User\CheckoutController;
 use App\Http\Controllers\User\DashboardController;
 use Illuminate\Foundation\Application;
@@ -109,10 +110,15 @@ Route::middleware([
     Route::delete('/orders/image/{id}', [OrderController::class, 'deleteImage'])->name('orders.image.delete');
     Route::delete('/orders/destory/{id}', [OrderController::class, 'destory'])->name('orders.destory');
     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
+    Route::put('/orders/update-shipment/{id}', [OrderController::class, 'updateShipment'])->name('orders.updateShipment');
+
+    Route::get('/user/orders', [UserOrderController::class, 'index'])->name('user.orders.index');
+    Route::get('/user/orders/{id}', [UserOrderController::class, 'show'])->name('user.orders.show');
 
     Route::prefix('checkout')->controller(CheckoutController::class)->group((function () {
         Route::post('order', 'store')->name('checkout.store');
         Route::get('success', 'success')->name('checkout.success');
         Route::get('cancel', 'cancel')->name('checkout.cancel');
+        Route::post('retry-payment/{orderId}', 'retryPayment')->name('checkout.retryPayment'); // New route for retrying payment
     }));
 });

@@ -183,7 +183,7 @@ const promptAddAddress = () => {
                     <div v-if="userAddress">
                         <h2 class="text-gray-900 text-lg mb-1 font-medium title-font">Shipping Address</h2>
                         <p class="leading-relaxed mb-5 text-gray-600">{{ capitalizeInitialWords(userAddress.address1) }}
-                            , {{ capitalizeInitialWords(userAddress.city) }}, {{ capitalizeInitialWords(userAddress.postcode) }}</p>
+                            , {{ capitalizeInitialWords(userAddress.city) }}, {{ (userAddress.postcode) }}, {{ capitalizeInitialWords(userAddress.country_name) }}</p>
                         <p class="leading-relaxed mb-5 text-gray-600">or you can add new below</p>
 
                     </div>
