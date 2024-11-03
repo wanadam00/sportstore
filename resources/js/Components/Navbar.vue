@@ -379,7 +379,32 @@
                         alt="user photo" />
                 </button>
                 <!-- Dropdown menu -->
-                <div class="hidden z-50 my-4 w-56 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600 "
+                <div v-if="auth.user"
+                    class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+                    id="dropdown">
+                    <div class="px-4 py-3">
+                        <span class="block text-sm text-gray-900 dark:text-white">{{ auth.user.name }}</span>
+                        <span class="block text-sm  text-gray-500 truncate dark:text-gray-400">{{ auth.user.email
+                            }}</span>
+                    </div>
+                    <ul class="py-2" aria-labelledby="user-menu-button">
+                        <li>
+                            <Link :href="route('dashboard')"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
+                            Dashboard</Link>
+                        </li>
+                        <li>
+                            <Link  @click="logout"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
+                            Sign Out</Link>
+                            <!-- <div class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"  @click="logout">
+                                <button>
+                                    Sign Out</button>
+                            </div> -->
+                        </li>
+                    </ul>
+                </div>
+                <!-- <div class="hidden z-50 my-4 w-56 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600 "
                     id="dropdown">
                     <div class="py-3 px-4">
                         <span class="block text-sm font-semibold text-gray-900 dark:text-white">Neil Sims</span>
@@ -449,13 +474,26 @@
                             out</Link>
                         </li>
                     </ul>
-                </div>
+                </div> -->
             </div>
         </div>
     </nav>
 </template>
 
 <script setup>
-import { Link } from '@inertiajs/vue3';
-
+import { Link, usePage, router } from '@inertiajs/vue3';
+import { computed } from 'vue'
+const auth = usePage().props.auth;
+// Logout function
+const logout = async () => {
+    await router.post(route('logout'), {}, {
+        onSuccess: () => {
+            // Redirect to the login page or another page after successful logout
+            router.visit(route('welcome'));
+        },
+        onError: (errors) => {
+            console.error(errors);
+        }
+    });
+};
 </script>

@@ -19,7 +19,7 @@ const form = reactive({
     state: null,
     city: null,
     postcode: null,
-    // country_code: null,
+    country_name: null,
     // type: null,
 
 })
@@ -27,7 +27,8 @@ const formFilled = computed(() => {
     return (form.address1 !== null &&
         form.state !== null &&
         form.city !== null &&
-        form.postcode !== null
+        form.postcode !== null &&
+        form.country_name !== null
         // form.country_code !== null
         // form.type !== null
     )
@@ -183,7 +184,8 @@ const promptAddAddress = () => {
                     <div v-if="userAddress">
                         <h2 class="text-gray-900 text-lg mb-1 font-medium title-font">Shipping Address</h2>
                         <p class="leading-relaxed mb-5 text-gray-600">{{ capitalizeInitialWords(userAddress.address1) }}
-                            , {{ capitalizeInitialWords(userAddress.city) }}, {{ (userAddress.postcode) }}, {{ capitalizeInitialWords(userAddress.country_name) }}</p>
+                            , {{ capitalizeInitialWords(userAddress.city) }}, {{ (userAddress.postcode) }}, {{
+                                capitalizeInitialWords(userAddress.country_name) }}</p>
                         <p class="leading-relaxed mb-5 text-gray-600">or you can add new below</p>
 
                     </div>
@@ -231,7 +233,9 @@ const promptAddAddress = () => {
                                 class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
                         </div> -->
 
-
+                        <div v-if="!userHasAddress" class="text-red-500 mb-4">
+                            You must add an address to continue.
+                        </div>
 
                         <button v-if="formFilled || userAddress" type="submit"
                             class="text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg">Checkout</button>

@@ -115,6 +115,30 @@ const capitalizeInitialWords = (str) => {
 function viewOrderDetails(orderId) {
     router.visit(`/orders/${orderId}`);
 }
+
+const removeUnderscores = (str) => {
+    return str.replace(/_/g, ' '); // Replace underscores with spaces
+};
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+
+    // Get day, month, and year
+    const day = String(date.getDate()).padStart(2, '0'); // Pad single digit days with a leading zero
+    const month = date.toLocaleString('default', { month: 'short' }); // Get short month name
+    const year = date.getFullYear(); // Get full year
+
+    // Get time components
+    const options = {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true // Change to true for 12-hour format
+    };
+    const time = date.toLocaleTimeString('en-US', options); // Format time
+
+    // Combine date and time
+    return `${day} ${month} ${year} ${time}`; // Format: "01 Jan 2023 02:00:00 PM"
+};
 </script>
 <template>
     <section class="  p-3 sm:p-5">
@@ -247,6 +271,7 @@ function viewOrderDetails(orderId) {
                             <tr>
                                 <th scope="col" class="px-4 py-3">Order ID</th>
                                 <th scope="col" class="px-4 py-3">Customer</th>
+                                <th scope="col" class="px-4 py-3">Order Date</th>
                                 <th scope="col" class="px-4 py-3">Quantity</th>
                                 <th scope="col" class="px-4 py-3">Total Price</th>
                                 <th scope="col" class="px-4 py-3">Product Name</th>
@@ -256,13 +281,15 @@ function viewOrderDetails(orderId) {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(orderItem, index) in groupedOrderItems" :key="orderItem.order_id"
+                            <tr v-for="(orderItem, index) in groupedOrderItems.slice().reverse()" :key="orderItem.id"
                                 class="hover:bg-gray-200">
                                 <th scope="row"
                                     class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                    #{{ orderItem.order_id }}
+                                    #{{ orderItem.id }}
                                 </th>
                                 <td class="px-4 py-3">{{ orderItem.user_name }}</td> <!-- Display User Name -->
+                                <td class="px-4 py-3">{{ formatDate(orderItem.created_at) }}</td>
+                                <!-- Display User Name -->
                                 <td class="px-4 py-3">{{ orderItem.total_quantity }}</td>
                                 <td class="px-4 py-3">RM {{ orderItem.total_price.toFixed(2) }}</td>
                                 <td class="px-4 py-3">{{ capitalizeInitialWords(orderItem.product_name || 'N/A') }}</td>
@@ -281,7 +308,8 @@ function viewOrderDetails(orderId) {
                                         'px-3 py-2 text-xs font-medium text-center text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800': orderItem.shipment_status === 'to_ship',
                                         'px-3 py-2 text-xs font-medium text-center text-white bg-yellow-500 rounded-lg hover:bg-yellow-600 focus:ring-4 focus:outline-none focus:ring-yellow-300 dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800': orderItem.shipment_status === 'delivered',
                                     }" class="inline-flex items-center px-2 py-1 rounded-full text-sm font-medium">
-                                        {{ capitalizeInitialWords(orderItem.shipment_status || 'N/A') }}
+                                        {{ removeUnderscores(capitalizeInitialWords(orderItem.shipment_status || 'N/A'))
+                                        }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 flex items-center justify-end">

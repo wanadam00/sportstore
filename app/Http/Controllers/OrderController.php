@@ -20,15 +20,16 @@ class OrderController extends Controller
 {
     public function index()
     {
-        // Fetch all order items with their related order and product
-        $orderItems = OrderItem::with(['order', 'product', 'order.userAddress.user'])->get();
-
-        // Return a view or Inertia response
-        // return view('order_items.index', compact('orderItems'));
-        // Or for Inertia.js
-        // return Inertia::render('OrderItems/Index', ['orderItems' => $orderItems]);
+        // Fetch paginated order items ordered by 'created_at' in descending order
+        $orderItems = OrderItem::with(['order', 'product', 'order.userAddress.user'])
+            ->orderBy('created_at', 'desc') // Order by created_at in descending order
+            // ->paginate(10);
+            ->get();
+        // dd($orderItems);
+        // Map the paginated items to the desired structure
         $orderItemsData = $orderItems->map(function ($item) {
             return [
+                'id' => $item->id,
                 'order_id' => $item->order_id,
                 'product_id' => $item->product_id,
                 'quantity' => $item->quantity,
@@ -38,15 +39,23 @@ class OrderController extends Controller
                 'estimated_delivery_date' => $item->order->estimated_delivery_date,
                 'tracking_number' => $item->order->tracking_number,
                 'shipment_status' => $item->order->shipment_status,
-                'user_name' => $item->order->userAddress->user->name ?? 'N/A', // Access user name
+                'user_name' => $item->order->userAddress->user->name ?? 'N/A',
+                'created_at' => $item->created_at,
             ];
         });
-        // dd($orderItemsData);
 
         return Inertia::render('OrderItems/Index', [
             'orderItems' => $orderItemsData,
+            // 'pagination' => [
+            //     'current_page' => $orderItems->currentPage(),
+            //     'last_page' => $orderItems->lastPage(),
+            //     'total' => $orderItems->total(),
+            //     'from' => $orderItems->firstItem(),
+            //     'to' => $orderItems->lastItem(),
+            // ],
         ]);
     }
+
 
     public function show($id)
     {
@@ -58,6 +67,7 @@ class OrderController extends Controller
             'total_price' => $order->total_price,
             'user_address' => $order->userAddress->full_address ?? 'N/A', // Adjust based on your address structure
             'user_name' => $order->userAddress && $order->userAddress->user ? $order->userAddress->user->name : 'N/A',
+            'created_at' => $order->created_at,
             'items' => $order->orderItems->map(function ($item) {
                 return [
                     'product_id' => $item->product_id,

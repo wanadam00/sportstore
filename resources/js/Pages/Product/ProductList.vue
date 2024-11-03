@@ -7,6 +7,7 @@ defineProps({
     products: Array
 })
 
+const products = usePage().props.products;
 const brands = usePage().props.brands;
 const categories = usePage().props.categories;
 const services = usePage().props.services;
@@ -243,6 +244,13 @@ const capitalizeInitialWords = (str) => {
 
 const dialogWidth = computed(() => {
     return window.innerWidth < 1024 ? '90%' : '30%'; // 90% for mobile, 30% for larger screens
+});
+const sortedProducts = computed(() => {
+    return [...products].sort((a, b) => {
+        const nameA = a.name.toLowerCase(); // Convert to lowercase for case-insensitive comparison
+        const nameB = b.name.toLowerCase();
+        return nameA.localeCompare(nameB); // Compare the names alphabetically
+    });
 });
 </script>
 <template>
@@ -520,7 +528,7 @@ const dialogWidth = computed(() => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(product, index) in products" :key="product.id"
+                            <tr v-for="(product, index) in sortedProducts" :key="product.id"
                                 class="hover:bg-gray-200">
                                 <th scope="row"
                                     class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">

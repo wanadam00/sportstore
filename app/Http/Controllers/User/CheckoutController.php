@@ -6,6 +6,7 @@ use App\Helper\Cart;
 use App\Http\Controllers\Controller;
 use App\Models\CartItem;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\OrderItem;
 use App\Models\Payment;
 use App\Models\UserAddress;
@@ -191,6 +192,15 @@ class CheckoutController extends Controller
             if ($order->status === 'unpaid') {
                 $order->status = 'paid';
                 $order->save();
+
+                // Decrease product quantity for each order item
+                foreach ($order->orderItems as $orderItem) {
+                    $product = Product::find($orderItem->product_id);
+                    if ($product) {
+                        $product->quantity -= $orderItem->quantity; // Reduce quantity
+                        $product->save();
+                    }
+                }
             }
 
             return redirect()->route('welcome');
