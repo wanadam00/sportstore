@@ -34,7 +34,7 @@ class UserAddress extends Model
 
     public function getFullAddressAttribute()
     {
-        return "<br>{$this->address1}<br>" .
+        return "{$this->address1}<br>" .
                ($this->address2 ? "{$this->address2}<br>" : "") .
                "{$this->city} {$this->state}<br>{$this->postcode} {$this->country_name}";
     }

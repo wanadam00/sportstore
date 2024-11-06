@@ -11,6 +11,7 @@ use App\Models\UserAddress;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 
 class UserOrderController extends Controller
 {
@@ -30,6 +31,7 @@ class UserOrderController extends Controller
             ->whereHas('userAddress', function ($query) {
                 $query->where('user_id', auth()->id()); // Filter by user_id in user_addresses
             })
+            ->orderBy('created_at', 'desc') // Sort by created_at in descending order
             ->get()
             ->map(function ($order) {
                 return [
@@ -93,4 +95,23 @@ class UserOrderController extends Controller
             'order' => $orderDetails,
         ]);
     }
+
+    public function updateShipment(Request $request, $orderId)
+{
+    $validator = Validator::make($request->all(), [
+        'shipment_status' => 'required|string',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
+    }
+
+    $order = Order::findOrFail($orderId);
+    $order->estimated_delivery_date = $request->estimated_delivery_date;
+    $order->tracking_number = $request->tracking_number;
+    $order->shipment_status = $request->shipment_status;
+    $order->save();
+
+    return response()->json(['message' => 'Shipment updated successfully'], 200);
+}
 }

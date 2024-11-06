@@ -11,6 +11,7 @@ use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
@@ -39,6 +40,23 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+
+        // Validator::make
+        $validator = Validator::make($request->all(), [
+            'name' => ['required', 'string', 'max:255'],
+            'price' => ['required', 'alpha', 'min:0'],
+            'promo_price' => ['nullable', 'alpha', 'min:0'],
+            'quantity' => ['required', 'integer', 'min:1'],
+            'description' => ['nullable', 'string'],
+            'category_id' => ['required', 'exists:categories,id'],
+            'brand_id' => ['required', 'exists:brands,id'],
+            'service_id' => ['required', 'exists:services,id'],
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
 
         $product = new Product;
         $product->name = $request->name;
@@ -70,11 +88,52 @@ class ProductController extends Controller
         return redirect()->route('products.index')->with('success', 'Product created successfully.');
     }
 
+    public function show($id)
+    {
+        // Fetch the product details
+        $product = Product::with('category', 'brand', 'service', 'product_images')->findOrFail($id);
+        $brand = Brand::get();
+        $category = Category::get();
+        $service = Service::get();
+        // dd($products);
+
+        // $productDetails = [
+        //     'product_id' => $product->id,
+        //     'product_name' => $product->name,
+        //     'total_price' => $product->total_price,
+        //     'user_address' => $product->userAddress->full_address ?? 'N/A', // Adjust based on your address structure
+        //     'user_name' => $product->userAddress && $product->userAddress->user ? $product->userAddress->user->name : 'N/A',
+        //     'created_at' => $product->created_at,
+        // ];
+        // Return the view with product details
+
+        return Inertia::render(
+            'Product/ProductView',
+            [
+                'product' => $product,
+                'brand' => $brand,
+                'category' => $category,
+                'service' => $service,
+            ]
+        );
+    }
+
     //update
     public function update(Request $request, $id)
     {
 
         $product = Product::findOrFail($id);
+        // Validator::make($request->all(), [
+        //     'name' => ['required'],
+        //     'price' => ['required', 'alpha'],
+        //     'promo_price' => ['nullable', 'alpha'],
+        //     'quantity' => ['required', 'alpha'],
+        //     'description' => ['nullable'],
+        //     'category_id' => ['required'],
+        //     'brand_id' => ['required'],
+        //     'service_id' => ['required'],
+        //     'product_images' => ['nullable'],
+        // ])->validateWithBag('updateProduct');
 
         // dd($product);
         $product->name = $request->name;

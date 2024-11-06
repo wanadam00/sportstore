@@ -49,7 +49,6 @@ const openEditModal = (brand, index) => {
     editMode.value = true;
     isAddBrand.value = false
     dialogVisible.value = true
-
 }
 
 
@@ -58,7 +57,7 @@ const openAddModal = () => {
     isAddBrand.value = true
     dialogVisible.value = true
     editMode.value = false;
-
+    resetFormData();
 }
 
 // add product method
@@ -81,15 +80,14 @@ const AddBrand = async () => {
                     title: page.props.flash.success
                 })
                 dialogVisible.value = false;
+                router.visit(route('brands.index'));
                 resetFormData();
             },
         })
     } catch (err) {
         console.log(err)
     }
-
-
-
+    resetFormData();
 }
 
 //rest data after added
@@ -132,7 +130,7 @@ const updateBrand = async () => {
     for (const image of brandImages.value) {
         formData.append('brand_images[]', image.raw);
     }
-
+    resetFormData();
     try {
         await router.post('brands/update/' + id.value, formData, {
             onSuccess: (page) => {
@@ -145,6 +143,7 @@ const updateBrand = async () => {
                     showConfirmButton: false,
                     title: page.props.flash.success
                 });
+                router.visit(route('brands.index'));
             }
         })
     } catch (err) {
@@ -161,8 +160,8 @@ const deleteBrand = (brand, index) => {
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        cancelButtonText: 'no',
-        confirmButtonText: 'yes, delete!'
+        cancelButtonText: 'No',
+        confirmButtonText: 'Yes, Delete!'
     }).then((result) => {
         if (result.isConfirmed) {
             try {
@@ -176,6 +175,7 @@ const deleteBrand = (brand, index) => {
                             showConfirmButton: false,
                             title: page.props.flash.success
                         });
+                        router.visit(route('brands.index'));
                     }
                 })
             } catch (err) {
@@ -183,8 +183,8 @@ const deleteBrand = (brand, index) => {
             }
         }
     })
-
 }
+
 const capitalizeInitialWords = (str) => {
     if (!str) return '';
     return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
@@ -260,7 +260,7 @@ const capitalizeInitialWords = (str) => {
                     <div class="relative z-0 w-full mb-6 group">
                         <el-upload v-model:file-list="brandImages" list-type="picture-card" multiple
                             :on-preview="handlePictureCardPreview" :on-remove="handleRemove"
-                            :on-change="handleFileChange">
+                            :on-change="handleFileChange" :auto-upload="false">
                             <el-icon>
                                 <Plus />
                             </el-icon>
@@ -431,10 +431,10 @@ const capitalizeInitialWords = (str) => {
                                 <th scope="col" class="px-4 py-3">Quantity</th>
                                 <th scope="col" class="px-4 py-3">Price</th>
                                 <th scope="col" class="px-4 py-3">Stock</th>
-                                <th scope="col" class="px-4 py-3">Publish</th>
+                                <th scope="col" class="px-4 py-3">Publish</th> -->
                                 <th scope="col" class="px-4 py-3">
                                     <span class="sr-only">Actions</span>
-                                </th> -->
+                                </th>
                             </tr>
                         </thead>
                         <tbody>

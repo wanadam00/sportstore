@@ -82,6 +82,7 @@ Route::middleware([
 
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::post('/products/store', [ProductController::class, 'store'])->name('products.store');
+    Route::get('/products/show/{id}', [ProductController::class, 'show'])->name('products.show');
     Route::put('/products/update/{id}', [ProductController::class, 'update'])->name('products.update');
     Route::delete('/products/image/{id}', [ProductController::class, 'deleteImage'])->name('products.image.delete');
     Route::delete('/products/destory/{id}', [ProductController::class, 'destory'])->name('products.destory');
@@ -114,6 +115,7 @@ Route::middleware([
 
     Route::get('/user/orders', [UserOrderController::class, 'index'])->name('user.orders.index');
     Route::get('/user/orders/{id}', [UserOrderController::class, 'show'])->name('user.orders.show');
+    Route::put('/orders/user-update-shipment/{id}', [UserOrderController::class, 'updateShipment'])->name('orders.userUpdateShipment');
 
     Route::prefix('checkout')->controller(CheckoutController::class)->group((function () {
         Route::post('order', 'store')->name('checkout.store');

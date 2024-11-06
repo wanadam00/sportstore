@@ -36,7 +36,7 @@
                             <p class="text-3xl font-semibold text-yellow-500">
                                 {{ displayTotalOrders }}
                             </p>
-                            <p class="mt-1 text-gray-500 dark:text-neutral-500">Total Orders</p>
+                            <p class="mt-1 text-gray-500 dark:text-neutral-500">Total Orders (Successful)</p>
                         </div>
                     </div>
                 </div>

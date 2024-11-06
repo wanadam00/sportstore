@@ -49,7 +49,6 @@ const openEditModal = (category, index) => {
     editMode.value = true;
     isAddCategory.value = false
     dialogVisible.value = true
-
 }
 
 
@@ -58,7 +57,7 @@ const openAddModal = () => {
     isAddCategory.value = true
     dialogVisible.value = true
     editMode.value = false;
-
+    resetFormData();
 }
 
 // add product method
@@ -81,7 +80,8 @@ const AddCategory = async () => {
                     title: page.props.flash.success
                 })
                 dialogVisible.value = false;
-                resetFormData();
+                // resetFormData();
+                router.visit(route('categories.index'));
             },
         })
     } catch (err) {
@@ -145,6 +145,7 @@ const updateCategory = async () => {
                     showConfirmButton: false,
                     title: page.props.flash.success
                 });
+                router.visit(route('categories.index'));
             }
         })
     } catch (err) {
@@ -161,8 +162,8 @@ const deleteCategory = (category, index) => {
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        cancelButtonText: 'no',
-        confirmButtonText: 'yes, delete!'
+        cancelButtonText: 'No',
+        confirmButtonText: 'Yes, Delete!'
     }).then((result) => {
         if (result.isConfirmed) {
             try {
@@ -176,6 +177,7 @@ const deleteCategory = (category, index) => {
                             showConfirmButton: false,
                             title: page.props.flash.success
                         });
+                        router.visit(route('categories.index'));
                     }
                 })
             } catch (err) {
@@ -260,7 +262,7 @@ const capitalizeInitialWords = (str) => {
                     <div class="relative z-0 w-full mb-6 group">
                         <el-upload v-model:file-list="categoryImages" list-type="picture-card" multiple
                             :on-preview="handlePictureCardPreview" :on-remove="handleRemove"
-                            :on-change="handleFileChange">
+                            :on-change="handleFileChange" :auto-upload="false">
                             <el-icon>
                                 <Plus />
                             </el-icon>
@@ -431,10 +433,10 @@ const capitalizeInitialWords = (str) => {
                                 <th scope="col" class="px-4 py-3">Quantity</th>
                                 <th scope="col" class="px-4 py-3">Price</th>
                                 <th scope="col" class="px-4 py-3">Stock</th>
-                                <th scope="col" class="px-4 py-3">Publish</th>
+                                <th scope="col" class="px-4 py-3">Publish</th> -->
                                 <th scope="col" class="px-4 py-3">
                                     <span class="sr-only">Actions</span>
-                                </th> -->
+                                </th>
                             </tr>
                         </thead>
                         <tbody>

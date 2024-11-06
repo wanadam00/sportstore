@@ -55,7 +55,7 @@ const resetFormData = () => {
 <template>
     <UserLayouts>
         <section class="text-gray-600 body-font relative">
-            <div class="fixed inset-0 bg-gray-300">
+            <div class="fixed inset-0">
                 <!-- Replace iframe with a Leaflet map container -->
                 <div id="map" class="my-16 w-full min-h h-[50vh] md:h-[60vh] lg:h-[70vh] opacity-50"></div>
             </div>

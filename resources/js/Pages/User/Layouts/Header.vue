@@ -1,10 +1,30 @@
 <script setup>
 import { Link, usePage, router } from '@inertiajs/vue3';
-import { computed } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 const canLogin = usePage().props.canLogin;
 const canRegister = usePage().props.canRegister;
 const auth = usePage().props.auth;
 const cart = computed(() => usePage().props.cart);
+const isTransparent = ref(true); // State to track if the navbar is transparent
+
+// Function to handle scroll event
+const handleScroll = () => {
+    // Check the scroll position
+    if (window.scrollY > 0) {
+        isTransparent.value = false; // Set to false when scrolled down
+    } else {
+        isTransparent.value = true; // Set to true when at the top
+    }
+};
+
+// Lifecycle hooks to add/remove the scroll event listener
+onMounted(() => {
+    window.addEventListener('scroll', handleScroll);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('scroll', handleScroll);
+});
 // Logout function
 const logout = async () => {
     await router.post(route('logout'), {}, {
@@ -19,8 +39,9 @@ const logout = async () => {
 };
 </script>
 <template>
-    <nav class="bg-white border-gray-200 dark:bg-gray-900 fixed top-0 left-0 w-full z-50">
-        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+    <nav :class="{ 'bg-transparent border-b ': isTransparent, 'bg-white border-b': !isTransparent }"
+        class="border-gray-200 fixed top-0 left-0 w-full z-50 transition-all duration-300">
+        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-2">
             <Link :href="route('welcome')" class="flex items-center">
             <!-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                 class="w-6 h-6">
@@ -34,39 +55,40 @@ const logout = async () => {
                 <div class="mr-4">
 
                     <Link :href="route('cart.view')"
-                        class="relative inline-flex items-center p-2 text-sm font-medium text-center text-white bg-yellow-500 rounded-lg hover:bg-yellow-800 focus:ring-2 focus:outline-none focus:ring-[#1a1a1a] dark:bg-yellow-600 dark:hover:bg-yellow-700 ">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="black" class="w-6 h-6 ">
+                        class="relative inline-flex items-center p-2 text-sm font-medium text-center text-white  ">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke=""
+                        class="w-7 h-7 rounded-lg"
+                        :class="{ 'text-white hover:stroke-white stroke-[#1a1a1a] transition-colors duration-300': isTransparent, 'text-[#1a1a1a] stroke-[#1a1a1a] hover:stroke-yellow-500 transition-colors duration-300': !isTransparent }">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                     </svg>
 
                     <span class="sr-only">cart</span>
-                    <div
-                        class="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-[#1a1a1a] border-2 border-white rounded-full -top-2 -right-2 dark:border-gray-900">
+                    <div :class="{ 'bg-[#1a1a1a] text-white -top-0 -right-0 ': isTransparent, 'bg-[#1a1a1a] text-white -top-0 -right-0': !isTransparent }"
+                        class="absolute inline-flex items-center justify-center w-5 h-5 text-xs font-bold rounded-full transition-colors duration-300">
                         {{ cart.data.count }}</div>
                     </Link>
 
 
                 </div>
                 <button v-if="auth.user" type="button"
-                    class="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                    class="flex mr-3 text-sm rounded-full md:mr-0 "
                     id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown"
                     data-dropdown-placement="bottom">
                     <span class="sr-only">Open user menu</span>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        class="w-8 h-8 rounded-full bg-white" stroke="currentColor">
+                        :class="{ 'text-white hover:stroke-white stroke-[#1a1a1a] transition-colors duration-300': isTransparent, 'text-[#1a1a1a] stroke-[#1a1a1a]  hover:stroke-yellow-500 transition-colors duration-300': !isTransparent }"
+                        class="w-7 h-7 rounded-full ">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                     </svg>
-
                 </button>
                 <div v-else>
                     <Link :href="route('login')" type="button"
-                        class="text-white bg-[#212121] hover:bg-[#0f0f0f] focus:ring-2 focus:outline-none focus:ring-yellow-500 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2">
+                        class="text-white bg-[#212121] hover:bg-[#0f0f0f] focus:ring-2 focus:outline-none focus:ring-white font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2">
                     Login</Link>
                     <Link :href="route('register')" v-if="canRegister" type="button"
-                        class="text-white bg-[#212121] hover:bg-[#0f0f0f] focus:ring-2 focus:outline-none focus:ring-yellow-500 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2">
+                        class="text-white bg-[#212121] hover:bg-[#0f0f0f] focus:ring-2 focus:outline-none focus:ring-white font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2">
                     Register</Link>
 
                 </div>
@@ -115,30 +137,25 @@ const logout = async () => {
                     </svg>
                 </button>
             </div>
-            <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-user">
-                <ul
-                    class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+            <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
+                :class="{ 'pl-36': !auth.user }" id="navbar-user">
+                <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 md:flex-row md:space-x-8 md:mt-0">
                     <li>
                         <Link :href="route('welcome')"
-                            class="block py-2 pl-3 pr-4 text-gray-900 bg-yellow-700 rounded md:bg-transparent md:hover:text-yellow-700 md:p-0 dark:text-white md:dark:hover:text-yellow-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                            :class="{ 'text-[#1a1a1a] hover:text-white': isTransparent, 'text-[#1a1a1a] hover:text-yellow-500 -top-0 -right-0': !isTransparent }"
+                            class="block py-2 pl-3 pr-4 text-gray-900 rounded md:bg-transparent md:p-0 transition-colors duration-300"
                             aria-current="page">Home</Link>
                     </li>
                     <li>
                         <Link :href="route('products.list')"
-                            class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-yellow-700 md:p-0 dark:text-white md:dark:hover:text-yellow-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                            :class="{ 'text-[#1a1a1a] hover:text-white': isTransparent, 'text-[#1a1a1a] hover:text-yellow-500 -top-0 -right-0': !isTransparent }"
+                            class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:p-0 transition-colors duration-300">
                         Product</Link>
                     </li>
-                    <!-- <li>
-                        <a href="#"
-                            class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-yellow-700 md:p-0 dark:text-white md:dark:hover:text-yellow-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Services</a>
-                    </li>
-                    <li>
-                        <a href="#"
-                            class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-yellow-700 md:p-0 dark:text-white md:dark:hover:text-yellow-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Pricing</a>
-                    </li> -->
                     <li>
                         <Link :href="route('products.contact')"
-                            class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-yellow-700 md:p-0 dark:text-white md:dark:hover:text-yellow-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                            :class="{ 'text-[#1a1a1a] hover:text-white': isTransparent, 'text-[#1a1a1a] hover:text-yellow-500 -top-0 -right-0': !isTransparent }"
+                            class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:p-0 transition-colors duration-300">
                         Contact</Link>
                     </li>
                 </ul>

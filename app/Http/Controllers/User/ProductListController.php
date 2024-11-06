@@ -15,7 +15,7 @@ class ProductListController extends Controller
 {
     public function list()
     {
-        $products = Product::with('category', 'brand', 'product_images')->filtered()->get();
+        $products = Product::with('category', 'brand', 'product_images')->filtered()->orderBy('name')->get();
         // $filterProducts = $products->filtered()->paginate(20)->withQueryString();
 
         $categories = Category::get();

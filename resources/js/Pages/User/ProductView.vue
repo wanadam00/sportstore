@@ -2,6 +2,7 @@
 import UserLayouts from './Layouts/UserLayouts.vue';
 import { usePage } from '@inertiajs/vue3';
 import { Link, router } from "@inertiajs/vue3";
+import { ref, computed } from 'vue';
 
 
 const { props } = usePage();
@@ -28,25 +29,84 @@ const capitalizeInitialWords = (str) => {
     if (!str) return '';
     return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
 };
+
+const currentIndex = ref(0);
+
+// Computed property to get the current image
+const currentImage = computed(() => {
+    return product.product_images.length > 0 ? product.product_images[currentIndex.value] : null;
+});
+
+// Function to go to the previous image
+const prevImage = () => {
+    if (currentIndex.value > 0) {
+        currentIndex.value--;
+    }
+};
+
+// Function to go to the next image
+const nextImage = () => {
+    if (currentIndex.value < product.product_images.length - 1) {
+        currentIndex.value++;
+    }
+};
+
+const getImageClass = (width, height) => {
+    return width > height ? 'h-full w-full object-fill object-center rounded-md'
+        : 'h-full w-full object-contain object-center rounded-md';
+};
 </script>
 <template>
     <UserLayouts>
         <section class="text-gray-600 body-font overflow-hidden">
             <div class="container px-5 py-24 mx-auto">
                 <div class="lg:w-4/5 mx-auto flex flex-wrap">
-                    <div class="lg:w-1/2 w-full flex justify-center">
-                        <img v-if="product.product_images.length > 0" :src="`/${product.product_images[0].image}`"
-                            :alt="product.imageAlt" class="h-400 w-400 object-cover object-center" />
+                    <div class="lg:w-1/2 w-full flex flex-col justify-center">
+                        <div class="relative">
+                            <transition name="fade" mode="out-in">
+                                <img v-if="currentImage" :key="currentImage.image" :src="`/${currentImage.image}`"
+                                    :alt="currentImage.alt"
+                                    :class="getImageClass(currentImage.width, currentImage.height)" />
+                                <img v-else :key="product.imageAlt"
+                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
+                                    :alt="product.imageAlt"
+                                    :class="getImageClass(currentImage.width, currentImage.height)" />
+                            </transition>
 
-                        <img v-else
-                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
-                            :alt="product.imageAlt" class="h-400 w-400 object-cover object-center" />
+                            <!-- Left Arrow Button -->
+                            <button @click="prevImage" :disabled="currentIndex === 0"
+                                class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-100 bg-opacity-20 p-2 rounded-lg hover:bg-gray-300 transition">
+                                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                    viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="m15 19-7-7 7-7" />
+                                </svg>
+                            </button>
+
+                            <!-- Right Arrow Button -->
+                            <button @click="nextImage" :disabled="currentIndex === product.product_images.length - 1"
+                                class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-100 bg-opacity-20 p-2 rounded-lg hover:bg-gray-300 transition">
+                                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                    viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="m9 5 7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="flex justify-center mt-4 w-full">
+                            <span>Image {{ currentIndex + 1 }} of {{ product.product_images.length }}</span>
+                        </div>
                     </div>
 
                     <div class="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0">
-                        <h2 class="text-sm title-font text-gray-500 tracking-widest">{{ capitalizeInitialWords(product.brand ?
-                            product.brand.name : 'Unknown Brand') }}</h2>
-                        <h1 class="text-gray-900 text-3xl title-font font-medium mb-1">{{ capitalizeInitialWords(product.name) }}</h1>
+                        <h2 class="text-sm title-font text-gray-500 tracking-widest">{{
+                            capitalizeInitialWords(product.brand ?
+                                product.brand.name : 'Unknown Brand') }}</h2>
+                        <h1 class="text-gray-900 text-3xl title-font font-medium mb-1">{{
+                            capitalizeInitialWords(product.name) }}</h1>
                         <div class="flex mb-4">
                             <span class="flex items-center">
                                 <svg fill="currentColor" stroke="currentColor" stroke-linecap="round"
@@ -172,6 +232,23 @@ const capitalizeInitialWords = (str) => {
         </section>
     </UserLayouts>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.fade-enter,
+.fade-leave-to
+
+/* .fade-leave-active in <2.1.8 */
+    {
+    opacity: 0;
+}
+
+/* Add any additional styles here if needed */
+</style>
 <!-- <template>
     <User Layouts>
         <div class="container mx-auto p-4">

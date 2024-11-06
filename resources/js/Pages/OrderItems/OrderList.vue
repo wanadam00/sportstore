@@ -39,6 +39,7 @@ const submitUpdateShipment = () => {
         onSuccess: () => {
             showUpdateModal.value = false;
             Swal.fire('Updated!', 'Shipment information has been updated.', 'success');
+            router.visit(route('orders.index'));
         },
         onError: (errors) => {
             console.log(errors);
@@ -46,7 +47,6 @@ const submitUpdateShipment = () => {
         }
     });
 };
-
 
 //delete product method
 const deleteOrder = (orderItem, index) => {

@@ -19,7 +19,7 @@ const editMode = ref(false);
 const dialogVisible = ref(false)
 
 //upload mulitpel images
-const productImages = ref([])
+const productImages = ref([]);
 const dialogImageUrl = ref('')
 // Handle file change when an image is uploaded
 const handleFileChange = (file, fileList) => {
@@ -92,7 +92,7 @@ const openAddModal = () => {
     isAddProduct.value = true
     dialogVisible.value = true
     editMode.value = false;
-
+    resetFormData();
 }
 
 // add product method
@@ -122,13 +122,17 @@ const AddProduct = async () => {
                     title: page.props.flash.success
                 })
                 dialogVisible.value = false;
-                resetFormData();
+                // resetFormData();
+                router.visit(route('products.index'));
             },
+            onError: (resp) => {
+                console.log(resp)
+            }
         })
     } catch (err) {
         console.log(err)
     }
-
+    resetFormData();
 
 
 }
@@ -140,6 +144,9 @@ const resetFormData = () => {
     price.value = '';
     promo_price.value = '';
     quantity.value = '';
+    category_id.value = '';
+    brand_id.value = '';
+    service_id.value = '';
     description.value = '';
     productImages.value = [];
     dialogImageUrl.value = ''
@@ -189,7 +196,7 @@ const updateProduct = async () => {
         await router.post('products/update/' + id.value, formData, {
             onSuccess: (page) => {
                 dialogVisible.value = false;
-                resetFormData();
+                // resetFormData();
                 Swal.fire({
                     toast: true,
                     icon: "success",
@@ -197,11 +204,15 @@ const updateProduct = async () => {
                     showConfirmButton: false,
                     title: page.props.flash.success
                 });
+                router.visit(route('products.index'));
+
             }
         })
     } catch (err) {
         console.log(err)
     }
+    resetFormData();
+    // router.visit(route('products.index'));
 }
 
 //delete product method
@@ -213,8 +224,8 @@ const deleteProduct = (product, index) => {
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        cancelButtonText: 'no',
-        confirmButtonText: 'yes, delete!'
+        cancelButtonText: 'No',
+        confirmButtonText: 'Yes, Delete!'
     }).then((result) => {
         if (result.isConfirmed) {
             try {
@@ -228,6 +239,7 @@ const deleteProduct = (product, index) => {
                             showConfirmButton: false,
                             title: page.props.flash.success
                         });
+                        router.visit(route('products.index'));
                     }
                 })
             } catch (err) {
@@ -236,6 +248,10 @@ const deleteProduct = (product, index) => {
         }
     })
 
+}
+
+function viewProduct(id) {
+    router.visit(`/products/show/${id}`);
 }
 const capitalizeInitialWords = (str) => {
     if (!str) return '';
@@ -261,40 +277,51 @@ const sortedProducts = computed(() => {
             <!-- form start -->
 
             <form @submit.prevent="editMode ? updateProduct() : AddProduct()" enctype="multipart/form-data">
-                <div class="relative z-0 w-full mb-6 group">
-                    <input v-model="name" type="text" name="floating_name" id="floating_name"
-                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                        placeholder=" " required />
-                    <label for="floating_name"
-                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Name</label>
+                <div class="flex flex-row gap-2">
+                    <div class="relative z-0 w-full mb-6 group">
+                        <input v-model="name" type="text" name="floating_name" id="floating_name"
+                            class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                            placeholder=" " required />
+                        <label for="floating_name"
+                            class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Name</label>
+                    </div>
+                    <div class="relative z-0 w-full mb-6 group">
+                        <input type="number" name="qty" id="floating_qty"
+                            class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                            placeholder=" " required v-model="quantity" />
+                        <label for="floating_qty"
+                            class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Quantity</label>
+                    </div>
                 </div>
-                <div class="relative z-0 w-full mb-6 group">
-                    <input type="number" name="floating_price" id="floating_price"
-                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                        placeholder=" " required v-model="price" />
-                    <label for="floating_price"
-                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Price</label>
+                <div class="flex flex-row gap-2">
+                    <div class="relative z-0 w-full mb-6 group">
+                        <input type="number" name="floating_price" id="floating_price"
+                            class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                            placeholder=" " required v-model="price" />
+                        <label for="floating_price"
+                            class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Price</label>
+                    </div>
+                    <div class="relative z-0 w-full mb-6 group">
+                        <input type="number" name="floating_price" id="floating_price"
+                            class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                            placeholder=" " v-model="promo_price" />
+                        <label for="floating_price"
+                            class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Promo
+                            Price</label>
+                    </div>
                 </div>
-                <div class="relative z-0 w-full mb-6 group">
-                    <input type="number" name="floating_price" id="floating_price"
-                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                        placeholder=" " required v-model="promo_price" />
-                    <label for="floating_price"
-                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Promo
-                        Price</label>
-                </div>
-                <div class="relative z-0 w-full mb-6 group">
+                <!-- <div class="relative z-0 w-full mb-6 group">
                     <input type="number" name="qty" id="floating_qty"
                         class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                         placeholder=" " required v-model="quantity" />
                     <label for="floating_qty"
                         class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Quantity</label>
-                </div>
+                </div> -->
 
                 <div>
                     <label for="countries" class="block my-2 text-sm font-medium text-gray-900 dark:text-white">Select
                         Category</label>
-                    <select id="countries" v-model="category_id"
+                    <select id="countries" v-model="category_id" required
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name
                             }}
@@ -307,7 +334,7 @@ const sortedProducts = computed(() => {
                 <div>
                     <label for="countries" class="block my-2 text-sm font-medium text-gray-900 dark:text-white">Select
                         Brand</label>
-                    <select id="countries" v-model="brand_id"
+                    <select id="countries" v-model="brand_id" required
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         <option v-for="brand in brands" :key="brand.id" :value="brand.id">{{ brand.name }}</option>
 
@@ -317,7 +344,7 @@ const sortedProducts = computed(() => {
                 <div>
                     <label for="countries" class="block my-2 text-sm font-medium text-gray-900 dark:text-white">Select
                         Service</label>
-                    <select id="countries" v-model="service_id"
+                    <select id="countries" v-model="service_id" required
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         <option v-for="service in services" :key="service.id" :value="service.id">{{ service.name }}
                         </option>
@@ -330,7 +357,7 @@ const sortedProducts = computed(() => {
                     <div class="relative z-0 w-full mb-6 group">
 
                         <label for="message"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
+                            class="block my-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
                         <textarea id="message" rows="4" v-model="description"
                             class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             placeholder="Leave a comment..."></textarea>
@@ -344,7 +371,7 @@ const sortedProducts = computed(() => {
                     <div class="relative z-0 w-full mb-6 group">
                         <el-upload v-model:file-list="productImages" list-type="picture-card" multiple
                             :on-preview="handlePictureCardPreview" :on-remove="handleRemove"
-                            :on-change="handleFileChange">
+                            :on-change="handleFileChange" :auto-upload="false">
                             <el-icon>
                                 <Plus />
                             </el-icon>
@@ -417,8 +444,8 @@ const sortedProducts = computed(() => {
                             <svg class="w-5 h-5 mr-2 text-gray-800 dark:text-white" aria-hidden="true"
                                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                                 viewBox="0 0 24 24">
-                                <path stroke="white" stroke-linecap="round" stroke-linejoin="round"
-                                    stroke-width="2" d="M5 12h14m-7 7V5" />
+                                <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 12h14m-7 7V5" />
                             </svg>
                             Add product
                         </button>
@@ -515,11 +542,11 @@ const sortedProducts = computed(() => {
                             <tr>
                                 <th scope="col" class="px-4 py-3">Product name</th>
                                 <th scope="col" class="px-4 py-3">Category</th>
-                                <th scope="col" class="px-4 py-3">Brand</th>
-                                <th scope="col" class="px-4 py-3">Service</th>
+                                <!-- <th scope="col" class="px-4 py-3">Brand</th> -->
+                                <!-- <th scope="col" class="px-4 py-3">Service</th> -->
                                 <th scope="col" class="px-4 py-3">Quantity</th>
                                 <th scope="col" class="px-4 py-3">Price</th>
-                                <th scope="col" class="px-4 py-3">Promo Price</th>
+                                <th scope="col" class="px-4 py-3 whitespace-nowrap">Promo Price</th>
                                 <!-- <th scope="col" class="px-4 py-3">Stock</th> -->
                                 <!-- <th scope="col" class="px-4 py-3">Publish</th> -->
                                 <th scope="col" class="px-4 py-3">
@@ -528,8 +555,7 @@ const sortedProducts = computed(() => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(product, index) in sortedProducts" :key="product.id"
-                                class="hover:bg-gray-200">
+                            <tr v-for="(product, index) in sortedProducts" :key="product.id" class="hover:bg-gray-200">
                                 <th scope="row"
                                     class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     {{ capitalizeInitialWords(product.name ?? '-') }}</th>
@@ -538,18 +564,18 @@ const sortedProducts = computed(() => {
                                         }}</span>
                                     <span v-else>-</span>
                                 </td>
-                                <td class="px-4 py-3">
-                                    <span v-if="product.category.name">{{ capitalizeInitialWords(product.brand.name)
+                                <!-- <td class="px-4 py-3">
+                                    <span v-if="product.brand.name">{{ capitalizeInitialWords(product.brand.name)
                                         }}</span>
                                     <span v-else>-</span>
-                                </td>
-                                <td class="px-4 py-3">{{ capitalizeInitialWords(product.service ? product.service.name :
-                                    '-') }}</td>
+                                </td> -->
+                                <!-- <td class="px-4 py-3">{{ capitalizeInitialWords(product.service ? product.service.name :
+                                    '-') }}</td> -->
                                 <td class="px-4 py-3">{{ product.quantity }}</td>
-                                <td class="px-4 py-3">
+                                <td class="px-4 py-3 whitespace-nowrap">
                                     <span v-if="product.price">RM {{ product.price }}</span>
                                 </td>
-                                <td class="px-4 py-3">
+                                <td class="px-4 py-3 whitespace-nowrap">
                                     <span v-if="product.promo_price">RM {{ product.promo_price }}</span>
                                     <span v-else>-</span>
                                 </td>
@@ -585,6 +611,13 @@ const sortedProducts = computed(() => {
                                         class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
                                         <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
                                             :aria-labelledby="`${product.id}-button`">
+
+                                            <li>
+                                                <a href="#" @click="viewProduct(product.id)"
+                                                    class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                                    View Details
+                                                </a>
+                                            </li>
 
                                             <li>
                                                 <a href="#" @click="openEditModal(product)"

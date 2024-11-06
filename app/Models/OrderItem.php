@@ -27,6 +27,11 @@ class OrderItem extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function product_images()
+    {
+        return $this->hasMany(ProductImage::class);
+    }
+
     public function userAddress()
     {
         return $this->belongsTo(UserAddress::class);

@@ -35,6 +35,7 @@ class OrderController extends Controller
                 'quantity' => $item->quantity,
                 'unit_price' => $item->unit_price,
                 'product_name' => $item->product->name ?? 'N/A',
+                // 'product_images' => $item->product->product_images,
                 'order_status' => $item->order->status,
                 'estimated_delivery_date' => $item->order->estimated_delivery_date,
                 'tracking_number' => $item->order->tracking_number,
@@ -86,7 +87,7 @@ class OrderController extends Controller
     public function updateShipment(Request $request, $orderId)
     {
         $request->validate([
-            // 'estimated_delivery_date' => 'required|date', // Ensure this is a valid date
+            'estimated_delivery_date' => 'required_if:shipment_status,to_ship|date', // Required if status is 'shipped'
             'tracking_number' => 'required|string|max:255', // Validate tracking number
             'shipment_status' => 'required|string', // Validate shipment status
         ]);
@@ -97,6 +98,6 @@ class OrderController extends Controller
         $order->shipment_status = $request->shipment_status;
         $order->save();
 
-        return back()->with('flash', ['success' => 'Shipment updated successfully']);
+        return redirect()->route('orders.index')->with('flash', ['success' => 'Shipment updated successfully']);
     }
 }
