@@ -50,11 +50,7 @@ class UserOrderController extends Controller
                             'product_name' => $item->product->name ?? 'N/A',
                             'quantity' => $item->quantity,
                             'unit_price' => (float) $item->unit_price,
-                            'product_images' => $item->product->product_images->map(function ($product_images) {
-                                return [
-                                    'image' => $product_images->url, // Assuming the image URL is stored in the 'url' field
-                                ];
-                            })->toArray(), // Convert the collection to an array
+                            'product_images' => $item->product->product_images->toArray(), // Convert the collection to an array
                         ];
                     }),
                 ];

@@ -29,9 +29,7 @@ class CartController extends Controller
                     ]
                 );
             }
-
-        }
-        else {
+        } else {
             $cartItems = Cart::getCookieCartItems();
             if (count($cartItems) > 0) {
                 $cartItems = new CartResource(Cart::getProductsAndCartItems());
@@ -69,15 +67,19 @@ class CartController extends Controller
             }
 
             if (!$isProductExists) {
+                // Determine the price to use (promo price if available, otherwise regular price)
+                $priceToUse = $product->promo_price >= 0 ? $product->promo_price : $product->price;
+
                 $cartItems[] = [
                     'user_id' => null,
                     'product_id' => $product->id,
                     'quantity' => $quantity,
-                    'price' => $product->price,
+                    'price' => $priceToUse, // Use the determined price
                 ];
             }
             Cart::setCookieCartItems($cartItems);
         }
+        // dd($quantity);
 
         return redirect()->back()->with('success', 'cart added successfully');
     }
@@ -103,14 +105,22 @@ class CartController extends Controller
     public function delete(Request $request, Product $product)
     {
         $user = $request->user();
+
         if ($user) {
-            CartItem::query()->where(['user_id' => $user->id, 'product_id' => $product->id])->first()?->delete();
-            if (CartItem::count() <= 0) {
-                return redirect()->route('welcome')->with('info', 'your cart is empty');
+            // Delete the cart item for the authenticated user
+            $cartItem = CartItem::where(['user_id' => $user->id, 'product_id' => $product->id])->first();
+            if ($cartItem) {
+                $cartItem->delete();
+            }
+
+            // Check if the user's cart is empty
+            if (CartItem::where('user_id', $user->id)->count() <= 0) {
+                return redirect()->route('welcome')->with('info', 'Your cart is empty');
             } else {
-                return redirect()->back()->with('success', 'item removed successfully');
+                return redirect()->back()->with('success', 'Item removed successfully');
             }
         } else {
+            // Handle guest users
             $cartItems = Cart::getCookieCartItems();
             foreach ($cartItems as $i => &$item) {
                 if ($item['product_id'] === $product->id) {
@@ -119,10 +129,12 @@ class CartController extends Controller
                 }
             }
             Cart::setCookieCartItems($cartItems);
+
+            // Check if the cookie cart is empty
             if (count($cartItems) <= 0) {
-                return redirect()->route('welcome')->with('info', 'your cart is empty');
+                return redirect()->route('welcome')->with('info', 'Your cart is empty');
             } else {
-                return redirect()->back()->with('success', 'item removed successfully');
+                return redirect()->back()->with('success', 'Item removed successfully');
             }
         }
     }

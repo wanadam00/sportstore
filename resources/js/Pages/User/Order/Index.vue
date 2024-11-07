@@ -7,32 +7,32 @@
             <div class="flex mb-4">
                 <span class=""></span>
                 <button @click="selectedStatus = ''"
-                    :class="{ 'text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-6': selectedStatus === '', 'border-b-2 border-gray-300 py-2 text-lg px-6': selectedStatus !== '' }"
+                    :class="{ 'text-yellow-500 border-b-2 border-yellow-500 py-2 text-lg px-6': selectedStatus === '', 'border-b-2 border-gray-300 py-2 text-lg px-6': selectedStatus !== '' }"
                     class="border-b-2 border-gray-300 py-2 text-lg px-6">
                     All
                 </button>
                 <button @click="selectedStatus = 'paid'"
-                    :class="{ 'text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-6': selectedStatus === 'paid', 'border-b-2 border-gray-300 py-2 text-lg px-6': selectedStatus !== 'paid' }"
+                    :class="{ 'text-yellow-500 border-b-2 border-yellow-500 py-2 text-lg px-6': selectedStatus === 'paid', 'border-b-2 border-gray-300 py-2 text-lg px-6': selectedStatus !== 'paid' }"
                     class="border-b-2 border-gray-300 py-2 text-lg px-6">
                     Paid
                 </button>
                 <button @click="selectedStatus = 'unpaid'"
-                    :class="{ 'text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-6': selectedStatus === 'unpaid', 'border-b-2 border-gray-300 py-2 text-lg px-6': selectedStatus !== 'unpaid' }"
+                    :class="{ 'text-yellow-500 border-b-2 border-yellow-500 py-2 text-lg px-6': selectedStatus === 'unpaid', 'border-b-2 border-gray-300 py-2 text-lg px-6': selectedStatus !== 'unpaid' }"
                     class="border-b-2 border-gray-300 py-2 text-lg px-6">
                     Unpaid
                 </button>
                 <button @click="selectedStatus = 'to_ship'"
-                    :class="{ 'text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-6': selectedStatus === 'to_ship', 'border-b-2 border-gray-300 py-2 text-lg px-6': selectedStatus !== 'to_ship' }"
+                    :class="{ 'text-yellow-500 border-b-2 border-yellow-500 py-2 text-lg px-6': selectedStatus === 'to_ship', 'border-b-2 border-gray-300 py-2 text-lg px-6': selectedStatus !== 'to_ship' }"
                     class="border-b-2 border-gray-300 py-2 text-lg px-6 whitespace-nowrap">
                     To Ship
                 </button>
                 <button @click="selectedStatus = 'shipped'"
-                    :class="{ 'text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-6': selectedStatus === 'shipped', 'border-b-2 border-gray-300 py-2 text-lg px-6': selectedStatus !== 'shipped' }"
+                    :class="{ 'text-yellow-500 border-b-2 border-yellow-500 py-2 text-lg px-6': selectedStatus === 'shipped', 'border-b-2 border-gray-300 py-2 text-lg px-6': selectedStatus !== 'shipped' }"
                     class="border-b-2 border-gray-300 py-2 text-lg px-6">
                     Shipped
                 </button>
                 <button @click="selectedStatus = 'delivered'"
-                    :class="{ 'text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-6': selectedStatus === 'delivered', 'border-b-2 border-gray-300 py-2 text-lg px-6': selectedStatus !== 'delivered' }"
+                    :class="{ 'text-yellow-500 border-b-2 border-yellow-500 py-2 text-lg px-6': selectedStatus === 'delivered', 'border-b-2 border-gray-300 py-2 text-lg px-6': selectedStatus !== 'delivered' }"
                     class="border-b-2 border-gray-300 py-2 text-lg px-6">
                     Delivered
                 </button>
@@ -47,9 +47,16 @@
                 <h2 class="text-xl font-semibold">Order #{{ order.id }}</h2>
                 <p><strong>Order Date:</strong> {{ formatDate(order.order_date) }}</p>
                 <p><strong>Status:</strong> {{ capitalizeInitialWords(order.status) }}</p>
-                <p><strong>Total Price:</strong> RM {{ order.total_price.toFixed(2) }}</p>
-                <template
-                    v-if="order.shipment_status === 'to_ship' || order.shipment_status === 'shipped' || order.shipment_status === 'delivered'">
+                <p><strong>Total Price:</strong> RM
+                    <span v-if="order.promo_price && order.promo_price > 0">
+                        {{ order.promo_price.toFixed(2) }} <span class="text-sm text-gray-500 line-through">RM {{
+                            order.total_price.toFixed(2) }}</span>
+                    </span>
+                    <span v-else>
+                        {{ order.total_price.toFixed(2) }}
+                    </span>
+                </p>
+                <template v-if="['to_ship', 'shipped', 'delivered'].includes(order.shipment_status)">
                     <p><strong>Estimated Delivery:</strong> {{ formatDate(order.estimated_delivery_date) }}</p>
                     <p><strong>Tracking Number:</strong> {{ order.tracking_number || 'N/A' }}</p>
                 </template>
@@ -59,15 +66,19 @@
                 <h3 class="mt-4 font-semibold">Items:</h3>
                 <ul>
                     <li v-for="item in order.items" :key="item.product_id">
-                        <img v-if="item.product_images && item.product_images.length > 0 && item.product_images[0].image"
-                            :src="`/storage/images/${item.product_images[0].image}`" alt="Product Image"
-                            class="w-36 h-36 object-contain mr-2"
-                            @error="handleImageError(item.product_images[0].image)">
-                        <img v-else
-                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
-                            alt="No Image Available" class="w-36 h-36 object-contain mr-2">
-                        {{ capitalizeInitialWords(item.product_name) }} - {{ item.quantity }} x RM {{
-                            item.unit_price.toFixed(2) }}
+                        <div class="flex flex-row">
+                            <div class="flex">
+                                <img v-if="item.product_images.length > 0" :src="`/${item.product_images[0].image}`"
+                                    alt="Product Image" class="w-36 h-36 object-contain rounded-sm mb-4">
+                                <img v-else
+                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
+                                    alt="No Image Available" class="w-36 h-36 object-contain mr-2">
+                            </div>
+                            <div class="flex mt-16 ml-8">
+                                {{ capitalizeInitialWords(item.product_name) }} - {{ item.quantity }} x RM {{
+                                    item.unit_price.toFixed(2) }}
+                            </div>
+                        </div>
                     </li>
                 </ul>
                 <!-- Conditional form for unpaid orders -->

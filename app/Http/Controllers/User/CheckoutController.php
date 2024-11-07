@@ -29,8 +29,14 @@ class CheckoutController extends Controller
         foreach ($carts as $cartItem) {
             foreach ($products as $product) {
                 if ($cartItem["product_id"] == $product["id"]) {
+                    // Determine the price to use (promo price if available, otherwise regular price)
+                    $priceToUse = $product['promo_price'] > 0 ? $product['promo_price'] : $product['price'];
+
                     // Merge the cart item with product data
-                    $mergedData[] = array_merge($cartItem, ["name" => $product["name"], 'price' => $product['price']]);
+                    $mergedData[] = array_merge($cartItem, [
+                        "name" => $product["name"],
+                        'price' => $priceToUse // Use the determined price
+                    ]);
                 }
             }
         }
@@ -99,21 +105,26 @@ class CheckoutController extends Controller
             $order->save();
             $cartItems = CartItem::where(['user_id' => $user->id])->get();
             foreach ($cartItems as $cartItem) {
+                // Determine the price to use (promo price if available, otherwise regular price)
+                $priceToUse = $cartItem->product->promo_price > 0 ? $cartItem->product->promo_price : $cartItem->product->price;
+
                 OrderItem::create([
                     'order_id' => $order->id, // Assuming you have an 'id' field in your orders table
                     'product_id' => $cartItem->product_id,
                     'quantity' => $cartItem->quantity,
-                    'unit_price' => $cartItem->product->price, // You may adjust this depending on your logic
+                    'unit_price' => $priceToUse, // Use the determined price
                 ]);
+
                 $cartItem->delete();
-                //remove cart items from cookies
-                $cartItems = Cart::getCookieCartItems();
-                foreach ($cartItems as $item) {
-                    unset($item);
-                }
-                array_splice($cartItems, 0, count($cartItems));
-                Cart::setCookieCartItems($cartItems);
             }
+
+            // Remove cart items from cookies
+            $cartItems = Cart::getCookieCartItems();
+            foreach ($cartItems as $item) {
+                unset($item);
+            }
+            array_splice($cartItems, 0, count($cartItems));
+            Cart::setCookieCartItems($cartItems);
 
             $paymentData = [
                 'order_id' => $order->id,

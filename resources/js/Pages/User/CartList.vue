@@ -165,7 +165,7 @@ const promptAddAddress = () => {
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 font-semibold text-gray-900 dark:text-white">
-                                    RM {{ product.price }}
+                                    RM {{ product.promo_price > 0 ? product.promo_price : product.price }}
                                 </td>
                                 <td class="px-6 py-4">
                                     <a @click="remove(product)"
