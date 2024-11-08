@@ -22,12 +22,11 @@ class OrderController extends Controller
     {
         // Fetch paginated order items ordered by 'created_at' in descending order
         $orderItems = OrderItem::with(['order', 'product', 'order.userAddress.user'])
-            ->orderBy('created_at', 'desc') // Order by created_at in descending order
-            // ->paginate(10);
-            ->get();
-        // dd($orderItems);
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
         // Map the paginated items to the desired structure
-        $orderItemsData = $orderItems->map(function ($item) {
+        $orderItemsData = $orderItems->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
                 'order_id' => $item->order_id,
@@ -35,7 +34,6 @@ class OrderController extends Controller
                 'quantity' => $item->quantity,
                 'unit_price' => $item->unit_price,
                 'product_name' => $item->product->name ?? 'N/A',
-                // 'product_images' => $item->product->product_images,
                 'order_status' => $item->order->status,
                 'estimated_delivery_date' => $item->order->estimated_delivery_date,
                 'tracking_number' => $item->order->tracking_number,
@@ -45,17 +43,21 @@ class OrderController extends Controller
             ];
         });
 
+        // Update the collection in the paginated result
+        $orderItems->setCollection($orderItemsData);
+
         return Inertia::render('OrderItems/Index', [
             'orderItems' => $orderItemsData,
-            // 'pagination' => [
-            //     'current_page' => $orderItems->currentPage(),
-            //     'last_page' => $orderItems->lastPage(),
-            //     'total' => $orderItems->total(),
-            //     'from' => $orderItems->firstItem(),
-            //     'to' => $orderItems->lastItem(),
-            // ],
+            'pagination' => [
+                'current_page' => $orderItems->currentPage(),
+                'last_page' => $orderItems->lastPage(),
+                'prev_page_url' => $orderItems->previousPageUrl(),
+                'next_page_url' => $orderItems->nextPageUrl(),
+                'total' => $orderItems->total(),
+            ],
         ]);
     }
+
 
 
     public function show($id)
@@ -87,7 +89,7 @@ class OrderController extends Controller
     public function updateShipment(Request $request, $orderId)
     {
         $request->validate([
-            'estimated_delivery_date' => 'required_if:shipment_status,to_ship|date', // Required if status is 'shipped'
+            'estimated_delivery_date' => 'required_if:shipment_status,shipped|date', // Required if status is 'shipped'
             'tracking_number' => 'required|string|max:255', // Validate tracking number
             'shipment_status' => 'required|string', // Validate shipment status
         ]);

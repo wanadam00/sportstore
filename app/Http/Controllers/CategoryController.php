@@ -19,14 +19,21 @@ class CategoryController extends Controller
         // $products = Product::get();
         // return Inertia::render('Product/Index');
         // $products = Product::with('category', 'brand', 'brand_images')->get();
-        $categories = Category::with('category_images')->get();
+        $categories = Category::with('category_images')->orderBy('name')->paginate(10);
         // $categories = Category::get();
 
         return Inertia::render(
             'Category/Index',
             [
                 // 'products' => $products,
-                'categories' => $categories,
+                'categories' => $categories->items(),
+                'pagination' => [
+                    'current_page' => $categories->currentPage(),
+                    'last_page' => $categories->lastPage(),
+                    'prev_page_url' => $categories->previousPageUrl(),
+                    'next_page_url' => $categories->nextPageUrl(),
+                    'total' => $categories->total(), // Add any additional pagination info as needed
+                ],
                 // 'categories' => $categories
             ]
         );

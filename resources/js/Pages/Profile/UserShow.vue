@@ -1,4 +1,5 @@
 <script setup>
+import Header from '@/Pages/User/Layouts/Header.vue'
 import AppLayout2 from '@/Layouts/AppLayout2.vue';
 import DeleteUserForm from '@/Pages/Profile/Partials/DeleteUserForm.vue';
 import LogoutOtherBrowserSessionsForm from '@/Pages/Profile/Partials/LogoutOtherBrowserSessionsForm.vue';
@@ -6,6 +7,7 @@ import SectionBorder from '@/Components/SectionBorder.vue';
 import TwoFactorAuthenticationForm from '@/Pages/Profile/Partials/TwoFactorAuthenticationForm.vue';
 import UpdatePasswordForm from '@/Pages/Profile/Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from '@/Pages/Profile/Partials/UpdateProfileInformationForm.vue';
+import UserLayouts from '../User/Layouts/UserLayouts.vue';
 
 defineProps({
     confirmsTwoFactorAuthentication: Boolean,
@@ -14,14 +16,14 @@ defineProps({
 </script>
 
 <template>
-    <AppLayout2 title="Profile">
-        <template #header>
+    <UserLayouts title="Profile">
+        <!-- <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Profile
             </h2>
-        </template>
+        </template> -->
 
-        <div>
+        <div class="pt-10">
             <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
                 <div v-if="$page.props.jetstream.canUpdateProfileInformation">
                     <UpdateProfileInformationForm :user="$page.props.auth.user" />
@@ -53,5 +55,5 @@ defineProps({
                 </template>
             </div>
         </div>
-    </AppLayout2>
+    </UserLayouts>
 </template>

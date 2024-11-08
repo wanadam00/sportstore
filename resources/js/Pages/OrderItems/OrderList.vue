@@ -141,7 +141,7 @@ const formatDate = (dateString) => {
 };
 </script>
 <template>
-    <section class="  p-3 sm:p-5">
+    <section class="  p-3 sm:pt-5">
         <!-- end -->
         <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
             <!-- Start coding here -->
@@ -269,12 +269,12 @@ const formatDate = (dateString) => {
                     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
-                                <th scope="col" class="px-4 py-3">Order ID</th>
+                                <th scope="col" class="px-4 py-3 whitespace-nowrap">Order ID</th>
                                 <th scope="col" class="px-4 py-3">Customer</th>
                                 <th scope="col" class="px-4 py-3">Order Date</th>
-                                <th scope="col" class="px-4 py-3">Quantity</th>
+                                <th scope="col" class="px-4 py-3">qty</th>
                                 <th scope="col" class="px-4 py-3">Total Price</th>
-                                <th scope="col" class="px-4 py-3">Product Name</th>
+                                <!-- <th scope="col" class="px-4 py-3">Product Name</th> -->
                                 <th scope="col" class="px-4 py-3">Payment Status</th>
                                 <th scope="col" class="px-4 py-3">Shipment Status</th>
                                 <th scope="col" class="px-4 py-3"><span class="sr-only">Actions</span></th>
@@ -291,11 +291,11 @@ const formatDate = (dateString) => {
                                 <td class="px-4 py-3">{{ formatDate(orderItem.created_at) }}</td>
                                 <!-- Display User Name -->
                                 <td class="px-4 py-3">{{ orderItem.total_quantity }}</td>
-                                <td class="px-4 py-3">RM {{ orderItem.total_price.toFixed(2) }}</td>
-                                <td class="px-4 py-3">{{ capitalizeInitialWords(orderItem.product_name || 'N/A') }}</td>
+                                <td class="px-4 py-3 whitespace-nowrap">RM {{ orderItem.total_price.toFixed(2) }}</td>
+                                <!-- <td class="px-4 py-3">{{ capitalizeInitialWords(orderItem.product_name || 'N/A') }}</td> -->
                                 <td class="px-4 py-3">
                                     <span :class="{
-                                        'px-3 py-2 text-xs font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800': orderItem.order_status === 'paid',
+                                        'px-5 py-2 text-xs font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800': orderItem.order_status === 'paid',
                                         'px-3 py-2 text-xs font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800': orderItem.order_status === 'unpaid'
                                     }" class="inline-flex items-center px-2 py-1 rounded-full text-sm font-medium">
                                         {{ capitalizeInitialWords(orderItem.order_status || 'N/A') }}
@@ -315,7 +315,7 @@ const formatDate = (dateString) => {
                                 <td class="px-4 py-3 flex items-center justify-end">
                                     <button :id="`${orderItem.order_id}-button`"
                                         :data-dropdown-toggle="`${orderItem.order_id}`"
-                                        class="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100"
+                                        class="inline-flex items-center py-1.5 px-2.5 shadow-sm text-sm font-medium text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none bg-gray-100"
                                         type="button">
                                         <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
                                             xmlns="http://www.w3.org/2000/svg">
@@ -394,7 +394,7 @@ const formatDate = (dateString) => {
                         </div>
                     </div>
                 </div>
-                <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4"
+                <!-- <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4"
                     aria-label="Table navigation">
                     <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
                         Showing
@@ -448,7 +448,7 @@ const formatDate = (dateString) => {
                             </a>
                         </li>
                     </ul>
-                </nav>
+                </nav> -->
             </div>
         </div>
     </section>

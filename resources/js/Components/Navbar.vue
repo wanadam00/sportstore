@@ -59,7 +59,7 @@
                 </button>
                 <!-- Notifications -->
                 <button type="button" data-dropdown-toggle="notification-dropdown"
-                    class="p-2 mr-1 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600">
+                    class="p-1 mr-1 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600">
                     <span class="sr-only">View notifications</span>
                     <!-- Bell icon -->
                     <svg aria-hidden="true" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"
@@ -235,7 +235,7 @@
                 </div>
                 <!-- Apps -->
                 <button type="button" data-dropdown-toggle="apps-dropdown"
-                    class="p-2 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600">
+                    class="p-1 mr-2 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600">
                     <span class="sr-only">View notifications</span>
                     <!-- Icon -->
                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -370,17 +370,23 @@
                         </a>
                     </div>
                 </div>
-                <button type="button"
+                <!-- <button type="button"
                     class="flex mx-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
                     id="user-menu-button" aria-expanded="false" data-dropdown-toggle="dropdown">
                     <span class="sr-only">Open user menu</span>
                     <img class="w-8 h-8 rounded-full"
                         src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/michael-gough.png"
                         alt="user photo" />
+                </button> -->
+                <button v-if="$page.props.jetstream.managesProfilePhotos" id="user-menu-button" aria-expanded="false"
+                    data-dropdown-toggle="dropdown"
+                    class="flex text-sm border-2 border-transparent rounded-lg focus:outline-none focus:border-gray-300 transition">
+                    <img class="h-8 w-8 rounded-lg object-cover" :src="$page.props.auth.user.profile_photo_url"
+                        :alt="$page.props.auth.user.name">
                 </button>
                 <!-- Dropdown menu -->
                 <div v-if="auth.user"
-                    class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+                    class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 border rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
                     id="dropdown">
                     <div class="px-4 py-3">
                         <span class="block text-sm text-gray-900 dark:text-white">{{ auth.user.name }}</span>
@@ -394,7 +400,15 @@
                             Dashboard</Link>
                         </li>
                         <li>
-                            <Link  @click="logout"
+                            <Link :href="route('profile.show')"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
+                            Profile</Link>
+                            <!-- <DropdownLink :href="route('profile.show')">
+                                Profile
+                            </DropdownLink> -->
+                        </li>
+                        <li>
+                            <Link @click="logout"
                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
                             Sign Out</Link>
                             <!-- <div class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"  @click="logout">

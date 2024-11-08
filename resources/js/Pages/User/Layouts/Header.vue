@@ -71,17 +71,15 @@ const logout = async () => {
 
 
                 </div>
-                <button v-if="auth.user" type="button"
-                    class="flex mr-3 text-sm rounded-full md:mr-0 "
+                <button v-if="auth.user" type="button" class="flex mr-3 text-sm rounded-lg md:mr-0 "
                     id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown"
                     data-dropdown-placement="bottom">
                     <span class="sr-only">Open user menu</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        :class="{ 'text-white hover:stroke-white stroke-[#1a1a1a] transition-colors duration-300': isTransparent, 'text-[#1a1a1a] stroke-[#1a1a1a]  hover:stroke-yellow-500 transition-colors duration-300': !isTransparent }"
-                        class="w-7 h-7 rounded-full ">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                    </svg>
+                    <button v-if="$page.props.jetstream.managesProfilePhotos"
+                        class="flex text-sm border-2 border-transparent rounded-lg focus:outline-none focus:border-gray-300 transition">
+                        <img class="h-8 w-8 rounded-lg object-cover" :src="$page.props.auth.user.profile_photo_url"
+                            :alt="$page.props.auth.user.name">
+                    </button>
                 </button>
                 <div v-else>
                     <Link :href="route('login')" type="button"
@@ -97,7 +95,7 @@ const logout = async () => {
 
                 <!-- Dropdown menu -->
                 <div v-if="auth.user"
-                    class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+                    class="z-50 hidden my-4 text-base list-none  bg-white divide-y border divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
                     id="user-dropdown">
                     <div class="px-4 py-3">
                         <span class="block text-sm text-gray-900 dark:text-white">{{ auth.user.name }}</span>
@@ -105,6 +103,11 @@ const logout = async () => {
                             }}</span>
                     </div>
                     <ul class="py-2" aria-labelledby="user-menu-button">
+                        <li>
+                            <Link :href="route('profile.show')"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
+                            Profile</Link>
+                        </li>
                         <li>
                             <Link :href="route('dashboard')"
                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">

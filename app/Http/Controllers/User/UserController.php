@@ -161,4 +161,9 @@ class UserController extends Controller
     {
         return Service::with('service_images')->get(); // Fetch all categories
     }
+
+    public function user()
+    {
+        return redirect()->route('profile.user');
+    }
 }

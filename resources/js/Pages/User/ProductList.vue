@@ -19,6 +19,9 @@ import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from
 import Products from '@/Pages/User/Components/Products.vue'
 import SecondaryButtonVue from '@/Components/SecondaryButton.vue';
 import { router, useForm } from '@inertiajs/vue3';
+import { defineProps } from 'vue';
+import { Inertia } from '@inertiajs/inertia';
+import PaginationLinks from './Components/PaginationLinks.vue';
 const sortOptions = [
     { name: 'Most Popular', href: '#', current: true },
     { name: 'Best Rating', href: '#', current: false },
@@ -55,10 +58,22 @@ const priceFilter = () => {
 const mobileFiltersOpen = ref(false)
 
 const props = defineProps({
-    products: Array,
+    // products: Object,
     brands: Array,
-    categories: Array
-})
+    categories: Array,
+    products: Array,
+    pagination: Object,
+    searchQuery: String,        // Optional search or filter parameter
+    selectedFilter: String,     // Optional filter parameter
+
+});
+
+// Function to navigate to the provided page URL
+function fetchPage(url) {
+    if (url) {
+        Inertia.visit(url);
+    }
+}
 
 //filter brands and categories
 const selectedBrands = ref([])
@@ -323,6 +338,11 @@ function updateFilteredProducts() {
                             <div class="lg:col-span-3">
                                 <!-- Your content -->
                                 <Products :products="products.data"></Products>
+                            </div>
+                            <!-- Pagination Controls -->
+                            <div class="col-span-full flex justify-center space-x-2">
+                                <PaginationLinks :pagination="pagination" routeName="products.list"
+                                    :query="{ search: searchQuery, filter: selectedFilter }" />
                             </div>
                         </div>
                     </section>

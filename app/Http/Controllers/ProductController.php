@@ -20,20 +20,24 @@ class ProductController extends Controller
 
         // $products = Product::get();
         // return Inertia::render('Product/Index');
-        $products = Product::with('category', 'brand', 'service', 'product_images')->get();
-        $brands = Brand::get();
-        $categories = Category::get();
-        $services = Service::get();
+        $products = Product::with('category', 'brand', 'service', 'product_images')->filtered()->orderBy('name')->paginate(10);
+        $brands = Brand::all();
+        $categories = Category::all();
+        $services = Service::all();
 
-        return Inertia::render(
-            'Product/Index',
-            [
-                'products' => $products,
-                'brands' => $brands,
-                'categories' => $categories,
-                'services' => $services,
-            ]
-        );
+        return Inertia::render('Product/Index', [
+            'products' => $products->items(), // Pass only the data array for the products
+            'brands' => $brands,
+            'categories' => $categories,
+            'services' => $services,
+            'pagination' => [
+                'current_page' => $products->currentPage(),
+                'last_page' => $products->lastPage(),
+                'prev_page_url' => $products->previousPageUrl(),
+                'next_page_url' => $products->nextPageUrl(),
+                'total' => $products->total(), // Add any additional pagination info as needed
+            ],
+        ]);
     }
 
 

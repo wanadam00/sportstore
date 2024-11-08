@@ -544,7 +544,7 @@ const sortedProducts = computed(() => {
                                 <th scope="col" class="px-4 py-3">Category</th>
                                 <!-- <th scope="col" class="px-4 py-3">Brand</th> -->
                                 <!-- <th scope="col" class="px-4 py-3">Service</th> -->
-                                <th scope="col" class="px-4 py-3">Quantity</th>
+                                <th scope="col" class="px-4 py-3">Qty</th>
                                 <th scope="col" class="px-4 py-3">Price</th>
                                 <th scope="col" class="px-4 py-3 whitespace-nowrap">Promo Price</th>
                                 <!-- <th scope="col" class="px-4 py-3">Stock</th> -->
@@ -635,7 +635,7 @@ const sortedProducts = computed(() => {
                         </tbody>
                     </table>
                 </div>
-                <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4"
+                <!-- <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4"
                     aria-label="Table navigation">
                     <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
                         Showing
@@ -689,7 +689,7 @@ const sortedProducts = computed(() => {
                             </a>
                         </li>
                     </ul>
-                </nav>
+                </nav> -->
             </div>
         </div>
     </section>

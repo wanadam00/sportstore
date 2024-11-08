@@ -19,14 +19,21 @@ class ServiceController extends Controller
         // $products = Product::get();
         // return Inertia::render('Product/Index');
         // $products = Product::with('category', 'brand', 'service_images')->get();
-        $services = Service::with('service_images')->get();
+        $services = Service::with('service_images')->orderBy('name')->paginate(10);
         // $categories = Category::get();
 
         return Inertia::render(
             'Service/Index',
             [
                 // 'products' => $products,
-                'services' => $services,
+                'services' => $services->items(),
+                'pagination' => [
+                    'current_page' => $services->currentPage(),
+                    'last_page' => $services->lastPage(),
+                    'prev_page_url' => $services->previousPageUrl(),
+                    'next_page_url' => $services->nextPageUrl(),
+                    'total' => $services->total(), // Add any additional pagination info as needed
+                ],
                 // 'categories' => $categories
             ]
         );

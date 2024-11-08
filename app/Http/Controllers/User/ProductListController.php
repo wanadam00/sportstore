@@ -15,18 +15,24 @@ class ProductListController extends Controller
 {
     public function list()
     {
-        $products = Product::with('category', 'brand', 'product_images')->filtered()->orderBy('name')->get();
+        $products = Product::with('category', 'brand', 'product_images')->filtered()->orderBy('name')->paginate(8);
         // $filterProducts = $products->filtered()->paginate(20)->withQueryString();
 
-        $categories = Category::get();
-        $brands = Brand::get();
+        $categories = Category::all();
+        $brands = Brand::all();
 
         return Inertia::render(
             'User/ProductList',
             [
                 'categories' => $categories,
                 'brands' => $brands,
-                'products' => ProductResource::collection($products)
+                'products' => ProductResource::collection($products),
+                'pagination' => [
+                    'current_page' => $products->currentPage(),
+                    'last_page' => $products->lastPage(),
+                    'prev_page_url' => $products->previousPageUrl(),
+                    'next_page_url' => $products->nextPageUrl(),
+                ],
             ]
         );
     }
