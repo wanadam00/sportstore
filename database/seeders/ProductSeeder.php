@@ -15,7 +15,7 @@ class ProductSeeder extends Seeder
     {
         Product::create([
             'name' => 'Nike Air Force 1 07',
-            'price' => 489.00,
+            'price' => 489,
             'quantity' => 20,
             'category_id'=> 2,
             'brand_id'=>1,
@@ -23,7 +23,7 @@ class ProductSeeder extends Seeder
         ]);
         Product::create([
             'name' => 'ADIZERO ADIOS PRO 3',
-            'price' => 999.03,
+            'price' => 999,
             'quantity' => 15,
             'category_id'=> 2,
             'brand_id'=>2,
@@ -31,7 +31,7 @@ class ProductSeeder extends Seeder
         ]);
         Product::create([
             'name' => 'Caven Trainers.',
-            'price' => 350.099,
+            'price' => 350,
             'quantity' => 10,
             'category_id'=> 2,
             'brand_id'=>3,

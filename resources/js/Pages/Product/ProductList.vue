@@ -295,16 +295,16 @@ const sortedProducts = computed(() => {
                 </div>
                 <div class="flex flex-row gap-2">
                     <div class="relative z-0 w-full mb-6 group">
-                        <input type="number" name="floating_price" id="floating_price"
+                        <input type="number" name="floating_price" id="floating_price" step="0.01"
                             class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                             placeholder=" " required v-model="price" />
                         <label for="floating_price"
                             class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Price</label>
                     </div>
                     <div class="relative z-0 w-full mb-6 group">
-                        <input type="number" name="floating_price" id="floating_price"
+                        <input type="number" name="floating_price" id="floating_price" step="0.01"
                             class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                            placeholder=" " v-model="promo_price" />
+                            placeholder=" " required v-model="promo_price" />
                         <label for="floating_price"
                             class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Promo
                             Price</label>
@@ -542,8 +542,8 @@ const sortedProducts = computed(() => {
                             <tr>
                                 <th scope="col" class="px-4 py-3">Product name</th>
                                 <th scope="col" class="px-4 py-3">Category</th>
-                                <!-- <th scope="col" class="px-4 py-3">Brand</th> -->
-                                <!-- <th scope="col" class="px-4 py-3">Service</th> -->
+                                <th scope="col" class="px-4 py-3">Brand</th>
+                                <th scope="col" class="px-4 py-3">Service</th>
                                 <th scope="col" class="px-4 py-3">Qty</th>
                                 <th scope="col" class="px-4 py-3">Price</th>
                                 <th scope="col" class="px-4 py-3 whitespace-nowrap">Promo Price</th>
@@ -564,13 +564,13 @@ const sortedProducts = computed(() => {
                                         }}</span>
                                     <span v-else>-</span>
                                 </td>
-                                <!-- <td class="px-4 py-3">
+                                <td class="px-4 py-3">
                                     <span v-if="product.brand.name">{{ capitalizeInitialWords(product.brand.name)
                                         }}</span>
                                     <span v-else>-</span>
-                                </td> -->
-                                <!-- <td class="px-4 py-3">{{ capitalizeInitialWords(product.service ? product.service.name :
-                                    '-') }}</td> -->
+                                </td>
+                                <td class="px-4 py-3">{{ capitalizeInitialWords(product.service ? product.service.name :
+                                    '-') }}</td>
                                 <td class="px-4 py-3">{{ product.quantity }}</td>
                                 <td class="px-4 py-3 whitespace-nowrap">
                                     <span v-if="product.price">RM {{ product.price }}</span>

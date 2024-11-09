@@ -11,7 +11,19 @@ defineProps({
 const carts = computed(() => usePage().props.cart.data.items)
 const products = computed(() => usePage().props.cart.data.products)
 
-const total = computed(() => usePage().props.cart.data.total)
+const total = computed(() => {
+    return carts.value.reduce((sum, item) => {
+        // Find the corresponding product in the products list using product_id
+        const product = products.value.find(p => p.id === item.product_id);
+
+        // Check if the product has a promo_price, use it if available, otherwise use the regular price
+        const price = product && product.promo_price > 0 ? product.promo_price : product.price;
+
+        // Calculate the price for this product (quantity * price) and add it to the total
+        return sum + (item.quantity * price);
+    }, 0).toFixed(2);  // Ensures the total has two decimal places
+});
+
 const itemId = (id) => carts.value.findIndex((item) => item.product_id === id);
 
 const form = reactive({

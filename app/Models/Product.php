@@ -79,7 +79,7 @@ class Product extends Model
                 ]);
             })
             ->when(request('promo_prices'), function (Builder $q) {
-                $q->whereBetween('price', [
+                $q->whereBetween('promo_price', [
                     request('promo_prices.from', 0),
                     request('promo_prices.to', 100000),
                 ]);

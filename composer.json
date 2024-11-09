@@ -11,6 +11,7 @@
         "laravel/jetstream": "^5.2",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
+        "spatie/laravel-permission": "^6.10",
         "spatie/laravel-sluggable": "^3.6",
         "stripe/stripe-php": "^16.1",
         "tightenco/ziggy": "^2.3"

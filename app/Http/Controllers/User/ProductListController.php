@@ -20,6 +20,7 @@ class ProductListController extends Controller
 
         $categories = Category::all();
         $brands = Brand::all();
+        // dd($brands);
 
         return Inertia::render(
             'User/ProductList',

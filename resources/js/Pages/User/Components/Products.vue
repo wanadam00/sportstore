@@ -43,7 +43,7 @@ const getImageClass = (width, height) => {
                 <img v-else
                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
                     :alt="product.imageAlt"
-                    :class="getImageClass(product.product_images[0].width, product.product_images[0].height)" />
+                    class="h-full w-full object-contain object-center rounded-md" />
 
                 <!-- add to cart icon -->
                 <div
@@ -79,17 +79,17 @@ const getImageClass = (width, height) => {
                         {{ capitalizeInitialWords(product.category.name) }}
                     </p>
                     <h3 class="text-sm text-gray-700">
-                        <span aria-hidden="true" class="" />
+                        <!-- <span aria-hidden="true" class="" /> -->
                         {{ capitalizeInitialWords(product.name) }}
                     </h3>
                     <p class="text-sm font-medium text-gray-900">
-                        <span v-if="product.promo_price" class="line-through text-gray-500">
+                        <span v-if="product.promo_price > 0" class="line-through text-gray-500">
                             RM {{ product.price }}
                         </span>
                         <span v-else>
                             RM {{ product.price }}
                         </span>
-                        <span v-if="product.promo_price" class="text-red-600 font-bold">
+                        <span v-if="product.promo_price > 0" class="text-red-600 font-bold">
                             RM {{ product.promo_price }}
                         </span>
                     </p>

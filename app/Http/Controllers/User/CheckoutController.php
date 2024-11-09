@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Support\Facades\Validator;
 
 class CheckoutController extends Controller
 {
@@ -74,6 +75,18 @@ class CheckoutController extends Controller
             'success_url' => route('checkout.success') . '?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => route('checkout.cancel'),
         ]);
+
+        // $validator = Validator::make($request->all(), [
+        //     'address1' => ['required', 'string', 'max:255'],
+        //     'city' => ['required', 'string', 'max:255'],
+        //     'state' => ['required', 'string', 'max:255'],
+        //     'postcode' => ['required', 'integer'],
+        //     'country_name' => ['required', 'string'],
+        // ]);
+
+        // if ($validator->fails()) {
+        //     return redirect()->back()->withErrors($validator)->withInput();
+        // }
 
 
         $newAddress = $request->address;

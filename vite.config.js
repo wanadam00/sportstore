@@ -32,4 +32,7 @@ export default defineConfig({
             filename: 'bundle-analysis.html', // Specify the output file name
         }),
     ],
+        // build: {
+        //     chunkSizeWarningLimit: 5000, // Increase to 1000 kB or your preferred limit
+        // },
 });

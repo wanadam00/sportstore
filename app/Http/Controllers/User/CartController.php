@@ -68,7 +68,7 @@ class CartController extends Controller
 
             if (!$isProductExists) {
                 // Determine the price to use (promo price if available, otherwise regular price)
-                $priceToUse = $product->promo_price >= 0 ? $product->promo_price : $product->price;
+                $priceToUse = $product->promo_price > 0 ? $product->promo_price : $product->price;
 
                 $cartItems[] = [
                     'user_id' => null,

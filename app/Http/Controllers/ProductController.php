@@ -46,20 +46,20 @@ class ProductController extends Controller
     {
 
         // Validator::make
-        $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'max:255'],
-            'price' => ['required', 'alpha', 'min:0'],
-            'promo_price' => ['nullable', 'alpha', 'min:0'],
-            'quantity' => ['required', 'integer', 'min:1'],
-            'description' => ['nullable', 'string'],
-            'category_id' => ['required', 'exists:categories,id'],
-            'brand_id' => ['required', 'exists:brands,id'],
-            'service_id' => ['required', 'exists:services,id'],
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     'name' => ['required', 'string', 'max:255'],
+        //     'price' => ['required', 'alpha', 'min:1'],
+        //     'promo_price' => ['nullable', 'alpha', 'min:2'],
+        //     'quantity' => ['required', 'integer', 'min:1'],
+        //     'description' => ['nullable', 'string'],
+        //     'category_id' => ['required', 'exists:categories,id'],
+        //     'brand_id' => ['required', 'exists:brands,id'],
+        //     'service_id' => ['required', 'exists:services,id'],
+        // ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
+        // if ($validator->fails()) {
+        //     return redirect()->back()->withErrors($validator)->withInput();
+        // }
 
 
         $product = new Product;
@@ -125,6 +125,21 @@ class ProductController extends Controller
     //update
     public function update(Request $request, $id)
     {
+
+        // $validator = Validator::make($request->all(), [
+        //     'name' => ['required', 'string', 'max:255'],
+        //     'price' => ['required', 'alpha', 'min:2'],
+        //     'promo_price' => ['required', 'alpha', 'min:0'],
+        //     'quantity' => ['required', 'integer', 'min:1'],
+        //     'description' => ['nullable', 'string'],
+        //     'category_id' => ['required', 'exists:categories,id'],
+        //     'brand_id' => ['required', 'exists:brands,id'],
+        //     'service_id' => ['required', 'exists:services,id'],
+        // ]);
+
+        // if ($validator->fails()) {
+        //     return redirect()->back()->withErrors($validator)->withInput();
+        // }
 
         $product = Product::findOrFail($id);
         // Validator::make($request->all(), [

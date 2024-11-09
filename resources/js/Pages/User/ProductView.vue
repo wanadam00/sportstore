@@ -70,7 +70,7 @@ const getImageClass = (width, height) => {
                                 <img v-else :key="product.imageAlt"
                                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
                                     :alt="product.imageAlt"
-                                    :class="getImageClass(currentImage.width, currentImage.height)" />
+                                    class="h-full w-full object-contain object-center rounded-md" />
                             </transition>
 
                             <!-- Left Arrow Button -->

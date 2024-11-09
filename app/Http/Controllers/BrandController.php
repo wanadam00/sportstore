@@ -93,7 +93,7 @@ class BrandController extends Controller
             }
         }
         $brand->update();
-        return redirect()->route('brands.index')->with('success', 'Product updated successfully.');
+        return redirect()->back()->with('success', 'Product updated successfully.');
     }
 
     public function deleteImage($id)
