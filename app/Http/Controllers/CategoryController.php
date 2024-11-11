@@ -19,7 +19,11 @@ class CategoryController extends Controller
         // $products = Product::get();
         // return Inertia::render('Product/Index');
         // $products = Product::with('category', 'brand', 'brand_images')->get();
-        $categories = Category::with('category_images')->orderBy('name')->paginate(10);
+        $categories = Category::with('category_images')
+            ->filtered()
+            ->orderBy('name')
+            ->paginate(10)
+            ->withQueryString();
         // $categories = Category::get();
 
         return Inertia::render(
@@ -35,6 +39,7 @@ class CategoryController extends Controller
                     'total' => $categories->total(), // Add any additional pagination info as needed
                 ],
                 // 'categories' => $categories
+                'filters' => request()->only(['search']),
             ]
         );
     }

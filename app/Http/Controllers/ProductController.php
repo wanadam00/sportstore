@@ -20,7 +20,12 @@ class ProductController extends Controller
 
         // $products = Product::get();
         // return Inertia::render('Product/Index');
-        $products = Product::with('category', 'brand', 'service', 'product_images')->filtered()->orderBy('name')->paginate(10);
+        $products = Product::with('category', 'brand', 'service', 'product_images')
+            ->filtered()
+            ->orderBy('name')
+            ->paginate(10)
+            ->withQueryString();
+
         $brands = Brand::all();
         $categories = Category::all();
         $services = Service::all();
@@ -37,6 +42,7 @@ class ProductController extends Controller
                 'next_page_url' => $products->nextPageUrl(),
                 'total' => $products->total(), // Add any additional pagination info as needed
             ],
+            'filters' => request()->only(['search']), // Pass search filters to the front end
         ]);
     }
 
@@ -60,6 +66,28 @@ class ProductController extends Controller
         // if ($validator->fails()) {
         //     return redirect()->back()->withErrors($validator)->withInput();
         // }
+        $rules = [
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'promo_price' => 'required_if:promo_price,!=,0|numeric|min:2', // If not 0, must be at least 2
+            'promo_price' => 'required|numeric|min:0',
+            'quantity' => 'required|integer|min:0',
+            'description' => 'nullable|string',
+            'category_id' => 'required|exists:categories,id',
+            'brand_id' => 'required|exists:brands,id',
+            'service_id' => 'required|exists:services,id',
+            'product_images.*' => 'required', // Validate each image
+        ];
+
+        // Create a validator instance
+        $validator = Validator::make($request->all(), $rules);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
 
 
         $product = new Product;
@@ -127,19 +155,54 @@ class ProductController extends Controller
     {
 
         // $validator = Validator::make($request->all(), [
-        //     'name' => ['required', 'string', 'max:255'],
-        //     'price' => ['required', 'alpha', 'min:2'],
-        //     'promo_price' => ['required', 'alpha', 'min:0'],
-        //     'quantity' => ['required', 'integer', 'min:1'],
+        //     'name' => ['nullable', 'string', 'max:255'],
+        //     'price' => ['nullable', 'alpha', 'min:2'],
+        //     'promo_price' => ['nullable', 'alpha', 'min:0'],
+        //     'quantity' => ['nullable', 'integer', 'min:1'],
         //     'description' => ['nullable', 'string'],
-        //     'category_id' => ['required', 'exists:categories,id'],
-        //     'brand_id' => ['required', 'exists:brands,id'],
-        //     'service_id' => ['required', 'exists:services,id'],
+        //     'category_id' => ['nullable', 'exists:categories,id'],
+        //     'brand_id' => ['nullable', 'exists:brands,id'],
+        //     'service_id' => ['nullable', 'exists:services,id'],
         // ]);
 
         // if ($validator->fails()) {
         //     return redirect()->back()->withErrors($validator)->withInput();
         // }
+        // $validator = $request->validate([
+        //     'name' => ['nullable', 'string', 'max:255'],
+        //     'price' => ['nullable', 'alpha', 'min:2'],
+        //     'promo_price' => ['nullable', 'alpha', 'min:0'],
+        //     'quantity' => ['nullable', 'integer', 'min:1'],
+        //     'description' => ['nullable', 'string'],
+        //     'category_id' => ['nullable', 'exists:categories,id'],
+        //     'brand_id' => ['nullable', 'exists:brands,id'],
+        //     'service_id' => ['nullable', 'exists:services,id'],
+        //     'product_images' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,avif', 'max:2048']
+        // ]);
+        // Define validation rules
+        // $rules = [
+        //     'name' => 'required|string|max:255',
+        //     'price' => 'required|numeric|min:0',
+        //     'promo_price' => 'nullable|numeric|min:0',
+        //     'promo_price' => 'required_if:promo_price,!=,0|numeric|min:2', // If not 0, must be at least 2
+        //     'quantity' => 'required|integer|min:0',
+        //     'description' => 'nullable|string',
+        //     'category_id' => 'required|exists:categories,id',
+        //     'brand_id' => 'required|exists:brands,id',
+        //     'service_id' => 'nullable|exists:services,id',
+        //     // 'product_images.*' => 'nullable', // Validate each image
+        // ];
+
+        // // Create a validator instance
+        // $validator = Validator::make($request->all(), $rules);
+
+        // // Check if validation fails
+        // if ($validator->fails()) {
+        //     return redirect()->back()
+        //         ->withErrors($validator)
+        //         ->withInput();
+        // }
+
 
         $product = Product::findOrFail($id);
         // Validator::make($request->all(), [
@@ -153,6 +216,18 @@ class ProductController extends Controller
         //     'service_id' => ['required'],
         //     'product_images' => ['nullable'],
         // ])->validateWithBag('updateProduct');
+        // Validate the incoming request data
+        // $request->validate([
+        //     'name' => 'required|string|max:255',
+        //     'price' => 'required|numeric|min:0',
+        //     'promo_price' => 'nullable|numeric|min:0',
+        //     'quantity' => 'required|integer|min:0',
+        //     'description' => 'nullable|string',
+        //     'category_id' => 'required|exists:categories,id',
+        //     'brand_id' => 'required|exists:brands,id',
+        //     'service_id' => 'nullable|exists:services,id',
+        //     'product_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,avif', // Validate each image
+        // ]);
 
         // dd($product);
         $product->name = $request->name;

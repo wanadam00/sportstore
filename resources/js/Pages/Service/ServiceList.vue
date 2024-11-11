@@ -2,6 +2,7 @@
 import { router, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
+import { Inertia } from '@inertiajs/inertia';
 
 defineProps({
     services: Array
@@ -9,6 +10,8 @@ defineProps({
 
 const services = usePage().props.services;
 const categories = usePage().props.categories;
+const pageProps = usePage().props;
+const search = ref(pageProps.filters.search || '');
 
 
 // console.log(products);
@@ -19,6 +22,10 @@ const dialogVisible = ref(false)
 //upload mulitpel images
 const serviceImages = ref([])
 const dialogImageUrl = ref('')
+const searchProducts = () => {
+    Inertia.get(route('services.index'), { search: search.value }, { preserveState: true });
+};
+
 const handleFileChange = (file) => {
     console.log(file)
     serviceImages.value.push(file)
@@ -96,9 +103,8 @@ const AddService = async () => {
 const resetFormData = () => {
     id.value = '';
     name.value = '';
-    serviceImages.value = [];
+    service_images.value = [];
     dialogImageUrl.value = ''
-    resetFormData();
 };
 
 
@@ -195,9 +201,20 @@ const capitalizeInitialWords = (str) => {
 </script>
 <template>
     <section class="  p-3 sm:p-5">
+        <div class="pb-4 mx-auto max-w-screen-xl px-4 lg:px-12 flex items-center">
+            <button @click="searchProducts" class="mr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                </svg>
+            </button>
+            <input v-model="search" placeholder="Search by name" @keyup.enter="searchProducts"
+                class="rounded-lg text-xs pl-6 border border-gray-300" />
+        </div>
         <!-- dialog for adding product or editing product -->
-        <el-dialog v-model="dialogVisible" :title="editMode ? 'Edit Service' : 'Add Service'" width="30%"
-            :before-close="handleClose">
+        <el-dialog v-model="dialogVisible" :title="editMode ? 'Edit Service' : 'Add Service'" width="30%">
+            <!-- :before-close="handleClose" -->
             <!-- form start -->
 
             <form @submit.prevent="editMode ? updateService() : AddService()">
@@ -441,8 +458,7 @@ const capitalizeInitialWords = (str) => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(service, index) in services" :key="service.id"
-                                class="hover:bg-gray-200">
+                            <tr v-for="(service, index) in services" :key="service.id" class="hover:bg-gray-200">
                                 <th scope="row"
                                     class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     {{ capitalizeInitialWords(service.name) }}</th>
@@ -499,7 +515,7 @@ const capitalizeInitialWords = (str) => {
                         </tbody>
                     </table>
                 </div>
-                <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4"
+                <!-- <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4"
                     aria-label="Table navigation">
                     <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
                         Showing
@@ -553,7 +569,7 @@ const capitalizeInitialWords = (str) => {
                             </a>
                         </li>
                     </ul>
-                </nav>
+                </nav> -->
             </div>
         </div>
     </section>

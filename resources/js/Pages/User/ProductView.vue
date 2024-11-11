@@ -213,9 +213,9 @@ const getImageClass = (width, height) => {
                                     </svg>
                                 </a>
                             </div> -->
-                            <a @click="addToCart(product)"
+                            <button @click="addToCart(product)"
                                 class="flex ml-auto text-white bg-yellow-500 border-0 py-2 px-6 focus:outline-none hover:bg-yellow-600 rounded">Add
-                                To Cart</a>
+                                To Cart</button>
                             <button
                                 class="rounded-full w-10 h-10 bg-black p-0 border-0 inline-flex items-center justify-center text-yellow-500 ml-4">
                                 <svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

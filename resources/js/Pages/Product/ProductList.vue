@@ -2,15 +2,17 @@
 import { router, usePage } from '@inertiajs/vue3';
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
+import { Inertia } from '@inertiajs/inertia';
 
 defineProps({
     products: Array
 })
-
+const pageProps = usePage().props;
 const products = usePage().props.products;
 const brands = usePage().props.brands;
 const categories = usePage().props.categories;
 const services = usePage().props.services;
+const search = ref(pageProps.filters.search || '');
 
 
 // console.log(products);
@@ -21,6 +23,10 @@ const dialogVisible = ref(false)
 //upload mulitpel images
 const productImages = ref([]);
 const dialogImageUrl = ref('')
+
+const searchProducts = () => {
+    Inertia.get(route('products.index'), { search: search.value }, { preserveState: true });
+};
 // Handle file change when an image is uploaded
 const handleFileChange = (file, fileList) => {
     console.log('Uploaded file:', file);
@@ -132,7 +138,7 @@ const AddProduct = async () => {
     } catch (err) {
         console.log(err)
     }
-    resetFormData();
+    // resetFormData();
 
 
 }
@@ -148,7 +154,7 @@ const resetFormData = () => {
     brand_id.value = '';
     service_id.value = '';
     description.value = '';
-    productImages.value = [];
+    product_images.value = [];
     dialogImageUrl.value = ''
 };
 
@@ -211,7 +217,7 @@ const updateProduct = async () => {
     } catch (err) {
         console.log(err)
     }
-    resetFormData();
+    // resetFormData();
     // router.visit(route('products.index'));
 }
 
@@ -271,9 +277,21 @@ const sortedProducts = computed(() => {
 </script>
 <template>
     <section class="p-3 sm:p-5">
+        <div class="pb-4 mx-auto max-w-screen-xl px-4 lg:px-12 flex items-center">
+            <button @click="searchProducts" class="mr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                </svg>
+            </button>
+            <input v-model="search" placeholder="Search by name" @keyup.enter="searchProducts"
+                class="rounded-lg text-xs pl-6 border border-gray-300" />
+        </div>
         <!-- dialog for adding product or editing product -->
         <el-dialog v-model="dialogVisible" :title="editMode ? 'Edit product' : 'Add Product'"
-            :style="{ width: dialogWidth }" :before-close="handleClose">
+            :style="{ width: dialogWidth }">
+            <!-- :before-close="handleClose" -->
             <!-- form start -->
 
             <form @submit.prevent="editMode ? updateProduct() : AddProduct()" enctype="multipart/form-data">

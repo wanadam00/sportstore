@@ -50,13 +50,18 @@ class HandleInertiaRequests extends Middleware
             //         return null;
             //     }
             // ],
+            // 'auth' => [
+            //     'user' => $request->user() ? $request->user()->only('id', 'name', 'email') : null,
+            //     'roles' => $request->user() ? $request->user()->getRoleNames() : [],
+            //     'permissions' => $request->user() ? $request->user()->getAllPermissions()->pluck('name') : [],
+            // ],
             'cart' => new CartResource(Cart::getProductsAndCartItems()),
 
             'flash' => [
-                'success' => fn () => $request->session()->get('success'),
-                'error' => fn () => $request->session()->get('error'),
-                'warning' => fn () => $request->session()->get('warning'),
-                'info' => fn () => $request->session()->get('info')
+                'success' => fn() => $request->session()->get('success'),
+                'error' => fn() => $request->session()->get('error'),
+                'warning' => fn() => $request->session()->get('warning'),
+                'info' => fn() => $request->session()->get('info')
             ],
             'canLogin' => app('router')->has('login'),
             'canRegister' => app('router')->has('register'),

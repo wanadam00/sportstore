@@ -36,5 +36,14 @@ class OrderItem extends Model
     {
         return $this->belongsTo(UserAddress::class);
     }
-
+    public function scopeFiltered($query)
+    {
+        if ($search = request('search')) {
+            $query->where('order_id', 'LIKE', "%{$search}%")
+                ->orWhereHas('order.userAddress.user', function ($q) use ($search) {
+                    $q->where('name', 'LIKE', "%{$search}%");
+                });
+        }
+        return $query;
+    }
 }

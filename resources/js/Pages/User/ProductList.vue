@@ -61,7 +61,7 @@ const props = defineProps({
     // products: Object,
     brands: Array,
     categories: Array,
-    products: Array,
+    products: Object,
     pagination: Object,
     searchQuery: String,        // Optional search or filter parameter
     selectedFilter: String,     // Optional filter parameter

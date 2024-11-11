@@ -2,6 +2,7 @@
 import { router, usePage } from '@inertiajs/vue3';
 import { ref, computed } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
+import { Inertia } from '@inertiajs/inertia';
 
 defineProps({
     orderItems: Array
@@ -14,6 +15,12 @@ const currentOrder = ref({});
 const estimatedDelivery = ref('');
 const trackingNumber = ref('');
 const shipmentStatus = ref('pending');
+const pageProps = usePage().props;
+const search = ref(pageProps.filters.search || '');
+
+const searchProducts = () => {
+    Inertia.get(route('orders.index'), { search: search.value }, { preserveState: true });
+};
 
 // Open modal and set current order details
 const openUpdateModal = (orderItem) => {
@@ -142,6 +149,17 @@ const formatDate = (dateString) => {
 </script>
 <template>
     <section class="  p-3 sm:pt-5">
+        <div class="pb-4 mx-auto max-w-screen-xl px-4 lg:px-12 flex items-center">
+            <button @click="searchProducts" class="mr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                </svg>
+            </button>
+            <input v-model="search" placeholder="Search by name" @keyup.enter="searchProducts"
+                class="rounded-lg text-xs pl-6 border border-gray-300" />
+        </div>
         <!-- end -->
         <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
             <!-- Start coding here -->

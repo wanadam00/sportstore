@@ -71,23 +71,31 @@ const logout = async () => {
 
 
                 </div>
-                <button v-if="auth.user" type="button" class="flex mr-3 text-sm rounded-lg md:mr-0 "
+                <button v-if="auth.user" type="button" class="flex mr-3 text-sm rounded-full md:mr-0 "
                     id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown"
                     data-dropdown-placement="bottom">
                     <span class="sr-only">Open user menu</span>
                     <button v-if="$page.props.jetstream.managesProfilePhotos"
-                        class="flex text-sm border-2 border-transparent rounded-lg focus:outline-none focus:border-gray-300 transition">
-                        <img class="h-8 w-8 rounded-lg object-cover" :src="$page.props.auth.user.profile_photo_url"
+                        class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
+                        <img class="h-9 w-9 rounded-full object-cover" :src="$page.props.auth.user.profile_photo_url"
                             :alt="$page.props.auth.user.name">
                     </button>
                 </button>
-                <div v-else>
-                    <Link :href="route('login')" type="button"
+                <div v-else class="pr-3">
+                    <Link :href="route('login')" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-7"
+                        :class="{ 'text-white hover:stroke-white stroke-[#1a1a1a] transition-colors duration-300': isTransparent, 'text-[#1a1a1a] stroke-[#1a1a1a] hover:stroke-yellow-500 transition-colors duration-300': !isTransparent }">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                    </svg>
+                    </Link>
+                    <!-- <Link :href="route('login')" type="button"
                         class="text-white bg-[#212121] hover:bg-[#0f0f0f] focus:ring-2 focus:outline-none focus:ring-white font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2">
                     Login</Link>
                     <Link :href="route('register')" v-if="canRegister" type="button"
                         class="text-white bg-[#212121] hover:bg-[#0f0f0f] focus:ring-2 focus:outline-none focus:ring-white font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2">
-                    Register</Link>
+                    Register</Link> -->
 
                 </div>
 
@@ -130,7 +138,7 @@ const logout = async () => {
                     </ul>
                 </div>
                 <button data-collapse-toggle="navbar-user" type="button"
-                    class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                    class="inline-flex items-center p-2 mr-4 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
                     aria-controls="navbar-user" aria-expanded="false">
                     <span class="sr-only">Open main menu</span>
                     <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -141,7 +149,7 @@ const logout = async () => {
                 </button>
             </div>
             <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
-                :class="{ 'pl-36': !auth.user }" id="navbar-user">
+                :class="{ '': !auth.user }" id="navbar-user">
                 <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 md:flex-row md:space-x-8 md:mt-0">
                     <li>
                         <Link :href="route('welcome')"

@@ -22,8 +22,10 @@ class OrderController extends Controller
     {
         // Fetch paginated order items ordered by 'created_at' in descending order
         $orderItems = OrderItem::with(['order', 'product', 'order.userAddress.user'])
+            ->filtered()
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString();
 
         // Map the paginated items to the desired structure
         $orderItemsData = $orderItems->getCollection()->map(function ($item) {
@@ -55,6 +57,7 @@ class OrderController extends Controller
                 'next_page_url' => $orderItems->nextPageUrl(),
                 'total' => $orderItems->total(),
             ],
+            'filters' => request()->only(['search']),
         ]);
     }
 
@@ -88,11 +91,11 @@ class OrderController extends Controller
 
     public function updateShipment(Request $request, $orderId)
     {
-        $request->validate([
-            'estimated_delivery_date' => 'required_if:shipment_status,shipped|date', // Required if status is 'shipped'
-            'tracking_number' => 'required|string|max:255', // Validate tracking number
-            'shipment_status' => 'required|string', // Validate shipment status
-        ]);
+        // $request->validate([
+        //     'estimated_delivery_date' => 'required_if:shipment_status,shipped|date', // Required if status is 'shipped'
+        //     'tracking_number' => 'required|string|max:255', // Validate tracking number
+        //     'shipment_status' => 'required|string', // Validate shipment status
+        // ]);
 
         $order = Order::findOrFail($orderId);
         $order->estimated_delivery_date = $request->estimated_delivery_date;

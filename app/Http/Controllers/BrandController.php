@@ -19,10 +19,15 @@ class BrandController extends Controller
         // $products = Product::get();
         // return Inertia::render('Product/Index');
         // $products = Product::with('category', 'brand', 'brand_images')->get();
-        $brands = Brand::with('brand_images')->orderBy('name')->paginate(10);
+        $brands = Brand::with('brand_images')
+            ->filtered()
+            ->orderBy('name')
+            ->paginate(10)
+            ->withQueryString();
         // $categories = Category::get();
 
-        return Inertia::render('Brand/Index',
+        return Inertia::render(
+            'Brand/Index',
             [
                 // 'products' => $products,
                 'brands' => $brands->items(),
@@ -33,6 +38,7 @@ class BrandController extends Controller
                     'next_page_url' => $brands->nextPageUrl(),
                     'total' => $brands->total(), // Add any additional pagination info as needed
                 ],
+                'filters' => request()->only(['search']), // Pass search filters to the front end
                 // 'categories' => $categories
             ]
         );

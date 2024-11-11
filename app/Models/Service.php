@@ -34,4 +34,11 @@ class Service extends Model
             ->generateSlugsFrom('name')
             ->saveSlugsTo('slug');
     }
+    public function scopeFiltered($query)
+    {
+        if ($search = request('search')) {
+            $query->where('name', 'LIKE', "%{$search}%");
+        }
+        return $query;
+    }
 }

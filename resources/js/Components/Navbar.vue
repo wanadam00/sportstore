@@ -47,7 +47,7 @@
                 </form> -->
             </div>
             <div class="flex items-center lg:order-2">
-                <button type="button" data-drawer-toggle="drawer-navigation" aria-controls="drawer-navigation"
+                <!-- <button type="button" data-drawer-toggle="drawer-navigation" aria-controls="drawer-navigation"
                     class="p-2 mr-1 text-gray-500 rounded-lg md:hidden hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600">
                     <span class="sr-only">Toggle search</span>
                     <svg aria-hidden="true" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"
@@ -56,19 +56,18 @@
                             d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z">
                         </path>
                     </svg>
-                </button>
+                </button> -->
                 <!-- Notifications -->
-                <button type="button" data-dropdown-toggle="notification-dropdown"
+                <!-- <button type="button" data-dropdown-toggle="notification-dropdown"
                     class="p-1 mr-1 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600">
                     <span class="sr-only">View notifications</span>
-                    <!-- Bell icon -->
                     <svg aria-hidden="true" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"
                         xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z">
                         </path>
                     </svg>
-                </button>
+                </button> -->
                 <!-- Dropdown menu -->
                 <div class="hidden overflow-hidden z-50 my-4 max-w-sm text-base list-none bg-white rounded divide-y divide-gray-100 shadow-lg dark:divide-gray-600 dark:bg-gray-700 "
                     id="notification-dropdown">
@@ -234,16 +233,15 @@
                     </a>
                 </div>
                 <!-- Apps -->
-                <button type="button" data-dropdown-toggle="apps-dropdown"
+                <!-- <button type="button" data-dropdown-toggle="apps-dropdown"
                     class="p-1 mr-2 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600">
                     <span class="sr-only">View notifications</span>
-                    <!-- Icon -->
                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
                         </path>
                     </svg>
-                </button>
+                </button> -->
                 <!-- Dropdown menu -->
                 <div class="hidden overflow-hidden z-50 my-4 max-w-sm text-base list-none bg-white rounded divide-y divide-gray-100 shadow-lg dark:bg-gray-700 dark:divide-gray-600 "
                     id="apps-dropdown">
@@ -380,8 +378,8 @@
                 </button> -->
                 <button v-if="$page.props.jetstream.managesProfilePhotos" id="user-menu-button" aria-expanded="false"
                     data-dropdown-toggle="dropdown"
-                    class="flex text-sm border-2 border-transparent rounded-lg focus:outline-none focus:border-gray-300 transition">
-                    <img class="h-8 w-8 rounded-lg object-cover" :src="$page.props.auth.user.profile_photo_url"
+                    class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
+                    <img class="h-9 w-9 rounded-full object-cover" :src="$page.props.auth.user.profile_photo_url"
                         :alt="$page.props.auth.user.name">
                 </button>
                 <!-- Dropdown menu -->
@@ -408,13 +406,13 @@
                             </DropdownLink> -->
                         </li>
                         <li>
-                            <Link @click="logout"
+                            <!-- <Link @click="logout"
                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
-                            Sign Out</Link>
-                            <!-- <div class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"  @click="logout">
+                            Sign Out</Link> -->
+                            <div class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"  @click="logout">
                                 <button>
                                     Sign Out</button>
-                            </div> -->
+                            </div>
                         </li>
                     </ul>
                 </div>

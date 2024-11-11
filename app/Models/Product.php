@@ -27,7 +27,7 @@ class Product extends Model
 
     ];
 
-    public function getSlugOptions() : SlugOptions
+    public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
             ->generateSlugsFrom('name')
@@ -63,6 +63,10 @@ class Product extends Model
     public function scopeFiltered(Builder $query)
     {
         $query
+            // Filter by product name (search)
+            ->when(request('search'), function (Builder $q) {
+                $q->where('name', 'LIKE', '%' . request('search') . '%');
+            })
             ->when(request('brands'), function (Builder $q) {
                 $q->whereIn('brand_id', request('brands'));
             })
@@ -87,5 +91,4 @@ class Product extends Model
 
         return $query; // Always return the query for chaining
     }
-
 }

@@ -27,18 +27,25 @@ class UserOrderController extends Controller
     public function index()
     {
         // Fetch orders for the authenticated user with related order items, products, and product images
-        $orders = Order::with(['orderItems.product.product_images', 'userAddress.user']) // Eager load product images
+        $orders = Order::with(['orderItems.product.product_images', 'userAddress.user'])
             ->whereHas('userAddress', function ($query) {
-                $query->where('user_id', auth()->id()); // Filter by user_id in user_addresses
+                $query->where('user_id', auth()->id());
             })
-            ->orderBy('created_at', 'desc') // Sort by created_at in descending order
+            ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($order) {
+                // Calculate total price based on promo price or unit price for each item
+                $calculatedTotalPrice = $order->orderItems->reduce(function ($total, $item) {
+                    // Use promo price if available, otherwise use the regular unit price
+                    $priceToUse = $item->product->promo_price > 0 ? $item->product->promo_price : $item->unit_price;
+                    return $total + ($priceToUse * $item->quantity);
+                }, 0);
+
                 return [
                     'id' => $order->id,
                     'status' => $order->status,
-                    'total_price' => (float) $order->total_price,
-                    'order_date' => $order->created_at->format('Y-m-d'), // Format order date
+                    'total_price' => (float) $calculatedTotalPrice, // Calculated total price
+                    'order_date' => $order->created_at->format('Y-m-d'),
                     'estimated_delivery_date' => $order->estimated_delivery_date,
                     'tracking_number' => $order->tracking_number ?? 'N/A',
                     'shipment_status' => $order->shipment_status ?? 'N/A',
@@ -50,12 +57,12 @@ class UserOrderController extends Controller
                             'product_name' => $item->product->name ?? 'N/A',
                             'quantity' => $item->quantity,
                             'unit_price' => (float) $item->unit_price,
-                            'product_images' => $item->product->product_images->toArray(), // Convert the collection to an array
+                            'promo_price' => $item->product->promo_price ?? 0,
+                            'product_images' => $item->product->product_images->toArray(),
                         ];
                     }),
                 ];
             });
-            // dd($orders);
 
         return Inertia::render('User/Order/Index', [
             'orders' => $orders,
@@ -93,21 +100,21 @@ class UserOrderController extends Controller
     }
 
     public function updateShipment(Request $request, $orderId)
-{
-    $validator = Validator::make($request->all(), [
-        'shipment_status' => 'required|string',
-    ]);
+    {
+        $validator = Validator::make($request->all(), [
+            'shipment_status' => 'required|string',
+        ]);
 
-    if ($validator->fails()) {
-        return response()->json(['errors' => $validator->errors()], 422);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $order = Order::findOrFail($orderId);
+        $order->estimated_delivery_date = $request->estimated_delivery_date;
+        $order->tracking_number = $request->tracking_number;
+        $order->shipment_status = $request->shipment_status;
+        $order->save();
+
+        return response()->json(['message' => 'Shipment updated successfully'], 200);
     }
-
-    $order = Order::findOrFail($orderId);
-    $order->estimated_delivery_date = $request->estimated_delivery_date;
-    $order->tracking_number = $request->tracking_number;
-    $order->shipment_status = $request->shipment_status;
-    $order->save();
-
-    return response()->json(['message' => 'Shipment updated successfully'], 200);
-}
 }

@@ -2,6 +2,7 @@
 import { router, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
+import { Inertia } from '@inertiajs/inertia';
 
 defineProps({
     brands: Array
@@ -9,7 +10,8 @@ defineProps({
 
 const brands = usePage().props.brands;
 const categories = usePage().props.categories;
-
+const pageProps = usePage().props;
+const search = ref(pageProps.filters.search || '');
 
 // console.log(products);
 const isAddBrand = ref(false);
@@ -19,6 +21,10 @@ const dialogVisible = ref(false)
 //upload mulitpel images
 const brandImages = ref([])
 const dialogImageUrl = ref('')
+const searchProducts = () => {
+    Inertia.get(route('brands.index'), { search: search.value }, { preserveState: true });
+};
+
 const handleFileChange = (file) => {
     console.log(file)
     brandImages.value.push(file)
@@ -94,7 +100,7 @@ const AddBrand = async () => {
 const resetFormData = () => {
     id.value = '';
     name.value = '';
-    brandImages.value = [];
+    brand_images.value = [];
     dialogImageUrl.value = ''
 };
 
@@ -191,9 +197,20 @@ const capitalizeInitialWords = (str) => {
 </script>
 <template>
     <section class="  p-3 sm:p-5">
+        <div class="pb-4 mx-auto max-w-screen-xl px-4 lg:px-12 flex items-center">
+            <button @click="searchProducts" class="mr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                </svg>
+            </button>
+            <input v-model="search" placeholder="Search by name" @keyup.enter="searchProducts"
+                class="rounded-lg text-xs pl-6 border border-gray-300" />
+        </div>
         <!-- dialog for adding product or editing product -->
-        <el-dialog v-model="dialogVisible" :title="editMode ? 'Edit Brand' : 'Add Brand'" width="30%"
-            :before-close="handleClose">
+        <el-dialog v-model="dialogVisible" :title="editMode ? 'Edit Brand' : 'Add Brand'" width="30%">
+            <!-- :before-close="handleClose" -->
             <!-- form start -->
 
             <form @submit.prevent="editMode ? updateBrand() : AddBrand()">
