@@ -67,7 +67,7 @@ import { Link } from '@inertiajs/vue3';
                         class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
                     Product</Link> -->
                     <a :href="route('products.index')"
-                        class="flex items-center p-2 text-base font-medium text-[#F2EED7] hover:text-gray-900 rounded-lg transition duration-75 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-[#F2EED7] group">
+                        class="flex items-center p-2 text-base font-medium text-[#F2EED7] hover:text-gray-900 rounded-lg transition duration-75 hover:bg-gray-100  group">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"
                             class="flex-shrink-0 w-6 h-6 text-[#F2EED7] transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-[#F2EED7]"
                             fill="currentColor">
@@ -83,7 +83,7 @@ import { Link } from '@inertiajs/vue3';
                         </li> -->
                 <li>
                     <a :href="route('brands.index')"
-                        class="flex items-center p-2 text-base font-medium text-[#F2EED7] hover:text-gray-900 rounded-lg transition duration-75 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-[#F2EED7] group">
+                        class="flex items-center p-2 text-base font-medium text-[#F2EED7] hover:text-gray-900 rounded-lg transition duration-75 hover:bg-gray-100  group">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
                             class="flex-shrink-0 w-6 h-6 text-[#F2EED7] transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-[#F2EED7]"
                             fill="currentColor">
@@ -97,9 +97,10 @@ import { Link } from '@inertiajs/vue3';
                     <!-- <a :href="route('categories.index')"
                         class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-[#F2EED7] dark:hover:bg-gray-700">Category</a> -->
                     <a :href="route('categories.index')"
-                        class="flex items-center p-2 text-base font-medium text-[#F2EED7] hover:text-gray-900 rounded-lg transition duration-75 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-[#F2EED7] group">
-                        <svg class="w-6 h-6 text-[#F2EED7]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                            width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        class="flex items-center p-2 text-base font-medium text-[#F2EED7] hover:text-gray-900 rounded-lg transition duration-75 hover:bg-gray-100 group">
+                        <svg class="flex-shrink-0 w-6 h-6 text-[#F2EED7] transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-[#F2EED7]"
+                            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                            viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9.143 4H4.857A.857.857 0 0 0 4 4.857v4.286c0 .473.384.857.857.857h4.286A.857.857 0 0 0 10 9.143V4.857A.857.857 0 0 0 9.143 4Zm10 0h-4.286a.857.857 0 0 0-.857.857v4.286c0 .473.384.857.857.857h4.286A.857.857 0 0 0 20 9.143V4.857A.857.857 0 0 0 19.143 4Zm-10 10H4.857a.857.857 0 0 0-.857.857v4.286c0 .473.384.857.857.857h4.286a.857.857 0 0 0 .857-.857v-4.286A.857.857 0 0 0 9.143 14Zm10 0h-4.286a.857.857 0 0 0-.857.857v4.286c0 .473.384.857.857.857h4.286a.857.857 0 0 0 .857-.857v-4.286a.857.857 0 0 0-.857-.857Z" />
                         </svg>
@@ -111,7 +112,7 @@ import { Link } from '@inertiajs/vue3';
                     <!-- <a :href="route('categories.index')"
                         class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-[#F2EED7] dark:hover:bg-gray-700">Category</a> -->
                     <a :href="route('services.index')"
-                        class="flex items-center p-2 text-base font-medium text-[#F2EED7] hover:text-gray-900 rounded-lg transition duration-75 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-[#F2EED7] group">
+                        class="flex items-center p-2 text-base font-medium text-[#F2EED7] hover:text-gray-900 rounded-lg transition duration-75 hover:bg-gray-100  group">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -124,7 +125,7 @@ import { Link } from '@inertiajs/vue3';
                     <!-- <a :href="route('categories.index')"
                         class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-[#F2EED7] dark:hover:bg-gray-700">Category</a> -->
                     <a :href="route('orders.index')"
-                        class="flex items-center p-2 text-base font-medium text-[#F2EED7] hover:text-gray-900 rounded-lg transition duration-75 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-[#F2EED7] group">
+                        class="flex items-center p-2 text-base font-medium text-[#F2EED7] hover:text-gray-900 rounded-lg transition duration-75 hover:bg-gray-100  group">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -137,6 +138,17 @@ import { Link } from '@inertiajs/vue3';
                 <!-- </li> -->
             </ul>
             <ul class="pt-5 mt-5 space-y-2 border-t border-gray-200 dark:border-gray-700">
+                <li>
+                    <a :href="route('users.index')"
+                        class="flex items-center p-2 text-base font-medium text-[#F2EED7] hover:text-gray-900 rounded-lg transition duration-75 hover:bg-gray-100  group">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                        </svg>
+                        <span class="ml-3">Manage User</span>
+                    </a>
+                </li>
                 <li>
                     <!-- <a href="#"
                         class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg transition duration-75 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white group">

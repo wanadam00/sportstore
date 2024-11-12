@@ -70,12 +70,22 @@ class User extends Authenticatable
         ];
     }
 
-    function user_address() {
+    function user_address()
+    {
         return $this->hasMany(UserAddress::class);
     }
 
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function scopeFiltered($query)
+    {
+        if ($search = request('search')) {
+            $query->where('name', 'LIKE', "%{$search}%")
+                ->orWhere('email', 'LIKE', "%{$search}%");
+        }
+        return $query;
     }
 }

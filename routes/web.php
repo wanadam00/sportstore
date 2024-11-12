@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\ServiceController;
@@ -73,6 +74,12 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/dashboard', [UserController::class, 'index'])->name('dashboard');
+
+    Route::get('/users', [AdminController::class, 'index'])->name('users.index');
+    Route::post('/users', [AdminController::class, 'store'])->name('users.store');
+    Route::get('/users/{user}', [AdminController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{user}', [AdminController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [AdminController::class, 'destroy'])->name('users.destroy');
     // Route::get('/dashboard', function () {
     //     return Inertia::render('Dashboard');
     // })->name('dashboard');

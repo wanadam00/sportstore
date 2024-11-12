@@ -66,12 +66,18 @@ class OrderController extends Controller
     public function show($id)
     {
         $order = Order::with(['orderItems.product', 'userAddress.user'])->findOrFail($id);
+        // Calculate the total price based on promo price or unit price for each item
+        $calculatedTotalPrice = $order->orderItems->reduce(function ($total, $item) {
+            // Use promo price if available, otherwise use the regular unit price
+            $priceToUse = $item->product->promo_price > 0 ? $item->product->promo_price : $item->unit_price;
+            return $total + ($priceToUse * $item->quantity);
+        }, 0);
 
         $orderDetails = [
             'order_id' => $order->id,
             'status' => $order->status,
-            'total_price' => $order->total_price,
-            'user_address' => $order->userAddress->full_address ?? 'N/A', // Adjust based on your address structure
+            'total_price' => (float) $calculatedTotalPrice,
+            'user_address' => $order->userAddress->full_address ?? 'N/A',
             'user_name' => $order->userAddress && $order->userAddress->user ? $order->userAddress->user->name : 'N/A',
             'created_at' => $order->created_at,
             'items' => $order->orderItems->map(function ($item) {

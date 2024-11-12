@@ -57,7 +57,7 @@ class UserOrderController extends Controller
                             'product_name' => $item->product->name ?? 'N/A',
                             'quantity' => $item->quantity,
                             'unit_price' => (float) $item->unit_price,
-                            'promo_price' => $item->product->promo_price ?? 0,
+                            'promo_price' => (float) $item->product->promo_price ?? 0,
                             'product_images' => $item->product->product_images->toArray(),
                         ];
                     }),
