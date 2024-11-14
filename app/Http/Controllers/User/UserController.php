@@ -138,4 +138,25 @@ class UserController extends Controller
     {
         return redirect()->route('profile.user');
     }
+
+    public function store(Request $request)
+    {
+        $user = User::create($request->all());
+
+        // Check if the user should be assigned an admin role
+        if ($request->has('is_admin') && $request->is_admin) {
+            $user->assignRole('admin');
+        }
+
+        return redirect()->route('users.index');
+    }
+    public function promoteToAdmin($userId)
+    {
+        $user = User::find($userId);
+        if ($user) {
+            $user->assignRole('admin');
+        }
+
+        return redirect()->back()->with('message', 'User promoted to admin!');
+    }
 }

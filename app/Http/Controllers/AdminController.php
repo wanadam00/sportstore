@@ -30,7 +30,7 @@ class AdminController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string|min:8|regex:/^(?=.*[a-zA-Z])(?=.*\d).+$/',
         ]);
 
         User::create([
@@ -40,7 +40,7 @@ class AdminController extends Controller
         ]);
         // dd($request);
 
-        return redirect()->route('users.index');
+        return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
 
     public function edit(User $user)
@@ -52,15 +52,27 @@ class AdminController extends Controller
 
     public function update(Request $request, User $user)
     {
+        // Validation rules, making password optional
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:8|regex:/^(?=.*[a-zA-Z])(?=.*\d).+$/', // Password is optional
         ]);
 
-        $user->update($request->only('name', 'email'));
+        // Collect the fields to update
+        $data = $request->only('name', 'email');
 
-        return redirect()->route('users.index');
+        // Only update the password if it is provided
+        if ($request->filled('password')) {
+            $data['password'] = bcrypt($request->password);
+        }
+
+        // Update the user with the collected data
+        $user->update($data);
+
+        return redirect()->route('users.index')->with('success', 'User updated successfully');
     }
+
 
     public function destroy(User $user)
     {

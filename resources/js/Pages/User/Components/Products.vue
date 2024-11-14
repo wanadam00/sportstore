@@ -33,7 +33,7 @@ const getImageClass = (width, height) => {
 };
 </script>
 <template>
-    <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+    <div class="mt-6 grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4 lg:grid-cols-4 xl:gap-x-8">
         <div v-for="product in products" :key="product.id" class="group relative">
             <div
                 class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-xl bg-transparent lg:aspect-none lg:h-80 transition duration-500 ease-in-out transform hover:-translate-y-2 hover:shadow-xl">
@@ -72,12 +72,12 @@ const getImageClass = (width, height) => {
             </div>
             <div class="mt-4 flex justify-between">
                 <div>
-                    <p class="mt-1 text-sm text-gray-500">
+                    <!-- <p class="mt-1 text-xs text-gray-500">
                         {{ capitalizeInitialWords(product.brand.name) }}
                     </p>
-                    <p class="mt-1 text-sm text-gray-500">
+                    <p class="mt-1 text-xs text-gray-500">
                         {{ capitalizeInitialWords(product.category.name) }}
-                    </p>
+                    </p> -->
                     <h3 class="text-sm text-gray-700">
                         <!-- <span aria-hidden="true" class="" /> -->
                         {{ capitalizeInitialWords(product.name) }}

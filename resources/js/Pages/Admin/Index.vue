@@ -21,6 +21,7 @@ const searchUser = () => {
 
 // Form data for creating/updating a user
 const form = useForm({
+    id: '',
     name: '',
     email: '',
     password: '',
@@ -36,6 +37,7 @@ function openAddUserModal() {
 // Open the modal for editing an existing user
 function openEditUserModal(user) {
     editMode.value = true;
+    form.id = user.id;
     form.name = user.name;
     form.email = user.email;
     form.password = ''; // Keep password field empty for security
@@ -45,10 +47,22 @@ function openEditUserModal(user) {
 // Add a new user
 function addUser() {
     form.post(route('users.store'), {
-        onSuccess: () => {
+        onSuccess: page => {
+            Swal.fire({
+                toast: true,
+                icon: 'success',
+                position: 'top-end',
+                showConfirmButton: false,
+                title: page.props.flash.success,
+                timer: 3000,
+                timerProgressBar: true,
+            })
             dialogVisible.value = false;
-            form.reset();
             router.visit(route('users.index'));
+        },
+        onError: (errors) => {
+            // console.log(resp)
+            form.errors = errors;
         }
     });
 }
@@ -56,10 +70,22 @@ function addUser() {
 // Update an existing user
 function updateUser() {
     form.put(route('users.update', { user: form.id }), {
-        onSuccess: () => {
+        onSuccess: page => {
+            Swal.fire({
+                toast: true,
+                icon: 'success',
+                position: 'top-end',
+                showConfirmButton: false,
+                title: page.props.flash.success,
+                timer: 3000,
+                timerProgressBar: true,
+            })
             dialogVisible.value = false;
-            form.reset();
             router.visit(route('users.index'));
+        },
+        onError: (errors) => {
+            // console.log(resp)
+            form.errors = errors;
         }
     });
 }
@@ -68,10 +94,19 @@ function updateUser() {
 function deleteUser(id) {
     if (confirm('Are you sure?')) {
         form.delete(route('users.destroy', id), {
-            onSuccess: () => {
-                // Optional: Refresh users list or redirect
+            onSuccess: page => {
+                Swal.fire({
+                    toast: true,
+                    icon: 'success',
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    title: page.props.flash.success,
+                    timer: 3000,
+                    timerProgressBar: true,
+                })
+                dialogVisible.value = false;
                 router.visit(route('users.index'));
-            }
+            },
         });
     }
 }
@@ -85,15 +120,28 @@ const capitalizeInitialWords = (str) => {
     <AppLayout2>
         <section class="  p-3 sm:p-5">
             <div class="pb-4 mx-auto max-w-screen-xl px-4 lg:px-12 flex items-center">
-                <button @click="searchUser" class="mr-2">
+                <button @click="searchUser" class="absolute ml-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="size-5">
+                        stroke="currentColor" class="size-5 ">
+                        <defs>
+                            <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
+                                <feOffset dx="1" dy="1" result="offsetblur" />
+                                <feFlood flood-color="rgba(0, 0, 0, 0.5)" />
+                                <feComposite in2="offsetblur" operator="in" />
+                                <feMerge>
+                                    <feMergeNode />
+                                    <feMergeNode in="SourceGraphic" />
+                                </feMerge>
+                            </filter>
+                        </defs>
                         <path stroke-linecap="round" stroke-linejoin="round"
-                            d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                            d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                            filter="url(#shadow)" />
                     </svg>
                 </button>
                 <input v-model="search" placeholder="Search by name" @keyup.enter="searchUser"
-                    class="rounded-lg text-xs pl-6 border border-gray-300" />
+                    class="rounded-lg text-xs  border border-gray-300 shadow-md text-center" />
             </div>
             <div>
                 <!-- <h1>User Management</h1> -->
@@ -205,23 +253,28 @@ const capitalizeInitialWords = (str) => {
                         <div class="relative z-0 w-full mb-6 group">
                             <input v-model="form.name" type="text" name="floating_name" id="floating_name"
                                 class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                placeholder=" " required />
+                                placeholder=" " />
                             <label for="floating_name"
                                 class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Name</label>
+                            <span v-if="form.errors.name" class="text-red-500 text-xs">{{ form.errors.name }}</span>
                         </div>
                         <div class="relative z-0 w-full mb-6 group">
-                            <input v-model="form.email" type="text" name="floating_name" id="floating_name"
+                            <input v-model="form.email" type="text" name="floating_email" id="floating_email"
                                 class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                placeholder=" " required />
-                            <label for="floating_name"
+                                placeholder=" " />
+                            <label for="floating_email"
                                 class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Email</label>
+                            <span v-if="form.errors.email" class="text-red-500 text-xs">{{ form.errors.email }}</span>
                         </div>
                         <div class="relative z-0 w-full mb-6 group">
-                            <input v-model="form.password" type="text" name="floating_name" id="floating_name"
+                            <input v-model="form.password" type="password" name="floating_password"
+                                id="floating_password"
                                 class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                placeholder=" " required />
-                            <label for="floating_name"
+                                placeholder=" " />
+                            <label for="floating_password"
                                 class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Password</label>
+                            <span v-if="form.errors.password" class="text-red-500 text-xs">{{ form.errors.password
+                                }}</span>
                         </div>
                         <button type="submit"
                             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Submit</button>

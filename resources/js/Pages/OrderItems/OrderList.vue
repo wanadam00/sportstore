@@ -1,5 +1,5 @@
 <script setup>
-import { router, usePage } from '@inertiajs/vue3';
+import { router, usePage, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
 import { Inertia } from '@inertiajs/inertia';
@@ -17,6 +17,13 @@ const trackingNumber = ref('');
 const shipmentStatus = ref('pending');
 const pageProps = usePage().props;
 const search = ref(pageProps.filters.search || '');
+const form = useForm({
+    id: '',
+    currentOrder: '',
+    estimated_delivery_date: '',
+    tracking_number: '',
+    shipment_status: '',
+});
 
 const searchProducts = () => {
     Inertia.get(route('orders.index'), { search: search.value }, { preserveState: true });
@@ -24,10 +31,14 @@ const searchProducts = () => {
 
 // Open modal and set current order details
 const openUpdateModal = (orderItem) => {
-    currentOrder.value = orderItem;
-    estimatedDelivery.value = orderItem.estimated_delivery_date; // Assuming backend returns tracking number
-    trackingNumber.value = orderItem.tracking_number || ''; // Assuming backend returns tracking number
-    shipmentStatus.value = orderItem.shipment_status || 'pending';
+    // currentOrder.value = orderItem;
+    // estimatedDelivery.value = orderItem.estimated_delivery_date; // Assuming backend returns tracking number
+    // trackingNumber.value = orderItem.tracking_number || ''; // Assuming backend returns tracking number
+    // shipmentStatus.value = orderItem.shipment_status || 'pending';
+    form.currentOrder = orderItem;
+    form.estimated_delivery_date = orderItem.estimated_delivery_date || '';
+    form.tracking_number = orderItem.tracking_number || '';
+    form.shipment_status = orderItem.shipment_status || 'pending';
     showUpdateModal.value = true;
 };
 
@@ -38,19 +49,22 @@ const closeUpdateModal = () => {
 
 // Submit updated shipment info
 const submitUpdateShipment = () => {
-    router.put(`/orders/update-shipment/${currentOrder.value.order_id}`, {
-        estimated_delivery_date: estimatedDelivery.value,
-        tracking_number: trackingNumber.value,
-        shipment_status: shipmentStatus.value,
-    }, {
-        onSuccess: () => {
+    form.put(`/orders/update-shipment/${form.currentOrder.order_id}`, {
+        onSuccess: (page) => {
             showUpdateModal.value = false;
-            Swal.fire('Updated!', 'Shipment information has been updated.', 'success');
+            Swal.fire({
+                toast: true,
+                icon: "success",
+                position: "top-end",
+                showConfirmButton: false,
+                title: page.props.flash.success,
+                timer: 3000,
+                timerProgressBar: true,
+            });
             router.visit(route('orders.index'));
         },
         onError: (errors) => {
-            console.log(errors);
-            Swal.fire('Error!', 'Failed to update shipment information.', 'error');
+            form.errors = errors;
         }
     });
 };
@@ -86,13 +100,11 @@ const deleteOrder = (orderItem, index) => {
             }
         }
     })
-
 }
 
 // Group and aggregate order items by order_id
 const groupedOrderItems = computed(() => {
     const grouped = {};
-
     orderItems.forEach((item) => {
         const { order_id, quantity, unit_price, product_name, user_name, order_status } = item;
 
@@ -109,7 +121,6 @@ const groupedOrderItems = computed(() => {
             grouped[order_id].total_price += unit_price * quantity;
         }
     });
-
     // Convert grouped object to an array
     return Object.values(grouped);
 });
@@ -128,12 +139,10 @@ const removeUnderscores = (str) => {
 };
 const formatDate = (dateString) => {
     const date = new Date(dateString);
-
     // Get day, month, and year
     const day = String(date.getDate()).padStart(2, '0'); // Pad single digit days with a leading zero
     const month = date.toLocaleString('default', { month: 'short' }); // Get short month name
     const year = date.getFullYear(); // Get full year
-
     // Get time components
     const options = {
         hour: '2-digit',
@@ -142,7 +151,6 @@ const formatDate = (dateString) => {
         hour12: true // Change to true for 12-hour format
     };
     const time = date.toLocaleTimeString('en-US', options); // Format time
-
     // Combine date and time
     return `${day} ${month} ${year} ${time}`; // Format: "01 Jan 2023 02:00:00 PM"
 };
@@ -150,15 +158,28 @@ const formatDate = (dateString) => {
 <template>
     <section class="  p-3 sm:pt-5">
         <div class="pb-4 mx-auto max-w-screen-xl px-4 lg:px-12 flex items-center">
-            <button @click="searchProducts" class="mr-2">
+            <button @click="searchProducts" class="absolute ml-2">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="size-5">
+                    stroke="currentColor" class="size-5 ">
+                    <defs>
+                        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
+                            <feOffset dx="1" dy="1" result="offsetblur" />
+                            <feFlood flood-color="rgba(0, 0, 0, 0.5)" />
+                            <feComposite in2="offsetblur" operator="in" />
+                            <feMerge>
+                                <feMergeNode />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                    </defs>
                     <path stroke-linecap="round" stroke-linejoin="round"
-                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                        filter="url(#shadow)" />
                 </svg>
             </button>
             <input v-model="search" placeholder="Search by name" @keyup.enter="searchProducts"
-                class="rounded-lg text-xs pl-6 border border-gray-300" />
+                class="rounded-lg text-xs  border border-gray-300 shadow-md text-center" />
         </div>
         <!-- end -->
         <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
@@ -196,7 +217,7 @@ const formatDate = (dateString) => {
                             </svg>
                             Add brand
                         </button> -->
-                        <div class="flex items-center space-x-3 w-full md:w-auto">
+                        <!-- <div class="flex items-center space-x-3 w-full md:w-auto">
                             <button id="actionsDropdownButton" data-dropdown-toggle="actionsDropdown"
                                 class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
                                 type="button">
@@ -280,7 +301,7 @@ const formatDate = (dateString) => {
                                     </li>
                                 </ul>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div class="overflow-x-auto">
@@ -365,7 +386,6 @@ const formatDate = (dateString) => {
                                         class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-600">
                                         Update Shipment
                                     </button> -->
-
                                 </td>
                             </tr>
                         </tbody>
@@ -376,34 +396,36 @@ const formatDate = (dateString) => {
                     class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md">
                         <h2 class="text-lg font-semibold mb-4">Update Shipment for Order #{{
-                            currentOrder.order_id }}</h2>
-
+                            form.currentOrder.order_id }}</h2>
                         <!-- Tracking Number Input -->
                         <label class="block mb-3">
                             <span class="text-gray-700 dark:text-gray-300">Tracking Number</span>
-                            <input v-model="trackingNumber" type="text"
+                            <input v-model="form.tracking_number" type="text"
                                 class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md" />
+                            <span v-if="form.errors.tracking_number" class="text-red-500 text-xs">{{
+                                form.errors.tracking_number }}</span>
                         </label>
-
                         <!-- Shipment Status Selector -->
                         <label class="block mb-3">
                             <span class="text-gray-700 dark:text-gray-300">Shipment Status</span>
-                            <select v-model="shipmentStatus"
+                            <select v-model="form.shipment_status"
                                 class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md">
                                 <option value="pending">Pending</option>
                                 <option value="to_ship">To Ship</option>
                                 <option value="shipped">Shipped</option>
                                 <option value="delivered">Delivered</option>
                             </select>
+                            <span v-if="form.errors.shipment_status" class="text-red-500 text-xs">{{
+                                form.errors.shipment_status }}</span>
                         </label>
-
                         <!-- Estimated Delivery Date Input -->
                         <label class="block mb-3">
                             <span class="text-gray-700 dark:text-gray-300">Estimated Delivery Date</span>
-                            <input v-model="estimatedDelivery" type="date"
+                            <input v-model="form.estimated_delivery_date" type="date"
                                 class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md" />
+                            <span v-if="form.errors.estimated_delivery_date" class="text-red-500 text-xs">{{
+                                form.errors.estimated_delivery_date }}</span>
                         </label>
-
                         <!-- Action Buttons -->
                         <div class="flex justify-end space-x-2">
                             <button @click="submitUpdateShipment"

@@ -1,5 +1,5 @@
 <template>
-    <nav class="bg-white  px-4 py-2.5 dark:bg-gray-800 dark:border-gray-700 fixed left-0 right-0 top-0 z-40">
+    <nav class="bg-white  px-4 py-2.5 dark:bg-gray-800 dark:border-gray-700 fixed left-0 right-0 top-0 z-50 border-b">
         <div class="flex flex-wrap justify-between items-center">
             <div class="flex justify-start items-center">
                 <button data-drawer-target="drawer-navigation" data-drawer-toggle="drawer-navigation"
@@ -409,7 +409,7 @@
                             <!-- <Link @click="logout"
                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
                             Sign Out</Link> -->
-                            <div class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"  @click="logout">
+                            <div class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" @click="logout">
                                 <button>
                                     Sign Out</button>
                             </div>
@@ -490,11 +490,19 @@
             </div>
         </div>
     </nav>
+    <!-- <main class="p-4 md:ml-64 h-auto pt-14"> -->
+
+    <slot />
+    <!-- </main> -->
 </template>
 
 <script setup>
 import { Link, usePage, router } from '@inertiajs/vue3';
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
+import { initFlowbite } from 'flowbite'
+onMounted(() => {
+    initFlowbite();
+})
 const auth = usePage().props.auth;
 // Logout function
 const logout = async () => {

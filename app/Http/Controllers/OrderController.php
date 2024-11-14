@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB; // Import the DB facade
+use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
 {
@@ -102,6 +103,26 @@ class OrderController extends Controller
         //     'tracking_number' => 'required|string|max:255', // Validate tracking number
         //     'shipment_status' => 'required|string', // Validate shipment status
         // ]);
+        $rules = [
+            // 'estimated_delivery_date' => 'required_if:shipment_status,shipped|date', // Required if status is 'shipped'
+            'tracking_number' => 'required|string|max:255', // Validate tracking number
+            'shipment_status' => 'required|string', // Validate shipment status
+        ];
+        $shipmentStatus = $request->input('shipment_status');
+        // Add conditional rule for estimated_delivery_date only if the status is "shipped"
+        if ($shipmentStatus === 'shipped' || $shipmentStatus === 'delivered') {
+            $rules['estimated_delivery_date'] = 'required|date';
+        }
+
+        // Create a validator instance
+        $validator = Validator::make($request->all(), $rules);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
 
         $order = Order::findOrFail($orderId);
         $order->estimated_delivery_date = $request->estimated_delivery_date;
@@ -109,6 +130,6 @@ class OrderController extends Controller
         $order->shipment_status = $request->shipment_status;
         $order->save();
 
-        return redirect()->route('orders.index')->with('flash', ['success' => 'Shipment updated successfully']);
+        return redirect()->back()->with('success', 'Shipment updated successfully');
     }
 }

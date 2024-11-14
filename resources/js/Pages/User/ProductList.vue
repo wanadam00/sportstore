@@ -18,10 +18,11 @@ import { XMarkIcon } from '@heroicons/vue/24/outline'
 import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from '@heroicons/vue/20/solid'
 import Products from '@/Pages/User/Components/Products.vue'
 import SecondaryButtonVue from '@/Components/SecondaryButton.vue';
-import { router, useForm } from '@inertiajs/vue3';
+import { router, useForm, usePage } from '@inertiajs/vue3';
 import { defineProps } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import PaginationLinks from './Components/PaginationLinks.vue';
+// import { Inertia } from '@inertiajs/inertia';
 const sortOptions = [
     { name: 'Most Popular', href: '#', current: true },
     { name: 'Best Rating', href: '#', current: false },
@@ -29,31 +30,37 @@ const sortOptions = [
     { name: 'Price: Low to High', href: '#', current: false },
     { name: 'Price: High to Low', href: '#', current: false },
 ]
+const pageProps = usePage().props;
+const search = ref(pageProps.filters.search || '');
 
+const searchProducts = () => {
+    Inertia.get(route('products.list'), { search: search.value }, { preserveState: true });
+};
 
-
+// Define and initialize with a single price input for both ranges
 const filterPrices = useForm({
-    prices: [0, 100000], // Original price range
-    promoPrices: [0, 100000] // Promotional price range
+    price: '' // Single input field for max price
 });
 
 // Method for price filter
 const priceFilter = () => {
+    const maxPrice = filterPrices.price; // Retrieve single price input value
+
     filterPrices.transform((data) => ({
         ...data,
         prices: {
-            from: filterPrices.prices[0],
-            to: filterPrices.prices[1]
+            from: 0, // Set from to 0 or adjust as needed
+            to: maxPrice
         },
         promoPrices: {
-            from: filterPrices.promoPrices[0],
-            to: filterPrices.promoPrices[1]
+            from: 0, // Set from to 0 or adjust as needed
+            to: maxPrice
         }
     })).get('product', {
         preserveState: true,
         replace: true
     });
-}
+};
 
 const mobileFiltersOpen = ref(false)
 
@@ -217,37 +224,70 @@ function updateFilteredProducts() {
                             </button>
                         </div> -->
                     </div>
-
                     <section aria-labelledby="products-heading" class="pb-24 pt-6">
                         <h2 id="products-heading" class="sr-only">Products</h2>
-
+                        <div class="pb-4 mx-auto max-w-screen-xl px-0 lg:px-0 flex items-center">
+                            <button @click="searchProducts" class="absolute ml-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="size-6 ">
+                                    <defs>
+                                        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                                            <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
+                                            <feOffset dx="1" dy="1" result="offsetblur" />
+                                            <feFlood flood-color="rgba(0, 0, 0, 0.5)" />
+                                            <feComposite in2="offsetblur" operator="in" />
+                                            <feMerge>
+                                                <feMergeNode />
+                                                <feMergeNode in="SourceGraphic" />
+                                            </feMerge>
+                                        </filter>
+                                    </defs>
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                                        filter="url(#shadow)" />
+                                </svg>
+                            </button>
+                            <input v-model="search" placeholder="Search by name" @keyup.enter="searchProducts"
+                                class="rounded-lg text-sm  border border-gray-300 bg-gray-50 p-2.5 text-center" />
+                        </div>
                         <div class="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
                             <!-- Filters -->
-                            <form class="hidden lg:block">
+                            <form class=" lg:block">
                                 <h3 class="sr-only">Prices</h3>
-                                <!-- price filter -->
-                                <div class="flex items-center justify-between space-x-3">
-                                    <div class="basis-1/3">
-                                        <label for="filters-price-from"
+                                <!-- single input price filter -->
+                                <div class="flex items-center space-x-3">
+                                    <div class="basis-3/3">
+                                        <label for="filters-price"
                                             class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
-                                            From
+                                            Price Range
                                         </label>
-                                        <input type="number" id="filters-price-from" placeholder="Min price"
-                                            v-model="filterPrices.prices[0]"
-                                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" />
+                                        <SecondaryButtonVue @click="priceFilter()" class="absolute ml-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="size-6 mt-2">
+                                                <defs>
+                                                    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                                                        <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
+                                                        <feOffset dx="1" dy="1" result="offsetblur" />
+                                                        <feFlood flood-color="rgba(0, 0, 0, 0.5)" />
+                                                        <feComposite in2="offsetblur" operator="in" />
+                                                        <feMerge>
+                                                            <feMergeNode />
+                                                            <feMergeNode in="SourceGraphic" />
+                                                        </feMerge>
+                                                    </filter>
+                                                </defs>
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                                                    filter="url(#shadow)" />
+                                            </svg>
+                                        </SecondaryButtonVue>
+                                        <input type="number" id="filters-price" placeholder="Enter max price"
+                                            v-model="filterPrices.price" @keyup.enter="priceFilter"
+                                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-center focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" />
                                     </div>
-                                    <div class="basis-1/3">
-                                        <label for="filters-price-to"
-                                            class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
-                                            To
-                                        </label>
-                                        <input type="number" id="filters-price-to" v-model="filterPrices.prices[1]"
-                                            placeholder="Max price"
-                                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" />
-                                    </div>
-                                    <SecondaryButtonVue class="self-end" @click="priceFilter()">
+                                    <!-- <SecondaryButtonVue class="self-end" @click="priceFilter()">
                                         Ok
-                                    </SecondaryButtonVue>
+                                    </SecondaryButtonVue> -->
                                 </div>
 
                                 <!-- Promotional Price Filters -->

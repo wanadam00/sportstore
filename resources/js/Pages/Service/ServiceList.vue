@@ -1,5 +1,5 @@
 <script setup>
-import { router, usePage } from '@inertiajs/vue3';
+import { router, usePage, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
 import { Inertia } from '@inertiajs/inertia';
@@ -13,22 +13,27 @@ const categories = usePage().props.categories;
 const pageProps = usePage().props;
 const search = ref(pageProps.filters.search || '');
 
-
 // console.log(products);
 const isAddService = ref(false);
 const editMode = ref(false);
-const dialogVisible = ref(false)
+const dialogVisible = ref(false);
 
 //upload mulitpel images
-const serviceImages = ref([])
-const dialogImageUrl = ref('')
-const searchProducts = () => {
+const serviceImages = ref([]);
+const dialogImageUrl = ref('');
+const form = useForm({
+    id: '',
+    name: '',
+    service_images: [],
+});
+
+const searchServices = () => {
     Inertia.get(route('services.index'), { search: search.value }, { preserveState: true });
 };
 
 const handleFileChange = (file) => {
     console.log(file)
-    serviceImages.value.push(file)
+    form.service_images.push(file)
 }
 
 const handlePictureCardPreview = (file) => {
@@ -49,54 +54,60 @@ const openEditModal = (service, index) => {
 
     console.log(service, index);
     //updatde data
-    id.value = service.id;
-    name.value = service.name;
-    service_images.value = service.service_images;
+    // id.value = service.id;
+    // name.value = service.name;
+    // service_images.value = service.service_images;
+    form.id = service.id;
+    form.name = service.name;
+    form.service_images = service.service_images;
 
     editMode.value = true;
     isAddService.value = false
     dialogVisible.value = true
-
 }
-
 
 //open add modal
 const openAddModal = () => {
     isAddService.value = true
     dialogVisible.value = true
     editMode.value = false;
-
+    form.reset();
 }
 
 // add product method
 const AddService = async () => {
     const formData = new FormData();
-    formData.append('name', name.value);
+    formData.append('name', form.name);
     // Append product images to the FormData
-    for (const image of serviceImages.value) {
-        formData.append('service_images[]', image.raw);
-    }
-
+    // for (const image of serviceImages.value) {
+    //     formData.append('service_images[]', image.raw);
+    // }
+    form.service_images.forEach((image, index) => {
+        formData.append(`service_images[${index}]`, image.raw || image);  // Use `raw` if it's a new file
+    });
     try {
-        await router.post('services/store', formData, {
+        await router.post(route('services.store'), formData, {
             onSuccess: page => {
                 Swal.fire({
                     toast: true,
                     icon: 'success',
                     position: 'top-end',
                     showConfirmButton: false,
-                    title: page.props.flash.success
+                    title: page.props.flash.success,
+                    timer: 3000,
+                    timerProgressBar: true,
                 })
                 dialogVisible.value = false;
                 router.visit(route('services.index'));
             },
+            onError: (errors) => {
+                // console.log(resp)
+                form.errors = errors;
+            }
         })
     } catch (err) {
         console.log(err)
     }
-
-
-
 }
 
 //rest data after added
@@ -107,21 +118,20 @@ const resetFormData = () => {
     dialogImageUrl.value = ''
 };
 
-
-
 //delete sigal product image
-
 const deleteImage = async (pimage, index) => {
     try {
         await router.delete('/services/image/' + pimage.id, {
             onSuccess: (page) => {
-                service_images.value.splice(index, 1);
+                form.service_images.splice(index, 1);
                 Swal.fire({
                     toast: true,
                     icon: "success",
                     position: "top-end",
                     showConfirmButton: false,
-                    title: page.props.flash.success
+                    title: page.props.flash.success,
+                    timer: 3000,
+                    timerProgressBar: true,
                 });
             }
         })
@@ -133,26 +143,30 @@ const deleteImage = async (pimage, index) => {
 //update product method
 const updateService = async () => {
     const formData = new FormData();
-    formData.append('name', name.value);
+    formData.append('name', form.name);
     formData.append("_method", 'PUT');
     // Append product images to the FormData
-    for (const image of serviceImages.value) {
-        formData.append('service_images[]', image.raw);
-    }
-
+    form.service_images.forEach((image, index) => {
+        formData.append(`service_images[${index}]`, image.raw || image);
+    });
     try {
-        await router.post('services/update/' + id.value, formData, {
+        await router.post(route('services.update', form.id), formData, {
             onSuccess: (page) => {
                 dialogVisible.value = false;
-                resetFormData();
                 Swal.fire({
                     toast: true,
                     icon: "success",
                     position: "top-end",
                     showConfirmButton: false,
-                    title: page.props.flash.success
+                    title: page.props.flash.success,
+                    timer: 3000,
+                    timerProgressBar: true,
                 });
                 router.visit(route('services.index'));
+            },
+            onError: (errors) => {
+                // console.log(resp)
+                form.errors = errors;
             }
         })
     } catch (err) {
@@ -174,7 +188,7 @@ const deleteService = (service, index) => {
     }).then((result) => {
         if (result.isConfirmed) {
             try {
-                router.delete('services/destory/' + service.id, {
+                form.delete('services/destory/' + service.id, {
                     onSuccess: (page) => {
                         this.delete(service, index);
                         Swal.fire({
@@ -182,7 +196,9 @@ const deleteService = (service, index) => {
                             icon: "success",
                             position: "top-end",
                             showConfirmButton: false,
-                            title: page.props.flash.success
+                            title: page.props.flash.success,
+                            timer: 3000,
+                            timerProgressBar: true,
                         });
                         router.visit(route('services.index'));
                     }
@@ -192,8 +208,8 @@ const deleteService = (service, index) => {
             }
         }
     })
-
 }
+
 const capitalizeInitialWords = (str) => {
     if (!str) return '';
     return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
@@ -202,28 +218,28 @@ const capitalizeInitialWords = (str) => {
 <template>
     <section class="  p-3 sm:p-5">
         <div class="pb-4 mx-auto max-w-screen-xl px-4 lg:px-12 flex items-center">
-            <button @click="searchProducts" class="mr-2">
+            <button @click="searchServices" class="mr-2">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-5">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                 </svg>
             </button>
-            <input v-model="search" placeholder="Search by name" @keyup.enter="searchProducts"
+            <input v-model="search" placeholder="Search by name" @keyup.enter="searchServices"
                 class="rounded-lg text-xs pl-6 border border-gray-300" />
         </div>
         <!-- dialog for adding product or editing product -->
         <el-dialog v-model="dialogVisible" :title="editMode ? 'Edit Service' : 'Add Service'" width="30%">
             <!-- :before-close="handleClose" -->
             <!-- form start -->
-
             <form @submit.prevent="editMode ? updateService() : AddService()">
                 <div class="relative z-0 w-full mb-6 group">
-                    <input v-model="name" type="text" name="floating_name" id="floating_name"
+                    <input v-model="form.name" type="text" name="floating_name" id="floating_name"
                         class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                        placeholder=" " required />
+                        placeholder=" " />
                     <label for="floating_name"
                         class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">name</label>
+                    <span v-if="form.errors.name" class="text-red-500 text-xs">{{ form.errors.name }}</span>
                 </div>
                 <!-- <div class="relative z-0 w-full mb-6 group">
                     <input type="text" name="floating_price" id="floating_price"
@@ -239,7 +255,6 @@ const capitalizeInitialWords = (str) => {
                     <label for="floating_qty"
                         class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Quantity</label>
                 </div>
-
                 <div>
                     <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select
                         Category</label>
@@ -250,8 +265,6 @@ const capitalizeInitialWords = (str) => {
 
                     </select>
                 </div>
-
-
                 <div>
                     <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select
                         Brand</label>
@@ -261,8 +274,6 @@ const capitalizeInitialWords = (str) => {
 
                     </select>
                 </div>
-
-
                 <div class="grid  md:gap-6">
                     <div class="relative z-0 w-full mb-6 group">
 
@@ -271,9 +282,7 @@ const capitalizeInitialWords = (str) => {
                         <textarea id="message" rows="4" v-model="description"
                             class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             placeholder="Leave a comment..."></textarea>
-
                     </div>
-
                 </div> -->
                 <!-- multiple images upload -->
                 <div class="grid  md:gap-6">
@@ -283,17 +292,17 @@ const capitalizeInitialWords = (str) => {
                             :on-change="handleFileChange" :auto-upload="false">
                             <el-icon>
                                 <Plus />
+                                <span v-if="form.errors.service_images" class="text-red-500 text-xs">{{
+                                    form.errors.service_images }}</span>
                             </el-icon>
                         </el-upload>
-
                     </div>
                 </div>
                 <!-- end -->
-
                 <!-- list of images for selected product -->
                 <div class="flex flex-nowrap mb-8 ">
-                    <div v-for="(pimage, index) in service_images" :key="pimage.id" class="relative w-32 h-32 ">
-                        <img class="w-24 h-20 rounded" :src="`/${pimage.image}`" alt="">
+                    <div v-for="(pimage, index) in form.service_images" :key="pimage.id" class="relative w-32 h-32 ">
+                        <img class="w-24 h-20 object-contain rounded" :src="`/${pimage.image}`" alt="">
                         <span
                             class="absolute top-0 right-8 transform -translate-y-1/2 w-3.5 h-3.5 bg-red-400 border-2 border-white dark:border-gray-800 rounded-full">
                             <span @click="deleteImage(pimage, index)"
@@ -301,22 +310,12 @@ const capitalizeInitialWords = (str) => {
                         </span>
                     </div>
                 </div>
-
                 <!-- end -->
-
-
-
-
                 <button type="submit"
                     class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
             </form>
-
             <!-- end -->
-
-
-
         </el-dialog>
-
         <!-- end -->
         <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
             <!-- Start coding here -->
@@ -354,7 +353,7 @@ const capitalizeInitialWords = (str) => {
                             </svg>
                             Add service
                         </button>
-                        <div class="flex items-center space-x-3 w-full md:w-auto">
+                        <!-- <div class="flex items-center space-x-3 w-full md:w-auto">
                             <button id="actionsDropdownButton" data-dropdown-toggle="actionsDropdown"
                                 class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
                                 type="button">
@@ -438,7 +437,7 @@ const capitalizeInitialWords = (str) => {
                                     </li>
                                 </ul>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div class="overflow-x-auto">
@@ -473,18 +472,14 @@ const capitalizeInitialWords = (str) => {
                                     <span v-else
                                         class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">Out
                                         of Stock</span>
-
                                 </td>
                                 <td class="px-4 py-3">
                                     <button v-if="product.published == 0" type="button"
                                         class="px-3 py-2 text-xs font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Published</button>
                                     <button v-else type="button"
                                         class="px-3 py-2 text-xs font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">UnPublished</button>
-
                                 </td> -->
-
                                 <td class="px-4 py-3 flex items-center justify-end">
-
                                     <button :id="`${service.id}-button`" :data-dropdown-toggle="`${service.id}`"
                                         class="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100"
                                         type="button">
@@ -498,7 +493,6 @@ const capitalizeInitialWords = (str) => {
                                         class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
                                         <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
                                             :aria-labelledby="`${service.id}-button`">
-
                                             <li>
                                                 <a href="#" @click="openEditModal(service)"
                                                     class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</a>
@@ -511,7 +505,6 @@ const capitalizeInitialWords = (str) => {
                                     </div>
                                 </td>
                             </tr>
-
                         </tbody>
                     </table>
                 </div>

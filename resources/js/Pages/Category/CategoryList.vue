@@ -1,5 +1,5 @@
 <script setup>
-import { router, usePage } from '@inertiajs/vue3';
+import { router, usePage, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
 import { Inertia } from '@inertiajs/inertia';
@@ -13,22 +13,27 @@ const brands = usePage().props.brands;
 const categories = usePage().props.categories;
 const search = ref(pageProps.filters.search || '');
 
-
 // console.log(products);
 const isAddCategory = ref(false);
 const editMode = ref(false);
-const dialogVisible = ref(false)
+const dialogVisible = ref(false);
 
 //upload mulitpel images
-const categoryImages = ref([])
-const dialogImageUrl = ref('')
-const searchProducts = () => {
+const categoryImages = ref([]);
+const dialogImageUrl = ref('');
+const form = useForm({
+    id: '',
+    name: '',
+    category_images: [],
+});
+
+const searchCategory = () => {
     Inertia.get(route('categories.index'), { search: search.value }, { preserveState: true });
 };
 
 const handleFileChange = (file) => {
     console.log(file)
-    categoryImages.value.push(file)
+    form.category_images.push(file)
 }
 
 const handlePictureCardPreview = (file) => {
@@ -49,54 +54,60 @@ const openEditModal = (category, index) => {
 
     console.log(category, index);
     //updatde data
-    id.value = category.id;
-    name.value = category.name;
-    category_images.value = category.category_images;
+    // id.value = category.id;
+    // name.value = category.name;
+    // category_images.value = category.category_images;
+    form.id = category.id;
+    form.name = category.name;
+    form.category_images = category.category_images;
 
     editMode.value = true;
     isAddCategory.value = false
     dialogVisible.value = true
 }
 
-
 //open add modal
 const openAddModal = () => {
     isAddCategory.value = true
     dialogVisible.value = true
     editMode.value = false;
-    resetFormData();
+    form.reset();
 }
 
 // add product method
 const AddCategory = async () => {
     const formData = new FormData();
-    formData.append('name', name.value);
+    formData.append('name', form.name);
     // Append product images to the FormData
-    for (const image of categoryImages.value) {
-        formData.append('category_images[]', image.raw);
-    }
+    // for (const image of categoryImages.value) {
+    //     formData.append('category_images[]', image.raw);
+    // }
+    form.category_images.forEach((image, index) => {
+        formData.append(`category_images[${index}]`, image.raw || image);  // Use `raw` if it's a new file
+    });
 
     try {
-        await router.post('categories/store', formData, {
+        await router.post(route('categories.store'), formData, {
             onSuccess: page => {
                 Swal.fire({
                     toast: true,
                     icon: 'success',
                     position: 'top-end',
                     showConfirmButton: false,
-                    title: page.props.flash.success
+                    title: page.props.flash.success,
+                    timer: 3000,
+                    timerProgressBar: true,
                 })
                 dialogVisible.value = false;
-                // resetFormData();
                 router.visit(route('categories.index'));
             },
+            onError: (errors) => {
+                form.errors = errors;
+            }
         })
     } catch (err) {
         console.log(err)
     }
-
-
-
 }
 
 //rest data after added
@@ -107,10 +118,7 @@ const resetFormData = () => {
     dialogImageUrl.value = ''
 };
 
-
-
 //delete sigal product image
-
 const deleteImage = async (pimage, index) => {
     try {
         await router.delete('/categories/image/' + pimage.id, {
@@ -121,7 +129,9 @@ const deleteImage = async (pimage, index) => {
                     icon: "success",
                     position: "top-end",
                     showConfirmButton: false,
-                    title: page.props.flash.success
+                    title: page.props.flash.success,
+                    timer: 3000,
+                    timerProgressBar: true,
                 });
             }
         })
@@ -133,26 +143,29 @@ const deleteImage = async (pimage, index) => {
 //update product method
 const updateCategory = async () => {
     const formData = new FormData();
-    formData.append('name', name.value);
+    formData.append('name', form.name);
     formData.append("_method", 'PUT');
     // Append product images to the FormData
-    for (const image of categoryImages.value) {
-        formData.append('category_images[]', image.raw);
-    }
-
+    form.category_images.forEach((image, index) => {
+        formData.append(`category_images[${index}]`, image.raw || image);
+    });
     try {
-        await router.post('categories/update/' + id.value, formData, {
+        await router.post(route('categories.update', form.id), formData, {
             onSuccess: (page) => {
                 dialogVisible.value = false;
-                resetFormData();
                 Swal.fire({
                     toast: true,
                     icon: "success",
                     position: "top-end",
                     showConfirmButton: false,
-                    title: page.props.flash.success
+                    title: page.props.flash.success,
+                    timer: 3000,
+                    timerProgressBar: true,
                 });
                 router.visit(route('categories.index'));
+            },
+            onError: (errors) => {
+                form.errors = errors;
             }
         })
     } catch (err) {
@@ -174,7 +187,7 @@ const deleteCategory = (category, index) => {
     }).then((result) => {
         if (result.isConfirmed) {
             try {
-                router.delete('categories/destory/' + category.id, {
+                form.delete('categories/destory/' + category.id, {
                     onSuccess: (page) => {
                         this.delete(categroy, index);
                         Swal.fire({
@@ -182,7 +195,9 @@ const deleteCategory = (category, index) => {
                             icon: "success",
                             position: "top-end",
                             showConfirmButton: false,
-                            title: page.props.flash.success
+                            title: page.props.flash.success,
+                            timer: 3000,
+                            timerProgressBar: true,
                         });
                         router.visit(route('categories.index'));
                     }
@@ -192,7 +207,6 @@ const deleteCategory = (category, index) => {
             }
         }
     })
-
 }
 const capitalizeInitialWords = (str) => {
     if (!str) return '';
@@ -202,28 +216,41 @@ const capitalizeInitialWords = (str) => {
 <template>
     <section class="  p-3 sm:p-5">
         <div class="pb-4 mx-auto max-w-screen-xl px-4 lg:px-12 flex items-center">
-            <button @click="searchProducts" class="mr-2">
+            <button @click="searchCategory" class="absolute ml-2">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="size-5">
+                    stroke="currentColor" class="size-5 ">
+                    <defs>
+                        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
+                            <feOffset dx="1" dy="1" result="offsetblur" />
+                            <feFlood flood-color="rgba(0, 0, 0, 0.5)" />
+                            <feComposite in2="offsetblur" operator="in" />
+                            <feMerge>
+                                <feMergeNode />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                    </defs>
                     <path stroke-linecap="round" stroke-linejoin="round"
-                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                        filter="url(#shadow)" />
                 </svg>
             </button>
-            <input v-model="search" placeholder="Search by name" @keyup.enter="searchProducts"
-                class="rounded-lg text-xs pl-6 border border-gray-300" />
+            <input v-model="search" placeholder="Search by name" @keyup.enter="searchCategory"
+                class="rounded-lg text-xs  border border-gray-300 shadow-md text-center" />
         </div>
         <!-- dialog for adding product or editing product -->
         <el-dialog v-model="dialogVisible" :title="editMode ? 'Edit Category' : 'Add Category'" width="30%">
             <!-- :before-close="handleClose" -->
             <!-- form start -->
-
             <form @submit.prevent="editMode ? updateCategory() : AddCategory()">
                 <div class="relative z-0 w-full mb-6 group">
-                    <input v-model="name" type="text" name="floating_name" id="floating_name"
+                    <input v-model="form.name" type="text" name="floating_name" id="floating_name"
                         class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                        placeholder=" " required />
+                        placeholder=" " />
                     <label for="floating_name"
                         class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">name</label>
+                    <span v-if="form.errors.name" class="text-red-500 text-xs">{{ form.errors.name }}</span>
                 </div>
                 <!-- <div class="relative z-0 w-full mb-6 group">
                     <input type="text" name="floating_price" id="floating_price"
@@ -247,33 +274,24 @@ const capitalizeInitialWords = (str) => {
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}
                         </option>
-
                     </select>
                 </div>
-
-
                 <div>
                     <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select
                         Brand</label>
                     <select id="countries" v-model="brand_id"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         <option v-for="brand in brands" :key="brand.id" :value="brand.id">{{ brand.name }}</option>
-
                     </select>
                 </div>
-
-
                 <div class="grid  md:gap-6">
                     <div class="relative z-0 w-full mb-6 group">
-
                         <label for="message"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
                         <textarea id="message" rows="4" v-model="description"
                             class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             placeholder="Leave a comment..."></textarea>
-
                     </div>
-
                 </div> -->
                 <!-- multiple images upload -->
                 <div class="grid  md:gap-6">
@@ -283,17 +301,18 @@ const capitalizeInitialWords = (str) => {
                             :on-change="handleFileChange" :auto-upload="false">
                             <el-icon>
                                 <Plus />
+                                <span v-if="form.errors.category_images" class="text-red-500 text-xs">{{
+                                    form.errors.category_images }}</span>
                             </el-icon>
                         </el-upload>
-
                     </div>
                 </div>
                 <!-- end -->
 
                 <!-- list of images for selected product -->
                 <div class="flex flex-nowrap mb-8 ">
-                    <div v-for="(pimage, index) in category_images" :key="pimage.id" class="relative w-32 h-32 ">
-                        <img class="w-24 h-20 rounded" :src="`/${pimage.image}`" alt="">
+                    <div v-for="(pimage, index) in form.category_images" :key="pimage.id" class="relative w-32 h-32 ">
+                        <img class="w-24 h-20 object-contain rounded" :src="`/${pimage.image}`" alt="">
                         <span
                             class="absolute top-0 right-8 transform -translate-y-1/2 w-3.5 h-3.5 bg-red-400 border-2 border-white dark:border-gray-800 rounded-full">
                             <span @click="deleteImage(pimage, index)"
@@ -301,22 +320,12 @@ const capitalizeInitialWords = (str) => {
                         </span>
                     </div>
                 </div>
-
                 <!-- end -->
-
-
-
-
                 <button type="submit"
                     class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
             </form>
-
             <!-- end -->
-
-
-
         </el-dialog>
-
         <!-- end -->
         <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
             <!-- Start coding here -->
@@ -354,7 +363,7 @@ const capitalizeInitialWords = (str) => {
                             </svg>
                             Add category
                         </button>
-                        <div class="flex items-center space-x-3 w-full md:w-auto">
+                        <!-- <div class="flex items-center space-x-3 w-full md:w-auto">
                             <button id="actionsDropdownButton" data-dropdown-toggle="actionsDropdown"
                                 class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
                                 type="button">
@@ -438,7 +447,7 @@ const capitalizeInitialWords = (str) => {
                                     </li>
                                 </ul>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div class="overflow-x-auto">
@@ -466,23 +475,19 @@ const capitalizeInitialWords = (str) => {
                                 <td class="px-4 py-3">{{ product.brand.name }}</td>
                                 <td class="px-4 py-3">{{ product.quantity }}</td>
                                 <td class="px-4 py-3">RM {{ product.price }}</td>
-
                                 <td class="px-4 py-3">
                                     <span v-if="product.inStock == 0"
                                         class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">inStock</span>
                                     <span v-else
                                         class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">Out
                                         of Stock</span>
-
                                 </td>
                                 <td class="px-4 py-3">
                                     <button v-if="product.published == 0" type="button"
                                         class="px-3 py-2 text-xs font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Published</button>
                                     <button v-else type="button"
                                         class="px-3 py-2 text-xs font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">UnPublished</button>
-
                                 </td> -->
-
                                 <td class="px-4 py-3 flex items-center justify-end">
 
                                     <button :id="`${category.id}-button`" :data-dropdown-toggle="`${category.id}`"
@@ -511,7 +516,6 @@ const capitalizeInitialWords = (str) => {
                                     </div>
                                 </td>
                             </tr>
-
                         </tbody>
                     </table>
                 </div>

@@ -10,6 +10,7 @@ use App\Models\BrandImage;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 
 class BrandController extends Controller
 {
@@ -48,6 +49,20 @@ class BrandController extends Controller
 
     public function store(Request $request)
     {
+        $rules = [
+            'name' => 'required|string|max:255',
+            'brand_images.*' => 'nullable', // Validate each image
+        ];
+
+        // Create a validator instance
+        $validator = Validator::make($request->all(), $rules);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
 
         $brand = new Brand;
         $brand->name = $request->name;
@@ -75,6 +90,20 @@ class BrandController extends Controller
     //update
     public function update(Request $request, $id)
     {
+        $rules = [
+            'name' => 'required|string|max:255',
+            'brand_images.*' => 'nullable', // Validate each image
+        ];
+
+        // Create a validator instance
+        $validator = Validator::make($request->all(), $rules);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
 
         $brand = Brand::findOrFail($id);
 

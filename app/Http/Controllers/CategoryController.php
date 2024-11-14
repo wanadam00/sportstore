@@ -10,6 +10,7 @@ use App\Models\CategoryImage;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
@@ -48,6 +49,20 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
+        $rules = [
+            'name' => 'required|string|max:255',
+            'category_images.*' => 'nullable', // Validate each image
+        ];
+
+        // Create a validator instance
+        $validator = Validator::make($request->all(), $rules);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
 
         $category = new Category;
         $category->name = $request->name;
@@ -75,6 +90,20 @@ class CategoryController extends Controller
     //update
     public function update(Request $request, $id)
     {
+        $rules = [
+            'name' => 'required|string|max:255',
+            'category_images.*' => 'nullable', // Validate each image
+        ];
+
+        // Create a validator instance
+        $validator = Validator::make($request->all(), $rules);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
 
         $category = Category::findOrFail($id);
 

@@ -1,5 +1,5 @@
 <script setup>
-import { router, usePage } from '@inertiajs/vue3';
+import { router, usePage, useForm } from '@inertiajs/vue3';
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
 import { Inertia } from '@inertiajs/inertia';
@@ -14,7 +14,6 @@ const categories = usePage().props.categories;
 const services = usePage().props.services;
 const search = ref(pageProps.filters.search || '');
 
-
 // console.log(products);
 const isAddProduct = ref(false);
 const editMode = ref(false);
@@ -22,7 +21,19 @@ const dialogVisible = ref(false)
 
 //upload mulitpel images
 const productImages = ref([]);
-const dialogImageUrl = ref('')
+const dialogImageUrl = ref('');
+const form = useForm({
+    id: '',
+    name: '',
+    price: '',
+    promo_price: '',
+    quantity: '',
+    description: '',
+    category_id: '',
+    brand_id: '',
+    service_id: '',
+    product_images: []
+});
 
 const searchProducts = () => {
     Inertia.get(route('products.index'), { search: search.value }, { preserveState: true });
@@ -33,15 +44,16 @@ const handleFileChange = (file, fileList) => {
     console.log('Updated file list:', fileList);
 
     // Update productImages with raw files
-    productImages.value = fileList.map(f => ({
+    form.product_images = fileList.map(f => ({
         name: f.name,
+        raw: f.raw,
         url: URL.createObjectURL(f.raw || f) // Generate preview URL for new files
     }));
 };
 
 // Handle picture preview when an image is clicked
 const handlePictureCardPreview = (file) => {
-    dialogImageUrl.value = file.url;  // Use the URL from the file object for preview
+    form.product_images = file.url;  // Use the URL from the file object for preview
     dialogVisible.value = true;       // Open the dialog
 };
 
@@ -51,8 +63,9 @@ const handleRemove = (file, fileList) => {
     console.log('Updated file list:', fileList);
 
     // Update productImages after removal
-    productImages.value = fileList.map(f => ({
+    form.product_images = fileList.map(f => ({
         name: f.name,
+        raw: f.raw,
         url: URL.createObjectURL(f.raw || f) // Regenerate URLs for remaining files
     }));
 };
@@ -73,74 +86,84 @@ const inStock = ref('')
 
 const openEditModal = (product, index) => {
 
-    console.log(product, index);
+    // console.log(product, index);
     //updatde data
-    id.value = product.id;
-    name.value = product.name;
-    price.value = product.price;
-    promo_price.value = product.promo_price;
-    quantity.value = product.quantity;
-    description.value = product.description;
-    brand_id.value = product.brand_id;
-    service_id.value = product.service_id;
-    category_id.value = product.category_id;
-    product_images.value = product.product_images;
+    // id.value = product.id;
+    // name.value = product.name;
+    // price.value = product.price;
+    // promo_price.value = product.promo_price;
+    // quantity.value = product.quantity;
+    // description.value = product.description;
+    // brand_id.value = product.brand_id;
+    // service_id.value = product.service_id;
+    // category_id.value = product.category_id;
+    // product_images.value = product.product_images;
+    form.id = product.id;
+    form.name = product.name;
+    form.quantity = product.quantity;
+    form.price = product.price;
+    form.promo_price = product.promo_price;
+    form.description = product.description;
+    form.category_id = product.category_id;
+    form.brand_id = product.brand_id;
+    form.service_id = product.service_id;
+    form.product_images = product.product_images;
 
     editMode.value = true;
     isAddProduct.value = false
     dialogVisible.value = true
-
 }
-
 
 //open add modal
 const openAddModal = () => {
     isAddProduct.value = true
     dialogVisible.value = true
     editMode.value = false;
-    resetFormData();
+    // resetFormData();
+    form.reset();
 }
 
 // add product method
 const AddProduct = async () => {
     const formData = new FormData();
-    formData.append('name', name.value);
-    formData.append('price', price.value);
-    formData.append('promo_price', promo_price.value);
-    formData.append('quantity', quantity.value);
-    formData.append('description', description.value);
-    formData.append('brand_id', brand_id.value);
-    formData.append('service_id', service_id.value);
-    formData.append('category_id', category_id.value);
-    // Append product images to the FormData
-    for (const image of productImages.value) {
-        formData.append('product_images[]', image.raw);
-    }
+    formData.append('name', form.name);
+    formData.append('price', form.price);
+    formData.append('promo_price', form.promo_price);
+    formData.append('quantity', form.quantity);
+    formData.append('description', form.description);
+    formData.append('brand_id', form.brand_id);
+    formData.append('service_id', form.service_id);
+    formData.append('category_id', form.category_id);
+    // Append each product image file individually
+    form.product_images.forEach((image, index) => {
+        formData.append(`product_images[${index}]`, image.raw || image);  // Use `raw` if it's a new file
+    });
 
     try {
-        await router.post('products/store', formData, {
+        await router.post(route('products.store'), formData, {
             onSuccess: page => {
                 Swal.fire({
                     toast: true,
                     icon: 'success',
                     position: 'top-end',
                     showConfirmButton: false,
-                    title: page.props.flash.success
+                    title: page.props.flash.success,
+                    timer: 3000,
+                    timerProgressBar: true, // Optional: Show a progress bar
                 })
                 dialogVisible.value = false;
                 // resetFormData();
                 router.visit(route('products.index'));
             },
-            onError: (resp) => {
-                console.log(resp)
+            onError: (errors) => {
+                // console.log(resp)
+                form.errors = errors;
             }
         })
     } catch (err) {
         console.log(err)
     }
     // resetFormData();
-
-
 }
 
 //rest data after added
@@ -158,21 +181,20 @@ const resetFormData = () => {
     dialogImageUrl.value = ''
 };
 
-
-
 //delete sigal product image
-
 const deleteImage = async (pimage, index) => {
     try {
         await router.delete('/products/image/' + pimage.id, {
             onSuccess: (page) => {
-                product_images.value.splice(index, 1);
+                form.product_images.splice(index, 1);
                 Swal.fire({
                     toast: true,
                     icon: "success",
                     position: "top-end",
                     showConfirmButton: false,
-                    title: page.props.flash.success
+                    title: page.props.flash.success,
+                    timer: 3000,
+                    timerProgressBar: true,
                 });
             }
         })
@@ -184,22 +206,23 @@ const deleteImage = async (pimage, index) => {
 //update product method
 const updateProduct = async () => {
     const formData = new FormData();
-    formData.append('name', name.value);
-    formData.append('price', price.value);
-    formData.append('promo_price', promo_price.value);
-    formData.append('quantity', quantity.value);
-    formData.append('description', description.value);
-    formData.append('category_id', category_id.value);
-    formData.append('brand_id', brand_id.value);
-    formData.append('service_id', service_id.value);
+    formData.append('name', form.name);
+    formData.append('price', form.price);
+    formData.append('promo_price', form.promo_price);
+    formData.append('quantity', form.quantity);
+    formData.append('description', form.description);
+    formData.append('category_id', form.category_id);
+    formData.append('brand_id', form.brand_id);
+    formData.append('service_id', form.service_id);
     formData.append("_method", 'PUT');
     // Append product images to the FormData
-    for (const image of productImages.value) {
-        formData.append('product_images[]', image.raw);
-    }
+    // Append each product image file individually
+    form.product_images.forEach((image, index) => {
+        formData.append(`product_images[${index}]`, image.raw || image);
+    });
 
     try {
-        await router.post('products/update/' + id.value, formData, {
+        await router.post(route('products.update', form.id), formData, {
             onSuccess: (page) => {
                 dialogVisible.value = false;
                 // resetFormData();
@@ -208,10 +231,15 @@ const updateProduct = async () => {
                     icon: "success",
                     position: "top-end",
                     showConfirmButton: false,
-                    title: page.props.flash.success
+                    title: page.props.flash.success,
+                    timer: 3000,
+                    timerProgressBar: true,
                 });
                 router.visit(route('products.index'));
-
+            },
+            onError: (errors) => {
+                // console.log(resp)
+                form.errors = errors;
             }
         })
     } catch (err) {
@@ -235,7 +263,7 @@ const deleteProduct = (product, index) => {
     }).then((result) => {
         if (result.isConfirmed) {
             try {
-                router.delete('products/destory/' + product.id, {
+                form.delete('products/destory/' + product.id, {
                     onSuccess: (page) => {
                         this.delete(product, index);
                         Swal.fire({
@@ -243,7 +271,9 @@ const deleteProduct = (product, index) => {
                             icon: "success",
                             position: "top-end",
                             showConfirmButton: false,
-                            title: page.props.flash.success
+                            title: page.props.flash.success,
+                            timer: 3000,
+                            timerProgressBar: true,
                         });
                         router.visit(route('products.index'));
                     }
@@ -253,7 +283,6 @@ const deleteProduct = (product, index) => {
             }
         }
     })
-
 }
 
 function viewProduct(id) {
@@ -278,60 +307,77 @@ const sortedProducts = computed(() => {
 <template>
     <section class="p-3 sm:p-5">
         <div class="pb-4 mx-auto max-w-screen-xl px-4 lg:px-12 flex items-center">
-            <button @click="searchProducts" class="mr-2">
+            <button @click="searchProducts" class="absolute ml-2">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="size-5">
+                    stroke="currentColor" class="size-5 ">
+                    <defs>
+                        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
+                            <feOffset dx="1" dy="1" result="offsetblur" />
+                            <feFlood flood-color="rgba(0, 0, 0, 0.5)" />
+                            <feComposite in2="offsetblur" operator="in" />
+                            <feMerge>
+                                <feMergeNode />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                    </defs>
                     <path stroke-linecap="round" stroke-linejoin="round"
-                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                        filter="url(#shadow)" />
                 </svg>
             </button>
             <input v-model="search" placeholder="Search by name" @keyup.enter="searchProducts"
-                class="rounded-lg text-xs pl-6 border border-gray-300" />
+                class="rounded-lg text-xs  border border-gray-300 shadow-md text-center" />
         </div>
         <!-- dialog for adding product or editing product -->
         <el-dialog v-model="dialogVisible" :title="editMode ? 'Edit product' : 'Add Product'"
             :style="{ width: dialogWidth }">
             <!-- :before-close="handleClose" -->
             <!-- form start -->
-
             <form @submit.prevent="editMode ? updateProduct() : AddProduct()" enctype="multipart/form-data">
                 <div class="flex flex-row gap-2">
                     <div class="relative z-0 w-full mb-6 group">
-                        <input v-model="name" type="text" name="floating_name" id="floating_name"
+                        <input v-model="form.name" type="text" name="floating_name" id="floating_name"
                             class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                            placeholder=" " required />
+                            placeholder=" " />
                         <label for="floating_name"
                             class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Name</label>
+                        <span v-if="form.errors.name" class="text-red-500 text-xs">{{ form.errors.name }}</span>
                     </div>
                     <div class="relative z-0 w-full mb-6 group">
                         <input type="number" name="qty" id="floating_qty"
                             class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                            placeholder=" " required v-model="quantity" />
+                            placeholder=" " v-model="form.quantity" />
                         <label for="floating_qty"
                             class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Quantity</label>
+                        <span v-if="form.errors.quantity" class="text-red-500 text-xs">{{ form.errors.quantity }}</span>
                     </div>
                 </div>
                 <div class="flex flex-row gap-2">
                     <div class="relative z-0 w-full mb-6 group">
                         <input type="number" name="floating_price" id="floating_price" step="0.01"
                             class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                            placeholder=" " required v-model="price" />
+                            placeholder=" " v-model="form.price" />
                         <label for="floating_price"
                             class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Price</label>
+                        <span v-if="form.errors.price" class="text-red-500 text-xs">{{ form.errors.price }}</span>
                     </div>
                     <div class="relative z-0 w-full mb-6 group">
                         <input type="number" name="floating_price" id="floating_price" step="0.01"
                             class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                            placeholder=" " required v-model="promo_price" />
+                            placeholder=" " v-model="form.promo_price" />
                         <label for="floating_price"
                             class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Promo
                             Price</label>
+                        <span v-if="form.errors.promo_price" class="text-red-500 text-xs">{{ form.errors.promo_price
+                            }}</span>
                     </div>
                 </div>
                 <!-- <div class="relative z-0 w-full mb-6 group">
                     <input type="number" name="qty" id="floating_qty"
                         class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                        placeholder=" " required v-model="quantity" />
+                        placeholder=" " v-model="quantity" />
                     <label for="floating_qty"
                         class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Quantity</label>
                 </div> -->
@@ -339,74 +385,71 @@ const sortedProducts = computed(() => {
                 <div>
                     <label for="countries" class="block my-2 text-sm font-medium text-gray-900 dark:text-white">Select
                         Category</label>
-                    <select id="countries" v-model="category_id" required
+                    <select id="countries" v-model="form.category_id"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name
                             }}
                         </option>
-
                     </select>
+                    <span v-if="form.errors.category_id" class="text-red-500 text-xs">{{ form.errors.category_id
+                        }}</span>
                 </div>
-
 
                 <div>
                     <label for="countries" class="block my-2 text-sm font-medium text-gray-900 dark:text-white">Select
                         Brand</label>
-                    <select id="countries" v-model="brand_id" required
+                    <select id="countries" v-model="form.brand_id"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         <option v-for="brand in brands" :key="brand.id" :value="brand.id">{{ brand.name }}</option>
-
                     </select>
+                    <span v-if="form.errors.brand_id" class="text-red-500 text-xs">{{ form.errors.brand_id }}</span>
                 </div>
 
                 <div>
                     <label for="countries" class="block my-2 text-sm font-medium text-gray-900 dark:text-white">Select
                         Service</label>
-                    <select id="countries" v-model="service_id" required
+                    <select id="countries" v-model="form.service_id"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         <option v-for="service in services" :key="service.id" :value="service.id">{{ service.name }}
                         </option>
-
                     </select>
+                    <span v-if="form.errors.service_id" class="text-red-500 text-xs">{{ form.errors.service_id }}</span>
                 </div>
-
 
                 <div class="grid  md:gap-6">
                     <div class="relative z-0 w-full mb-6 group">
 
                         <label for="message"
                             class="block my-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                        <textarea id="message" rows="4" v-model="description"
+                        <textarea id="message" rows="4" v-model="form.description"
                             class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             placeholder="Leave a comment..."></textarea>
-
                     </div>
-
                 </div>
 
                 <div class="grid md:gap-6">
                     <!-- Multiple images upload using el-upload -->
                     <div class="relative z-0 w-full mb-6 group">
-                        <el-upload v-model:file-list="productImages" list-type="picture-card" multiple
+                        <el-upload v-model:file-list="form.product_images" list-type="picture-card" multiple
                             :on-preview="handlePictureCardPreview" :on-remove="handleRemove"
                             :on-change="handleFileChange" :auto-upload="false">
                             <el-icon>
                                 <Plus />
+                                <span v-if="form.errors.product_images" class="text-red-500 text-xs">{{
+                                    form.errors.product_images }}</span>
                             </el-icon>
                         </el-upload>
                     </div>
-
                     <!-- Image preview dialog (optional implementation) -->
                     <!-- <el-dialog v-model="dialogVisible">
                         <img :src="dialogImageUrl" alt="Image Preview" class="w-full h-auto">
                     </el-dialog> -->
                 </div>
                 <!-- end -->
-
                 <!-- list of images for selected product -->
                 <div class="flex flex-nowrap mb-8 ">
-                    <div v-for="(pimage, index) in product_images" :key="pimage.id" class="relative w-32 h-32 ">
-                        <img class="w-24 h-20 rounded" :src="`/${pimage.image}`" alt="">
+                    <div v-for="(pimage, index) in form.product_images" :key="pimage.id" class="relative w-32 h-32 ">
+                        <img class="w-24 h-20 object-contain rounded" :src="`/${pimage.image}`" alt="">
                         <span
                             class="absolute top-0 right-8 transform -translate-y-1/2 w-3.5 h-3.5 bg-red-400 border-2 border-white dark:border-gray-800 rounded-full">
                             <span @click="deleteImage(pimage, index)"
@@ -414,22 +457,12 @@ const sortedProducts = computed(() => {
                         </span>
                     </div>
                 </div>
-
                 <!-- end -->
-
-
-
-
                 <button type="submit"
                     class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
             </form>
-
             <!-- end -->
-
-
-
         </el-dialog>
-
         <!-- end -->
         <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
             <!-- Start coding here -->
@@ -467,91 +500,6 @@ const sortedProducts = computed(() => {
                             </svg>
                             Add product
                         </button>
-                        <div class="flex items-center space-x-3 w-full md:w-auto">
-                            <button id="actionsDropdownButton" data-dropdown-toggle="actionsDropdown"
-                                class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-                                type="button">
-                                <svg class="-ml-1 mr-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                    <path clip-rule="evenodd" fill-rule="evenodd"
-                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-                                </svg>
-                                Actions
-                            </button>
-                            <div id="actionsDropdown"
-                                class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
-                                <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
-                                    aria-labelledby="actionsDropdownButton">
-                                    <li>
-                                        <a href="#"
-                                            class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Mass
-                                            Edit</a>
-                                    </li>
-                                </ul>
-                                <div class="py-1">
-                                    <a href="#"
-                                        class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete
-                                        all</a>
-                                </div>
-                            </div>
-                            <button id="filterDropdownButton" data-dropdown-toggle="filterDropdown"
-                                class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-                                type="button">
-                                <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
-                                    class="h-4 w-4 mr-2 text-gray-400" viewbox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                Filter
-                                <svg class="-mr-1 ml-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                    <path clip-rule="evenodd" fill-rule="evenodd"
-                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-                                </svg>
-                            </button>
-                            <div id="filterDropdown"
-                                class="z-10 hidden w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700">
-                                <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Choose brand</h6>
-                                <ul class="space-y-2 text-sm" aria-labelledby="filterDropdownButton">
-                                    <li class="flex items-center">
-                                        <input id="apple" type="checkbox" value=""
-                                            class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                        <label for="apple"
-                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Apple
-                                            (56)</label>
-                                    </li>
-                                    <li class="flex items-center">
-                                        <input id="fitbit" type="checkbox" value=""
-                                            class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                        <label for="fitbit"
-                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Microsoft
-                                            (16)</label>
-                                    </li>
-                                    <li class="flex items-center">
-                                        <input id="razor" type="checkbox" value=""
-                                            class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                        <label for="razor"
-                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Razor
-                                            (49)</label>
-                                    </li>
-                                    <li class="flex items-center">
-                                        <input id="nikon" type="checkbox" value=""
-                                            class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                        <label for="nikon"
-                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Nikon
-                                            (12)</label>
-                                    </li>
-                                    <li class="flex items-center">
-                                        <input id="benq" type="checkbox" value=""
-                                            class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                        <label for="benq"
-                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">BenQ
-                                            (74)</label>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div class="overflow-x-auto">
@@ -604,14 +552,12 @@ const sortedProducts = computed(() => {
                                     <span v-else
                                         class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">Out
                                         of Stock</span>
-
                                 </td> -->
                                 <!-- <td class="px-4 py-3">
                                     <button v-if="product.published == 0" type="button"
                                         class="px-3 py-2 text-xs font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Published</button>
                                     <button v-else type="button"
                                         class="px-3 py-2 text-xs font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">UnPublished</button>
-
                                 </td> -->
 
                                 <td class="px-4 py-3 flex items-center justify-end">

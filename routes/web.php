@@ -73,52 +73,55 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
+
+    Route::middleware(['role:admin'])->group(function () {
+        Route::get('/users', [AdminController::class, 'index'])->name('users.index');
+        Route::post('/users', [AdminController::class, 'store'])->name('users.store');
+        Route::get('/users/{user}', [AdminController::class, 'edit'])->name('users.edit');
+        Route::put('/users/{user}', [AdminController::class, 'update'])->name('users.update');
+        Route::delete('/users/{user}', [AdminController::class, 'destroy'])->name('users.destroy');
+
+        Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+        Route::post('/products/store', [ProductController::class, 'store'])->name('products.store');
+        Route::get('/products/show/{id}', [ProductController::class, 'show'])->name('products.show');
+        Route::put('/products/update/{id}', [ProductController::class, 'update'])->name('products.update');
+        Route::delete('/products/image/{id}', [ProductController::class, 'deleteImage'])->name('products.image.delete');
+        Route::delete('/products/destory/{id}', [ProductController::class, 'destory'])->name('products.destory');
+
+        Route::get('/brands', [BrandController::class, 'index'])->name('brands.index');
+        Route::post('/brands/store', [BrandController::class, 'store'])->name('brands.store');
+        Route::put('/brands/update/{id}', [BrandController::class, 'update'])->name('brands.update');
+        Route::delete('/brands/image/{id}', [BrandController::class, 'deleteImage'])->name('brands.image.delete');
+        Route::delete('/brands/destory/{id}', [BrandController::class, 'destory'])->name('brands.destory');
+
+        Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::post('/categories/store', [CategoryController::class, 'store'])->name('categories.store');
+        Route::put('/categories/update/{id}', [CategoryController::class, 'update'])->name('categories.update');
+        Route::delete('/categories/image/{id}', [CategoryController::class, 'deleteImage'])->name('categories.image.delete');
+        Route::delete('/categories/destory/{id}', [CategoryController::class, 'destory'])->name('categories.destory');
+
+        Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
+        Route::post('/services/store', [ServiceController::class, 'store'])->name('services.store');
+        Route::put('/services/update/{id}', [ServiceController::class, 'update'])->name('services.update');
+        Route::delete('/services/image/{id}', [ServiceController::class, 'deleteImage'])->name('services.image.delete');
+        Route::delete('/services/destory/{id}', [ServiceController::class, 'destory'])->name('services.destory');
+
+        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+        Route::post('/orders/store', [OrderController::class, 'store'])->name('orders.store');
+        Route::put('/orders/update/{id}', [OrderController::class, 'update'])->name('orders.update');
+        Route::delete('/orders/image/{id}', [OrderController::class, 'deleteImage'])->name('orders.image.delete');
+        Route::delete('/orders/destory/{id}', [OrderController::class, 'destory'])->name('orders.destory');
+        Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
+        Route::put('/orders/update-shipment/{id}', [OrderController::class, 'updateShipment'])->name('orders.updateShipment');
+    });
     Route::get('/dashboard', [UserController::class, 'index'])->name('dashboard');
 
-    Route::get('/users', [AdminController::class, 'index'])->name('users.index');
-    Route::post('/users', [AdminController::class, 'store'])->name('users.store');
-    Route::get('/users/{user}', [AdminController::class, 'edit'])->name('users.edit');
-    Route::put('/users/{user}', [AdminController::class, 'update'])->name('users.update');
-    Route::delete('/users/{user}', [AdminController::class, 'destroy'])->name('users.destroy');
     // Route::get('/dashboard', function () {
     //     return Inertia::render('Dashboard');
     // })->name('dashboard');
     Route::get('/list', function () {
         return Inertia::render('List');
     })->name('list');
-
-    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-    Route::post('/products/store', [ProductController::class, 'store'])->name('products.store');
-    Route::get('/products/show/{id}', [ProductController::class, 'show'])->name('products.show');
-    Route::put('/products/update/{id}', [ProductController::class, 'update'])->name('products.update');
-    Route::delete('/products/image/{id}', [ProductController::class, 'deleteImage'])->name('products.image.delete');
-    Route::delete('/products/destory/{id}', [ProductController::class, 'destory'])->name('products.destory');
-
-    Route::get('/brands', [BrandController::class, 'index'])->name('brands.index');
-    Route::post('/brands/store', [BrandController::class, 'store'])->name('brands.store');
-    Route::put('/brands/update/{id}', [BrandController::class, 'update'])->name('brands.update');
-    Route::delete('/brands/image/{id}', [BrandController::class, 'deleteImage'])->name('brands.image.delete');
-    Route::delete('/brands/destory/{id}', [BrandController::class, 'destory'])->name('brands.destory');
-
-    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-    Route::post('/categories/store', [CategoryController::class, 'store'])->name('categories.store');
-    Route::put('/categories/update/{id}', [CategoryController::class, 'update'])->name('categories.update');
-    Route::delete('/categories/image/{id}', [CategoryController::class, 'deleteImage'])->name('categories.image.delete');
-    Route::delete('/categories/destory/{id}', [CategoryController::class, 'destory'])->name('categories.destory');
-
-    Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
-    Route::post('/services/store', [ServiceController::class, 'store'])->name('services.store');
-    Route::put('/services/update/{id}', [ServiceController::class, 'update'])->name('services.update');
-    Route::delete('/services/image/{id}', [ServiceController::class, 'deleteImage'])->name('services.image.delete');
-    Route::delete('/services/destory/{id}', [ServiceController::class, 'destory'])->name('services.destory');
-
-    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-    Route::post('/orders/store', [OrderController::class, 'store'])->name('orders.store');
-    Route::put('/orders/update/{id}', [OrderController::class, 'update'])->name('orders.update');
-    Route::delete('/orders/image/{id}', [OrderController::class, 'deleteImage'])->name('orders.image.delete');
-    Route::delete('/orders/destory/{id}', [OrderController::class, 'destory'])->name('orders.destory');
-    Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
-    Route::put('/orders/update-shipment/{id}', [OrderController::class, 'updateShipment'])->name('orders.updateShipment');
 
     Route::get('/user/orders', [UserOrderController::class, 'index'])->name('user.orders.index');
     Route::get('/user/orders/{id}', [UserOrderController::class, 'show'])->name('user.orders.show');

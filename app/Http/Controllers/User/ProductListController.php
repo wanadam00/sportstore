@@ -15,7 +15,11 @@ class ProductListController extends Controller
 {
     public function list()
     {
-        $products = Product::with('category', 'brand', 'product_images')->filtered()->orderBy('name')->paginate(8);
+        $products = Product::with('category', 'brand', 'product_images')
+            ->filtered()
+            ->orderBy('name')
+            ->paginate(8)
+            ->withQueryString();
         // $filterProducts = $products->filtered()->paginate(20)->withQueryString();
 
         $categories = Category::all();
@@ -34,6 +38,7 @@ class ProductListController extends Controller
                     'prev_page_url' => $products->previousPageUrl(),
                     'next_page_url' => $products->nextPageUrl(),
                 ],
+                'filters' => request()->only(['search']),
             ]
         );
     }

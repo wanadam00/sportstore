@@ -150,7 +150,7 @@ const logout = async () => {
             </div>
             <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
                 :class="{ '': !auth.user }" id="navbar-user">
-                <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 md:flex-row md:space-x-8 md:mt-0">
+                <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 md:flex-row md:space-x-8 md:mt-0 sm:bg-white sm:bg-opacity-0 bg-white bg-opacity-100">
                     <li>
                         <Link :href="route('welcome')"
                             :class="{ 'text-[#1a1a1a] hover:text-white': isTransparent, 'text-[#1a1a1a] hover:text-yellow-500 -top-0 -right-0': !isTransparent }"
