@@ -22,7 +22,7 @@ class CategoryController extends Controller
         // $products = Product::with('category', 'brand', 'brand_images')->get();
         $categories = Category::with('category_images')
             ->filtered()
-            ->orderBy('name')
+            ->orderBy('created_at', 'desc')
             ->paginate(10)
             ->withQueryString();
         // $categories = Category::get();
@@ -54,25 +54,28 @@ class CategoryController extends Controller
             'category_images.*' => 'nullable', // Validate each image
         ];
 
+        $inputs = $request->all();
+
         // Create a validator instance
-        $validator = Validator::make($request->all(), $rules);
+        Validator::make($inputs, $rules)->validateWithBag('createCategory');
 
         // Check if validation fails
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
+        // if ($validator->fails()) {
+        //     return redirect()->back()
+        //         ->withErrors($validator)
+        //         ->withInput();
+        // }
 
         $category = new Category;
-        $category->name = $request->name;
+        $category->name = $inputs['name'];
         $category->save();
 
         //check if product has images upload
 
-        if ($request->hasFile('category_images')) {
-            $categoryImages = $request->file('category_images');
+        if (!empty($inputs['category_images'])) {
+            $categoryImages = $inputs['category_images'];
             foreach ($categoryImages as $image) {
+                $image = $image['raw'];
                 // Generate a unique name for the image using timestamp and random string
                 $uniqueName = time() . '-' . Str::random(10) . '.' . $image->getClientOriginalExtension();
                 // Store the image in the public folder with the unique name

@@ -22,7 +22,7 @@ class ProductController extends Controller
         // return Inertia::render('Product/Index');
         $products = Product::with('category', 'brand', 'service', 'product_images')
             ->filtered()
-            ->orderBy('name')
+            ->orderBy('created_at', 'desc')
             ->paginate(10)
             ->withQueryString();
 
@@ -69,8 +69,11 @@ class ProductController extends Controller
         $rules = [
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
-            'promo_price' => 'required_if:promo_price,!=,0|numeric|min:2', // If not 0, must be at least 2
-            'promo_price' => 'required|numeric|min:0',
+            'promo_price' => ['required', 'numeric', function ($attribute, $value, $fail) {
+                if ($value != 0 && $value < 2) {
+                    $fail('The promo price must be 0 or at least 2.');
+                }
+            }],
             'quantity' => 'required|integer|min:0',
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
@@ -79,33 +82,37 @@ class ProductController extends Controller
             'product_images.*' => 'nullable', // Validate each image
         ];
 
+        $inputs = $request->all();
+
         // Create a validator instance
-        $validator = Validator::make($request->all(), $rules);
+        Validator::make($inputs, $rules)->validateWithBag('createProduct');
 
         // Check if validation fails
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
+        // if ($inputs->fails()) {
+        //     return redirect()->back()
+        //         ->withErrors($validator)
+        //         ->withInput();
+        // }
 
 
         $product = new Product;
-        $product->name = $request->name;
-        $product->price = $request->price;
-        $product->promo_price = $request->promo_price;
-        $product->quantity = $request->quantity;
-        $product->description = $request->description;
-        $product->category_id = $request->category_id;
-        $product->brand_id = $request->brand_id;
-        $product->service_id = $request->service_id;
+        $product->name = $inputs['name'];
+        $product->price = $inputs['price'];
+        $product->promo_price = $inputs['promo_price'];
+        $product->quantity = $inputs['quantity'];
+        $product->description = $inputs['description'];
+        $product->category_id = $inputs['category_id'];
+        $product->brand_id = $inputs['brand_id'];
+        $product->service_id = $inputs['service_id'];
         $product->save();
 
         //check if product has images upload
 
-        if ($request->hasFile('product_images')) {
-            $productImages = $request->file('product_images');
+        if (!empty($inputs['product_images'])) {
+            $productImages = $inputs['product_images'];
+            // dd($productImages);
             foreach ($productImages as $image) {
+                $image = $image['raw'];
                 // Generate a unique name for the image using timestamp and random string
                 $uniqueName = time() . '-' . Str::random(10) . '.' . $image->getClientOriginalExtension();
                 // Store the image in the public folder with the unique name
@@ -157,8 +164,11 @@ class ProductController extends Controller
         $rules = [
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
-            'promo_price' => 'required_if:promo_price,!=,0|numeric|min:2', // If not 0, must be at least 2
-            'promo_price' => 'required|numeric|min:0',
+            'promo_price' => ['required', 'numeric', function ($attribute, $value, $fail) {
+                if ($value != 0 && $value < 2) {
+                    $fail('The promo price must be 0 or at least 2.');
+                }
+            }],
             'quantity' => 'required|integer|min:0',
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',

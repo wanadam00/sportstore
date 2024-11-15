@@ -4,18 +4,14 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
 import { Inertia } from '@inertiajs/inertia';
 
-const props = defineProps({
-    products: Array,
-    categories: Array,
-    services: Array,
-    brands: Array,
+defineProps({
+    products: Array
 })
-
 const pageProps = usePage().props;
-// const products = usePage().props.products;
-// const brands = usePage().props.brands;
-// const categories = usePage().props.categories;
-// const services = usePage().props.services;
+const products = usePage().props.products;
+const brands = usePage().props.brands;
+const categories = usePage().props.categories;
+const services = usePage().props.services;
 const search = ref(pageProps.filters.search || '');
 
 // console.log(products);
@@ -24,19 +20,18 @@ const editMode = ref(false);
 const dialogVisible = ref(false)
 
 //upload mulitpel images
-// const productImages = ref([]);
+const productImages = ref([]);
 const dialogImageUrl = ref('');
 const form = useForm({
-    // id: '',
-    _method: editMode ? '' : 'PUT',
-    name: null,
-    price: null,
-    promo_price: null,
-    quantity: null,
-    description: null,
-    category_id: null,
-    brand_id: null,
-    service_id: null,
+    id: '',
+    name: '',
+    price: '',
+    promo_price: '',
+    quantity: '',
+    description: '',
+    category_id: '',
+    brand_id: '',
+    service_id: '',
     product_images: []
 });
 
@@ -45,16 +40,15 @@ const searchProducts = () => {
 };
 // Handle file change when an image is uploaded
 const handleFileChange = (file, fileList) => {
-    // console.log('Uploaded file:', file);
-    // console.log('Updated file list:', fileList);
+    console.log('Uploaded file:', file);
+    console.log('Updated file list:', fileList);
 
-    // // Update productImages with raw files
-    // form.product_images = fileList.map(f => ({
-    //     name: f.name,
-    //     raw: f.raw,
-    //     url: URL.createObjectURL(f.raw || f) // Generate preview URL for new files
-    // }));
-    form.product_images.push(file)
+    // Update productImages with raw files
+    form.product_images = fileList.map(f => ({
+        name: f.name,
+        raw: f.raw,
+        url: URL.createObjectURL(f.raw || f) // Generate preview URL for new files
+    }));
 };
 
 // Handle picture preview when an image is clicked
@@ -65,15 +59,15 @@ const handlePictureCardPreview = (file) => {
 
 // Handle removing images from the upload list
 const handleRemove = (file, fileList) => {
-    // console.log('Removed file:', file);
-    // console.log('Updated file list:', fileList);
+    console.log('Removed file:', file);
+    console.log('Updated file list:', fileList);
 
-    // // Update productImages after removal
-    // form.product_images = fileList.map(f => ({
-    //     name: f.name,
-    //     raw: f.raw,
-    //     url: URL.createObjectURL(f.raw || f) // Regenerate URLs for remaining files
-    // }));
+    // Update productImages after removal
+    form.product_images = fileList.map(f => ({
+        name: f.name,
+        raw: f.raw,
+        url: URL.createObjectURL(f.raw || f) // Regenerate URLs for remaining files
+    }));
 };
 //prodct from data
 const id = ref('');
@@ -83,11 +77,11 @@ const promo_price = ref('')
 const quantity = ref('')
 const description = ref('')
 const product_images = ref([])
-// const published = ref('')
+const published = ref('')
 const category_id = ref('')
 const brand_id = ref('')
 const service_id = ref('')
-// const inStock = ref('')
+const inStock = ref('')
 //end
 
 const openEditModal = (product, index) => {
@@ -131,11 +125,22 @@ const openAddModal = () => {
 
 // add product method
 const AddProduct = async () => {
-    form.post(
-        route('products.store'),
-        {
-            errorBag: 'createProduct',
-            preserveScroll: true,
+    const formData = new FormData();
+    formData.append('name', form.name);
+    formData.append('price', form.price);
+    formData.append('promo_price', form.promo_price);
+    formData.append('quantity', form.quantity);
+    formData.append('description', form.description);
+    formData.append('brand_id', form.brand_id);
+    formData.append('service_id', form.service_id);
+    formData.append('category_id', form.category_id);
+    // Append each product image file individually
+    form.product_images.forEach((image, index) => {
+        formData.append(`product_images[${index}]`, image.raw || image);  // Use `raw` if it's a new file
+    });
+
+    try {
+        await router.post(route('products.store'), formData, {
             onSuccess: page => {
                 Swal.fire({
                     toast: true,
@@ -148,15 +153,17 @@ const AddProduct = async () => {
                 })
                 dialogVisible.value = false;
                 // resetFormData();
-                form.reset();
                 router.visit(route('products.index'));
             },
             onError: (errors) => {
                 // console.log(resp)
                 form.errors = errors;
             }
-        }
-    );
+        })
+    } catch (err) {
+        console.log(err)
+    }
+    // resetFormData();
 }
 
 //rest data after added
@@ -258,7 +265,7 @@ const deleteProduct = (product, index) => {
             try {
                 form.delete('products/destory/' + product.id, {
                     onSuccess: (page) => {
-                        // this.delete(product, index);
+                        this.delete(product, index);
                         Swal.fire({
                             toast: true,
                             icon: "success",
@@ -290,7 +297,7 @@ const dialogWidth = computed(() => {
     return window.innerWidth < 1024 ? '90%' : '30%'; // 90% for mobile, 30% for larger screens
 });
 const sortedProducts = computed(() => {
-    return [...props.products].sort((a, b) => {
+    return [...products].sort((a, b) => {
         const nameA = a.name.toLowerCase(); // Convert to lowercase for case-insensitive comparison
         const nameB = b.name.toLowerCase();
         return nameA.localeCompare(nameB); // Compare the names alphabetically
@@ -325,7 +332,7 @@ const sortedProducts = computed(() => {
         </div>
         <!-- dialog for adding product or editing product -->
         <el-dialog v-model="dialogVisible" :title="editMode ? 'Edit product' : 'Add Product'"
-            _style="{ width: dialogWidth }" class="max-w-md">
+            :style="{ width: dialogWidth }">
             <!-- :before-close="handleClose" -->
             <!-- form start -->
             <form @submit.prevent="editMode ? updateProduct() : AddProduct()" enctype="multipart/form-data">
@@ -439,13 +446,10 @@ const sortedProducts = computed(() => {
                     </el-dialog> -->
                 </div>
                 <!-- end -->
-
-                <!-- <pre class="text-xs">{{ form.product_images }}</pre> -->
-
                 <!-- list of images for selected product -->
-                <div v-if="editMode" class="flex flex-nowrap mb-8 ">
+                <div class="flex flex-nowrap mb-8 ">
                     <div v-for="(pimage, index) in form.product_images" :key="pimage.id" class="relative w-32 h-32 ">
-                        <img class="w-24 h-20 object-contain rounded" :src="`${pimage.url}`" alt="">
+                        <img class="w-24 h-20 object-contain rounded" :src="`/${pimage.image}`" alt="">
                         <span
                             class="absolute top-0 right-8 transform -translate-y-1/2 w-3.5 h-3.5 bg-red-400 border-2 border-white dark:border-gray-800 rounded-full">
                             <span @click="deleteImage(pimage, index)"
@@ -453,19 +457,6 @@ const sortedProducts = computed(() => {
                         </span>
                     </div>
                 </div>
-
-                <!-- <div>
-                    Processing: {{ form.processing }}
-                    <progress max="100" :value="form.progress?.percentage" />
-                </div> -->
-                <!-- Progress bar -->
-                <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700 mb-6">
-                    <div class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-1 leading-none rounded-full transition-all duration-300"
-                        :style="{ width: `${form.progress?.percentage || 0}%` }">
-                        {{ form.processing ? `${form.progress?.percentage}%` : '' }}
-                    </div>
-                </div>
-
                 <!-- end -->
                 <button type="submit"
                     class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
@@ -530,7 +521,7 @@ const sortedProducts = computed(() => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(product, index) in products" :key="product.id" class="hover:bg-gray-200">
+                            <tr v-for="(product, index) in sortedProducts" :key="product.id" class="hover:bg-gray-200">
                                 <th scope="row"
                                     class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     {{ capitalizeInitialWords(product.name ?? '-') }}</th>

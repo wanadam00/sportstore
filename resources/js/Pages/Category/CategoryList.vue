@@ -4,13 +4,13 @@ import { ref } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
 import { Inertia } from '@inertiajs/inertia';
 
-defineProps({
+const props = defineProps({
     categories: Array
 })
 
 const pageProps = usePage().props;
-const brands = usePage().props.brands;
-const categories = usePage().props.categories;
+// const brands = usePage().props.brands;
+// const categories = usePage().props.categories;
 const search = ref(pageProps.filters.search || '');
 
 // console.log(products);
@@ -22,8 +22,9 @@ const dialogVisible = ref(false);
 const categoryImages = ref([]);
 const dialogImageUrl = ref('');
 const form = useForm({
-    id: '',
-    name: '',
+    // id: '',
+    _method: editMode ? '' : 'PUT',
+    name: null,
     category_images: [],
 });
 
@@ -76,18 +77,43 @@ const openAddModal = () => {
 
 // add product method
 const AddCategory = async () => {
-    const formData = new FormData();
-    formData.append('name', form.name);
-    // Append product images to the FormData
-    // for (const image of categoryImages.value) {
-    //     formData.append('category_images[]', image.raw);
-    // }
-    form.category_images.forEach((image, index) => {
-        formData.append(`category_images[${index}]`, image.raw || image);  // Use `raw` if it's a new file
-    });
+    // const formData = new FormData();
+    // formData.append('name', form.name);
+    // // Append product images to the FormData
+    // // for (const image of categoryImages.value) {
+    // //     formData.append('category_images[]', image.raw);
+    // // }
+    // form.category_images.forEach((image, index) => {
+    //     formData.append(`category_images[${index}]`, image.raw || image);  // Use `raw` if it's a new file
+    // });
 
-    try {
-        await router.post(route('categories.store'), formData, {
+    // try {
+    //     await router.post(route('categories.store'), formData, {
+    //         onSuccess: page => {
+    //             Swal.fire({
+    //                 toast: true,
+    //                 icon: 'success',
+    //                 position: 'top-end',
+    //                 showConfirmButton: false,
+    //                 title: page.props.flash.success,
+    //                 timer: 3000,
+    //                 timerProgressBar: true,
+    //             })
+    //             dialogVisible.value = false;
+    //             router.visit(route('categories.index'));
+    //         },
+    //         onError: (errors) => {
+    //             form.errors = errors;
+    //         }
+    //     })
+    // } catch (err) {
+    //     console.log(err)
+    // }
+    form.post(
+        route('categories.store'),
+        {
+            errorBag: 'createCategory',
+            preserveScroll: true,
             onSuccess: page => {
                 Swal.fire({
                     toast: true,
@@ -96,18 +122,19 @@ const AddCategory = async () => {
                     showConfirmButton: false,
                     title: page.props.flash.success,
                     timer: 3000,
-                    timerProgressBar: true,
+                    timerProgressBar: true, // Optional: Show a progress bar
                 })
                 dialogVisible.value = false;
+                // resetFormData();
+                form.reset();
                 router.visit(route('categories.index'));
             },
             onError: (errors) => {
+                // console.log(resp)
                 form.errors = errors;
             }
-        })
-    } catch (err) {
-        console.log(err)
-    }
+        }
+    );
 }
 
 //rest data after added
@@ -240,7 +267,7 @@ const capitalizeInitialWords = (str) => {
                 class="rounded-lg text-xs  border border-gray-300 shadow-md text-center" />
         </div>
         <!-- dialog for adding product or editing product -->
-        <el-dialog v-model="dialogVisible" :title="editMode ? 'Edit Category' : 'Add Category'" width="30%">
+        <el-dialog v-model="dialogVisible" :title="editMode ? 'Edit Category' : 'Add Category'" class="max-w-md">
             <!-- :before-close="handleClose" -->
             <!-- form start -->
             <form @submit.prevent="editMode ? updateCategory() : AddCategory()">
@@ -252,51 +279,10 @@ const capitalizeInitialWords = (str) => {
                         class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">name</label>
                     <span v-if="form.errors.name" class="text-red-500 text-xs">{{ form.errors.name }}</span>
                 </div>
-                <!-- <div class="relative z-0 w-full mb-6 group">
-                    <input type="text" name="floating_price" id="floating_price"
-                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                        placeholder=" " required v-model="price" />
-                    <label for="floating_price"
-                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Price</label>
-                </div>
-                <div class="relative z-0 w-full mb-6 group">
-                    <input type="number" name="qty" id="floating_qty"
-                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                        placeholder=" " required v-model="quantity" />
-                    <label for="floating_qty"
-                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Quantity</label>
-                </div>
-
-                <div>
-                    <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select
-                        Category</label>
-                    <select id="countries" v-model="category_id"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                        <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}
-                        </option>
-                    </select>
-                </div>
-                <div>
-                    <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select
-                        Brand</label>
-                    <select id="countries" v-model="brand_id"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                        <option v-for="brand in brands" :key="brand.id" :value="brand.id">{{ brand.name }}</option>
-                    </select>
-                </div>
-                <div class="grid  md:gap-6">
-                    <div class="relative z-0 w-full mb-6 group">
-                        <label for="message"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                        <textarea id="message" rows="4" v-model="description"
-                            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Leave a comment..."></textarea>
-                    </div>
-                </div> -->
                 <!-- multiple images upload -->
                 <div class="grid  md:gap-6">
                     <div class="relative z-0 w-full mb-6 group">
-                        <el-upload v-model:file-list="categoryImages" list-type="picture-card" multiple
+                        <el-upload v-model:file-list="form.category_images" list-type="picture-card" multiple
                             :on-preview="handlePictureCardPreview" :on-remove="handleRemove"
                             :on-change="handleFileChange" :auto-upload="false">
                             <el-icon>
@@ -310,14 +296,25 @@ const capitalizeInitialWords = (str) => {
                 <!-- end -->
 
                 <!-- list of images for selected product -->
-                <div class="flex flex-nowrap mb-8 ">
+                <div v-if="editMode" class="flex flex-nowrap mb-8 ">
                     <div v-for="(pimage, index) in form.category_images" :key="pimage.id" class="relative w-32 h-32 ">
-                        <img class="w-24 h-20 object-contain rounded" :src="`/${pimage.image}`" alt="">
+                        <img class="w-24 h-20 object-contain rounded" :src="`${pimage.url}`" alt="">
                         <span
                             class="absolute top-0 right-8 transform -translate-y-1/2 w-3.5 h-3.5 bg-red-400 border-2 border-white dark:border-gray-800 rounded-full">
                             <span @click="deleteImage(pimage, index)"
                                 class="text-white text-xs font-bold absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">x</span>
                         </span>
+                    </div>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700">
+                    <div class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
+                        :value="form.progress?.percentage" style="width: 100%"> {{ form.processing }} </div>
+                </div>
+                <!-- Progress bar -->
+                <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700 mb-6">
+                    <div class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-1 leading-none rounded-full transition-all duration-300"
+                        :style="{ width: `${form.progress?.percentage || 0}%` }">
+                        {{ form.processing ? `${form.progress.percentage}%` : '' }}
                     </div>
                 </div>
                 <!-- end -->

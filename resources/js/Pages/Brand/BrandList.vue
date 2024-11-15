@@ -4,12 +4,12 @@ import { ref } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
 import { Inertia } from '@inertiajs/inertia';
 
-defineProps({
-    brands: Array
+const props = defineProps({
+    brands: Array,
 })
 
-const brands = usePage().props.brands;
-const categories = usePage().props.categories;
+// const brands = usePage().props.brands;
+// const categories = usePage().props.categories;
 const pageProps = usePage().props;
 const search = ref(pageProps.filters.search || '');
 
@@ -22,8 +22,9 @@ const dialogVisible = ref(false)
 const brandImages = ref([])
 const dialogImageUrl = ref('');
 const form = useForm({
-    id: '',
-    name: '',
+    // id: '',
+    _method: editMode ? '' : 'PUT',
+    name: null,
     brand_images: [],
 });
 
@@ -77,14 +78,11 @@ const openAddModal = () => {
 
 // add product method
 const AddBrand = async () => {
-    const formData = new FormData();
-    formData.append('name', form.name);
-    // Append product images to the FormData
-    form.brand_images.forEach((image, index) => {
-        formData.append(`brand_images[${index}]`, image.raw || image);  // Use `raw` if it's a new file
-    });
-    try {
-        await router.post(route('brands.store'), formData, {
+    form.post(
+        route('brands.store'),
+        {
+            errorBag: 'createBrand',
+            preserveScroll: true,
             onSuccess: page => {
                 Swal.fire({
                     toast: true,
@@ -93,19 +91,19 @@ const AddBrand = async () => {
                     showConfirmButton: false,
                     title: page.props.flash.success,
                     timer: 3000,
-                    timerProgressBar: true,
+                    timerProgressBar: true, // Optional: Show a progress bar
                 })
                 dialogVisible.value = false;
+                // resetFormData();
+                form.reset();
                 router.visit(route('brands.index'));
             },
             onError: (errors) => {
                 // console.log(resp)
                 form.errors = errors;
             }
-        })
-    } catch (err) {
-        console.log(err)
-    }
+        }
+    );
 }
 
 //rest data after added
@@ -241,7 +239,7 @@ const capitalizeInitialWords = (str) => {
                 class="rounded-lg text-xs  border border-gray-300 shadow-md text-center" />
         </div>
         <!-- dialog for adding product or editing product -->
-        <el-dialog v-model="dialogVisible" :title="editMode ? 'Edit Brand' : 'Add Brand'" width="30%">
+        <el-dialog v-model="dialogVisible" :title="editMode ? 'Edit Brand' : 'Add Brand'" class="max-w-md">
             <!-- :before-close="handleClose" -->
             <!-- form start -->
             <form @submit.prevent="editMode ? updateBrand() : AddBrand()">
@@ -256,7 +254,7 @@ const capitalizeInitialWords = (str) => {
                 <!-- multiple images upload -->
                 <div class="grid  md:gap-6">
                     <div class="relative z-0 w-full mb-6 group">
-                        <el-upload v-model:file-list="brandImages" list-type="picture-card" multiple
+                        <el-upload v-model:file-list="form.brand_images" list-type="picture-card" multiple
                             :on-preview="handlePictureCardPreview" :on-remove="handleRemove"
                             :on-change="handleFileChange" :auto-upload="false">
                             <el-icon>
@@ -269,14 +267,21 @@ const capitalizeInitialWords = (str) => {
                 </div>
                 <!-- end -->
                 <!-- list of images for selected product -->
-                <div class="flex flex-nowrap mb-8 ">
+                <div v-if="editMode" class="flex flex-nowrap mb-8 ">
                     <div v-for="(pimage, index) in form.brand_images" :key="pimage.id" class="relative w-32 h-32 ">
-                        <img class="w-24 h-20 object-contain rounded" :src="`/${pimage.image}`" alt="">
+                        <img class="w-24 h-20 object-contain rounded" :src="`${pimage.url}`" alt="">
                         <span
                             class="absolute top-0 right-8 transform -translate-y-1/2 w-3.5 h-3.5 bg-red-400 border-2 border-white dark:border-gray-800 rounded-full">
                             <span @click="deleteImage(pimage, index)"
                                 class="text-white text-xs font-bold absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">x</span>
                         </span>
+                    </div>
+                </div>
+                <!-- Progress bar -->
+                <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700 mb-6">
+                    <div class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-1 leading-none rounded-full transition-all duration-300"
+                        :style="{ width: `${form.progress?.percentage || 0}%` }">
+                        {{ form.processing ? `${form.progress.percentage}%` : '' }}
                     </div>
                 </div>
                 <!-- end -->

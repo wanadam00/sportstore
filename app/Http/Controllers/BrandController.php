@@ -22,7 +22,7 @@ class BrandController extends Controller
         // $products = Product::with('category', 'brand', 'brand_images')->get();
         $brands = Brand::with('brand_images')
             ->filtered()
-            ->orderBy('name')
+            ->orderBy('created_at', 'desc')
             ->paginate(10)
             ->withQueryString();
         // $categories = Category::get();
@@ -54,25 +54,28 @@ class BrandController extends Controller
             'brand_images.*' => 'nullable', // Validate each image
         ];
 
+        $inputs = $request->all();
+
         // Create a validator instance
-        $validator = Validator::make($request->all(), $rules);
+        Validator::make($inputs, $rules)->validateWithBag('createBrand');
 
         // Check if validation fails
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
+        // if ($validator->fails()) {
+        //     return redirect()->back()
+        //         ->withErrors($validator)
+        //         ->withInput();
+        // }
 
         $brand = new Brand;
-        $brand->name = $request->name;
+        $brand->name = $inputs['name'];
         $brand->save();
 
         //check if product has images upload
 
-        if ($request->hasFile('brand_images')) {
-            $brandImages = $request->file('brand_images');
+        if (!empty($inputs['brand_images'])) {
+            $brandImages = $inputs['brand_images'];
             foreach ($brandImages as $image) {
+                $image = $image['raw'];
                 // Generate a unique name for the image using timestamp and random string
                 $uniqueName = time() . '-' . Str::random(10) . '.' . $image->getClientOriginalExtension();
                 // Store the image in the public folder with the unique name

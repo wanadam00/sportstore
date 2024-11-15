@@ -20,118 +20,135 @@ class CheckoutController extends Controller
 {
     public function store(Request $request)
     {
+        $rules = [
+            'address1' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'state' => 'required|string|max:255',
+            'postcode' => 'required|integer',
+            'country_name' => 'required|string|max:255',
+            'phone_number' => 'required|string|max:255',
+        ];
+
+        $inputs = $request->all();
+
+        // Validate the request data
+        $validate = Validator::make($inputs, $rules)->validateWithBag('createOrder');
+
+        // dd($validate);
+
         $user = $request->user();
-        $carts = $request->carts ?? []; // Ensure carts is an array
-        $products = $request->products ?? []; // Ensure products is an array
+        $carts = $inputs['carts'] ?? [];
+        $products = $inputs['products'] ?? [];
+
+        // dd($inputs);
 
         $mergedData = [];
 
-        // Loop through the "carts" array and merge with "products" data
         foreach ($carts as $cartItem) {
             foreach ($products as $product) {
                 if ($cartItem["product_id"] == $product["id"]) {
-                    // Determine the price to use (promo price if available, otherwise regular price)
                     $priceToUse = $product['promo_price'] > 0 ? $product['promo_price'] : $product['price'];
 
-                    // Merge the cart item with product data
                     $mergedData[] = array_merge($cartItem, [
                         "name" => $product["name"],
-                        'price' => $priceToUse // Use the determined price
+                        'price' => $priceToUse
                     ]);
                 }
             }
         }
 
-        // Check if mergedData is empty
         if (empty($mergedData)) {
             return redirect()->back()->with('error', 'No items to purchase.');
         }
 
-        //stripe payment
         $stripe = new \Stripe\StripeClient(env('STRIPE_KEY'));
         $lineItems = [];
         foreach ($mergedData as $item) {
-            $lineItems[] =
-                [
-                    'price_data' => [
-                        'currency' => 'myr',
-                        'product_data' => [
-                            'name' => ucwords(strtolower($item['name'])),
-                        ],
-                        'unit_amount' => (int)($item['price'] * 100),
+            $lineItems[] = [
+                'price_data' => [
+                    'currency' => 'myr',
+                    'product_data' => [
+                        'name' => ucwords(strtolower($item['name'])),
                     ],
-                    'quantity' => $item['quantity'],
-                ];
+                    'unit_amount' => (int)($item['price'] * 100),
+                ],
+                'quantity' => $item['quantity'],
+            ];
         }
 
-        // Check if lineItems is empty
         if (empty($lineItems)) {
             return redirect()->back()->with('error', 'No valid line items for payment.');
         }
 
         $checkout_session = $stripe->checkout->sessions->create([
-            'line_items' =>  $lineItems,
+            'line_items' => $lineItems,
             'mode' => 'payment',
             'success_url' => route('checkout.success') . '?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => route('checkout.cancel'),
         ]);
 
-        // $validator = Validator::make($request->all(), [
-        //     'address1' => ['required', 'string', 'max:255'],
-        //     'city' => ['required', 'string', 'max:255'],
-        //     'state' => ['required', 'string', 'max:255'],
-        //     'postcode' => ['required', 'integer'],
-        //     'country_name' => ['required', 'string'],
-        // ]);
+        // Determine validation rules based on the user's address existence
+        // $hasAddress = $user->user_address()->exists();
+        // $rules = [
+        //     'address1' => 'required|string|max:255',
+        //     'city' => 'required|string|max:255',
+        //     'state' => 'required|string|max:255',
+        //     'postcode' => 'required|integer',
+        //     'country_name' => 'required|string|max:255',
+        //     'phone_number' => 'required|string|max:255',
+        // ];
+
+        // $inputs = $request->all();
+
+        // // Validate the request data
+        // Validator::make($inputs, $rules)->validateWithBag('createOrder');
 
         // if ($validator->fails()) {
         //     return redirect()->back()->withErrors($validator)->withInput();
         // }
 
-
-        $newAddress = $request->address;
-        if ($newAddress['address1'] != null) {
+        // $newAddress = $inputs['address'] ?? [];
+        // dd($newAddress);
+        if (!empty($inputs['address1'])) {
             $address = UserAddress::where('isMain', 1)->count();
             if ($address > 0) {
-                $address = UserAddress::where('isMain', 1)->update(['isMain' => 0]);
+                UserAddress::where('isMain', 1)->update(['isMain' => 0]);
             }
             $address = new UserAddress();
-            $address->address1 = $newAddress['address1'];
-            $address->state = $newAddress['state'];
-            $address->postcode = $newAddress['postcode'];
-            $address->city = $newAddress['city'];
-            // $address->country_code = $newAddress['country_code'];
-            $address->country_name = $newAddress['country_name'];
-            // $address->type = $newAddress['type'];
-            $address->user_id = Auth::user()->id;
+            $address->address1 = $inputs['address1'];
+            $address->state = $inputs['state'];
+            $address->postcode = $inputs['postcode'];
+            $address->city = $inputs['city'];
+            $address->country_name = $inputs['country_name'];
+            $address->phone_number = $inputs['phone_number'];
+            $address->user_id = $user->id;
             $address->save();
         }
+
         $mainAddress = $user->user_address()->where('isMain', 1)->first();
         if ($mainAddress) {
             $order = new Order();
             $order->status = 'unpaid';
-            $order->total_price = $request->total;
+            $order->total_price = $inputs['total'];
             $order->session_id = $checkout_session->id;
             $order->created_by = $user->id;
-            // If a main address with isMain = 1 exists, set its id as customer_address_id
             $order->user_address_id = $mainAddress->id;
             $order->save();
+
             $cartItems = CartItem::where(['user_id' => $user->id])->get();
             foreach ($cartItems as $cartItem) {
-                // Determine the price to use (promo price if available, otherwise regular price)
                 $priceToUse = $cartItem->product->promo_price > 0 ? $cartItem->product->promo_price : $cartItem->product->price;
 
                 OrderItem::create([
-                    'order_id' => $order->id, // Assuming you have an 'id' field in your orders table
+                    'order_id' => $order->id,
                     'product_id' => $cartItem->product_id,
                     'quantity' => $cartItem->quantity,
-                    'unit_price' => $priceToUse, // Use the determined price
+                    'unit_price' => $priceToUse,
                 ]);
 
                 $cartItem->delete();
             }
 
-            // Remove cart items from cookies
             $cartItems = Cart::getCookieCartItems();
             foreach ($cartItems as $item) {
                 unset($item);
@@ -146,11 +163,11 @@ class CheckoutController extends Controller
                 'type' => 'stripe',
                 'created_by' => $user->id,
                 'updated_by' => $user->id,
-                // 'session_id' => $session->id
             ];
 
             Payment::create($paymentData);
         }
+
         return Inertia::location($checkout_session->url);
     }
 

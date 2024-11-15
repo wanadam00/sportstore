@@ -20,6 +20,7 @@ class UserAddress extends Model
         'contry_name',
         'user_id',
         'type',
+        'phone_number',
     ];
 
     function user()

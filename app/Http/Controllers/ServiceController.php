@@ -22,7 +22,7 @@ class ServiceController extends Controller
         // $products = Product::with('category', 'brand', 'service_images')->get();
         $services = Service::with('service_images')
             ->filtered()
-            ->orderBy('name')
+            ->orderBy('created_at', 'desc')
             ->paginate(10)
             ->withQueryString();
         // $categories = Category::get();
@@ -54,25 +54,28 @@ class ServiceController extends Controller
             'service_images.*' => 'nullable', // Validate each image
         ];
 
+        $inputs = $request->all();
+
         // Create a validator instance
-        $validator = Validator::make($request->all(), $rules);
+        Validator::make($inputs, $rules)->validateWithBag('createService');
 
         // Check if validation fails
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
+        // if ($validator->fails()) {
+        //     return redirect()->back()
+        //         ->withErrors($validator)
+        //         ->withInput();
+        // }
 
         $service = new Service;
-        $service->name = $request->name;
+        $service->name = $inputs['name'];
         $service->save();
 
         //check if product has images upload
 
-        if ($request->hasFile('service_images')) {
-            $serviceImages = $request->file('service_images');
+        if (!empty($inputs['service_images'])) {
+            $serviceImages = $inputs['service_images'];
             foreach ($serviceImages as $image) {
+                $image = $image['raw'];
                 // Generate a unique name for the image using timestamp and random string
                 $uniqueName = time() . '-' . Str::random(10) . '.' . $image->getClientOriginalExtension();
                 // Store the image in the public folder with the unique name

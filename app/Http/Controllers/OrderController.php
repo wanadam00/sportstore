@@ -79,6 +79,7 @@ class OrderController extends Controller
             'status' => $order->status,
             'total_price' => (float) $calculatedTotalPrice,
             'user_address' => $order->userAddress->full_address ?? 'N/A',
+            'phone_number' => $order->userAddress->phone_number ?? 'N/A',
             'user_name' => $order->userAddress && $order->userAddress->user ? $order->userAddress->user->name : 'N/A',
             'created_at' => $order->created_at,
             'items' => $order->orderItems->map(function ($item) {

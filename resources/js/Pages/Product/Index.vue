@@ -1,6 +1,6 @@
 <template>
     <AppLayout2>
-        <ProductList :products="products"></ProductList>
+        <ProductList :products="products" :categories="categories" :services="services" :brands="brands"/>
         <div class="col-span-full flex justify-center space-x-2">
             <PaginationLinks :pagination="pagination" routeName="products.index"
                 :query="{ search: searchQuery, filter: selectedFilter }" />
@@ -12,6 +12,9 @@
 <script setup>
 defineProps({
     products: Array,
+    categories: Array,
+    services: Array,
+    brands: Array,
     pagination: Object,
     searchQuery: String,        // Optional search or filter parameter
     selectedFilter: String,     // Optional filter parameter

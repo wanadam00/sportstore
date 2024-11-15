@@ -203,7 +203,17 @@ const getImageClass = (width, height) => {
                             </div>
                         </div> -->
                         <div class="flex mt-6">
-                            <span class="title-font font-medium text-2xl text-gray-900">RM {{ product.price }}</span>
+                            <p class="title-font font-medium text-2xl text-gray-900">
+                                <span v-if="product.promo_price > 0" class="line-through text-gray-500">
+                                    RM {{ product.price }}
+                                </span>
+                                <span v-else>
+                                    RM {{ product.price }}
+                                </span>
+                                <span v-if="product.promo_price > 0" class="text-red-600 font-bold">
+                                    RM {{ product.promo_price }}
+                                </span>
+                            </p>
                             <!-- <div class="bg-blue-700 p-2 rounded-full">
                                 <a @click="addToCart(product)">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"

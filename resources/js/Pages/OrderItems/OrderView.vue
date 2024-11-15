@@ -6,6 +6,7 @@
             <div class=" mb-6 border-b border-gray-300 pb-5 flex flex-row">
                 <div class="gap-2 flex flex-col">
                     <p class="font-medium"><strong>Order ID</strong></p>
+                    <p class="font-medium"><strong>Contact Number</strong></p>
                     <p class="font-medium"><strong>Customer</strong></p>
                     <p><strong>Status</strong></p>
                     <p class="font-medium"><strong>Total Price</strong></p>
@@ -13,6 +14,7 @@
                 </div>
                 <div class=" flex flex-col gap-2">
                     <span class=" ml-2">: #{{ order.order_id }}</span>
+                    <span class=" ml-2">: {{ order.phone_number }}</span>
                     <span class=" ml-2">: {{
                         capitalizeInitialWords(order.user_name) }}</span>
                     <div class="ml-2"><span>:</span>

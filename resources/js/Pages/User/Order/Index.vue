@@ -43,7 +43,7 @@
                 </button> -->
             </div>
 
-            <div v-for="order in filteredOrders" :key="order.id" class="mb-8 p-4 border rounded">
+            <div v-for="order in filteredOrders" :key="order.id" class="mb-8 p-4 border space-y-0.5 rounded">
                 <h2 class="text-xl font-semibold">Order #{{ order.id }}</h2>
                 <p><strong>Order Date:</strong> {{ formatDate(order.order_date) }}</p>
                 <p><strong>Status:</strong> {{ capitalizeInitialWords(order.status) }}</p>
@@ -60,10 +60,11 @@
                     <p><strong>Estimated Delivery:</strong> {{ formatDate(order.estimated_delivery_date) }}</p>
                     <p><strong>Tracking Number:</strong> {{ order.tracking_number || 'N/A' }}</p>
                 </template>
-                <p><strong>Shipping Address:</strong> <span v-html="capitalizeInitialWords(order.user_address)"></span>
+                <p><strong>Shipping Address:</strong> <br><span v-html="capitalizeInitialWords(order.user_address)"></span>
                 </p>
-
-                <h3 class="mt-4 font-semibold">Items:</h3>
+                <p><strong>Contact Number:</strong> <span v-html="capitalizeInitialWords(order.phone_number)"></span>
+                </p>
+                <h3 class="pt-3 font-semibold">Items:</h3>
                 <ul>
                     <li v-for="item in order.items" :key="item.product_id">
                         <div class="flex flex-row">

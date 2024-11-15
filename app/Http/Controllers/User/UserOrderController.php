@@ -51,6 +51,7 @@ class UserOrderController extends Controller
                     'shipment_status' => $order->shipment_status ?? 'N/A',
                     'user_address' => $order->userAddress->full_address ?? 'N/A',
                     'user_name' => $order->userAddress->user->name ?? 'N/A',
+                    'phone_number' => $order->userAddress->phone_number ?? 'N/A',
                     'items' => $order->orderItems->map(function ($item) {
                         return [
                             'product_id' => $item->product_id,
@@ -83,6 +84,7 @@ class UserOrderController extends Controller
             'status' => $order->status,
             'total_price' => (float) $order->total_price,
             'user_address' => $order->userAddress->full_address ?? 'N/A',
+            'phone_number' => $order->userAddress->phone_number ?? 'N/A',
             'user_name' => $order->userAddress->user->name ?? 'N/A',
             'items' => $order->orderItems->map(function ($item) {
                 return [

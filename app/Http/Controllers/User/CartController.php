@@ -20,6 +20,7 @@ class CartController extends Controller
         if ($user) {
             $cartItems = CartItem::where('user_id', $user->id)->get();
             $userAddress = UserAddress::where('user_id', $user->id)->where('isMain', 1)->first();
+            // dd($userAddress);
             if ($cartItems->count() > 0) {
                 return Inertia::render(
                     'User/CartList',

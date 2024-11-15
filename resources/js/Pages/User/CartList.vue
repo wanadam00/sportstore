@@ -2,9 +2,9 @@
 import { computed, reactive } from 'vue'
 
 import UserLayouts from './Layouts/UserLayouts.vue';
-import { router, usePage } from '@inertiajs/vue3';
+import { router, usePage, Link, useForm } from '@inertiajs/vue3';
 
-defineProps({
+const props = defineProps({
     userAddress: Object
 })
 
@@ -26,13 +26,17 @@ const total = computed(() => {
 
 const itemId = (id) => carts.value.findIndex((item) => item.product_id === id);
 
-const form = reactive({
-    address1: null,
-    state: null,
-    city: null,
-    postcode: null,
-    country_name: null,
-    // type: null,
+const form = useForm({
+    address1: props.userAddress?.address1,
+    state: props.userAddress?.state,
+    city: props.userAddress?.city,
+    postcode: props.userAddress?.postcode,
+    country_name: props.userAddress?.country_name,
+    // type: props.userAddress?,
+    phone_number: props.userAddress?.phone_number,
+    carts: carts,
+    products: products,
+    total: total
 
 })
 const formFilled = computed(() => {
@@ -40,7 +44,8 @@ const formFilled = computed(() => {
         form.state !== null &&
         form.city !== null &&
         form.postcode !== null &&
-        form.country_name !== null
+        form.country_name !== null &&
+        form.phone_number !== null
         // form.country_code !== null
         // form.type !== null
     )
@@ -59,7 +64,8 @@ const remove = (product) => router.delete(route('cart.delete', product));
 //confirm order
 
 function submit() {
-    router.visit(route('checkout.store'), {
+    form.post(route('checkout.store'), {
+        errorBag: 'createOrder',
         method: 'post',
         data: {
             carts: usePage().props.cart.data.items,
@@ -99,7 +105,7 @@ const promptAddAddress = () => {
         confirmButtonText: 'Add Address',
     }).then((result) => {
         if (result.isConfirmed) {
-            router.visit('/user/address');
+            router.visit(route('cart.view'));
         }
     });
 };
@@ -240,9 +246,14 @@ const promptAddAddress = () => {
 
                     <div v-if="userAddress">
                         <h2 class="text-gray-900 text-lg mb-1 font-medium title-font">Shipping Address</h2>
-                        <p class="leading-relaxed mb-5 text-gray-600">{{ capitalizeInitialWords(userAddress.address1) }}
-                            , {{ capitalizeInitialWords(userAddress.city) }}, {{ (userAddress.postcode) }}, {{
+                        <p class="leading-relaxed mb-5 text-gray-600">{{ capitalizeInitialWords(userAddress.address1)
+                            }},<br>{{ capitalizeInitialWords(userAddress.city) }},<br>{{ (userAddress.postcode)
+                            }}, {{
                                 capitalizeInitialWords(userAddress.country_name) }}</p>
+                        <h2 class="text-gray-900 text-lg mb-1 font-medium title-font">Contact Number</h2>
+                        <p class="leading-relaxed mb-5 text-gray-600">{{
+                            capitalizeInitialWords(userAddress.phone_number) }}
+                        </p>
                         <p class="leading-relaxed mb-5 text-gray-600">or you can add new below</p>
 
                     </div>
@@ -254,30 +265,47 @@ const promptAddAddress = () => {
 
 
                     <form @submit.prevent="submit">
+                       error {{ form.errors }}
                         <div class="relative mb-4">
                             <label for="name" class="leading-7 text-sm text-gray-600">Address 1</label>
                             <input type="text" id="name" name="address1" v-model="form.address1"
                                 class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                            <span v-if="form.errors.address1" class="text-red-500 text-xs">{{ form.errors.address1
+                                }}</span>
                         </div>
                         <div class="relative mb-4">
                             <label for="email" class="leading-7 text-sm text-gray-600">City</label>
                             <input type="text" id="email" name="city" v-model="form.city"
                                 class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                            <span v-if="form.errors.city" class="text-red-500 text-xs">{{ form.errors.city }}</span>
                         </div>
                         <div class="relative mb-4">
                             <label for="email" class="leading-7 text-sm text-gray-600">State</label>
                             <input type="text" id="email" name="state" v-model="form.state"
                                 class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                            <span v-if="form.errors.state" class="text-red-500 text-xs">{{ form.errors.state }}</span>
                         </div>
                         <div class="relative mb-4">
                             <label for="email" class="leading-7 text-sm text-gray-600">Postcode</label>
-                            <input type="text" id="email" name="postcode" v-model="form.postcode"
+                            <input type="number" id="email" name="postcode" v-model="form.postcode"
                                 class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                            <span v-if="form.errors.postcode" class="text-red-500 text-xs">{{ form.errors.postcode
+                                }}</span>
                         </div>
                         <div class="relative mb-4">
                             <label for="email" class="leading-7 text-sm text-gray-600">Country</label>
                             <input type="text" id="email" name="countryname" v-model="form.country_name"
                                 class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                            <span v-if="form.errors.country_name" class="text-red-500 text-xs">{{
+                                form.errors.country_name
+                            }}</span>
+                        </div>
+                        <div class="relative mb-4">
+                            <label for="email" class="leading-7 text-sm text-gray-600">Contact Number</label>
+                            <input type="text" id="email" name="phonenumber" v-model="form.phone_number"
+                                class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                            <span v-if="form.errors.phone_number" class="text-red-500 text-xs">{{
+                                form.errors.phone_number }}</span>
                         </div>
                         <!-- <div class="relative mb-4">
                             <label for="code" class="leading-7 text-sm text-gray-600">Country Code</label>
@@ -303,7 +331,9 @@ const promptAddAddress = () => {
 
                     </form>
 
-                    <p class="text-xs text-gray-500 mt-3">Continue Shopping </p>
+                    <Link :href="route('products.list')"
+                        class="text-xs text-gray-500 mt-3 underline hover:font-semibold hover:text-gray-600">Continue
+                    Shopping </Link>
                 </div>
             </div>
         </section>
