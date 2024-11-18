@@ -190,7 +190,7 @@ const capitalizeInitialWords = (str) => {
                                 <tbody>
                                     <tr v-for="user in users.data" :key="user.id" class="hover:bg-gray-200">
                                         <th scope="row"
-                                            class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white uppercase">
                                             {{ capitalizeInitialWords(user.name) }}</th>
                                         <td class="px-4 py-3">{{ user.email }}</td>
                                         <td class="px-4 py-3 flex items-center justify-end">

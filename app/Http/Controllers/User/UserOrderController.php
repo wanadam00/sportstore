@@ -86,6 +86,7 @@ class UserOrderController extends Controller
             'user_address' => $order->userAddress->full_address ?? 'N/A',
             'phone_number' => $order->userAddress->phone_number ?? 'N/A',
             'user_name' => $order->userAddress->user->name ?? 'N/A',
+            'estimated_delivery_date' => $order->estimated_delivery_date,
             'items' => $order->orderItems->map(function ($item) {
                 return [
                     'product_id' => $item->product_id,

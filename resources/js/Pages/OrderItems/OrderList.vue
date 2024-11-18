@@ -326,7 +326,7 @@ const formatDate = (dateString) => {
                                     class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     #{{ orderItem.id }}
                                 </th>
-                                <td class="px-4 py-3">{{ orderItem.user_name }}</td> <!-- Display User Name -->
+                                <td class="px-4 py-3 uppercase">{{ orderItem.user_name }}</td> <!-- Display User Name -->
                                 <td class="px-4 py-3">{{ formatDate(orderItem.created_at) }}</td>
                                 <!-- Display User Name -->
                                 <td class="px-4 py-3">{{ orderItem.total_quantity }}</td>
@@ -351,7 +351,7 @@ const formatDate = (dateString) => {
                                         }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 flex items-center justify-end">
+                                <td class="px-4 sm:py-4 py-12 flex items-center justify-end">
                                     <button :id="`${orderItem.order_id}-button`"
                                         :data-dropdown-toggle="`${orderItem.order_id}`"
                                         class="inline-flex items-center py-1.5 px-2.5 shadow-sm text-sm font-medium text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none bg-gray-100"

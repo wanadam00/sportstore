@@ -32,6 +32,7 @@
         "filepond": "^4.32.0",
         "filepond-plugin-file-validate-type": "^1.2.9",
         "flowbite": "^2.5.2",
+        "jspdf": "^2.5.2",
         "leaflet": "^1.9.4",
         "leaflet.awesome-markers": "^2.0.5",
         "moment-timezone": "^0.5.46",

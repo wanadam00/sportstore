@@ -82,6 +82,7 @@ class OrderController extends Controller
             'phone_number' => $order->userAddress->phone_number ?? 'N/A',
             'user_name' => $order->userAddress && $order->userAddress->user ? $order->userAddress->user->name : 'N/A',
             'created_at' => $order->created_at,
+            'estimated_delivery_date' => $order->estimated_delivery_date ?? '',
             'items' => $order->orderItems->map(function ($item) {
                 return [
                     'product_id' => $item->product_id,

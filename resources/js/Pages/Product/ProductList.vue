@@ -33,7 +33,7 @@ const form = useForm({
     price: null,
     promo_price: null,
     quantity: null,
-    description: null,
+    description: '',
     category_id: null,
     brand_id: null,
     service_id: null,
@@ -467,7 +467,7 @@ const sortedProducts = computed(() => {
                 </div>
 
                 <!-- end -->
-                <button type="submit"
+                <button type="submit" :class="{ 'opacity-25': form.processing }" :disabled="form.processing"
                     class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
             </form>
             <!-- end -->
@@ -516,9 +516,9 @@ const sortedProducts = computed(() => {
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
                                 <th scope="col" class="px-4 py-3">Product name</th>
-                                <th scope="col" class="px-4 py-3">Category</th>
+                                <!-- <th scope="col" class="px-4 py-3">Category</th>
                                 <th scope="col" class="px-4 py-3">Brand</th>
-                                <th scope="col" class="px-4 py-3">Service</th>
+                                <th scope="col" class="px-4 py-3">Service</th> -->
                                 <th scope="col" class="px-4 py-3">Qty</th>
                                 <th scope="col" class="px-4 py-3">Price</th>
                                 <th scope="col" class="px-4 py-3 whitespace-nowrap">Promo Price</th>
@@ -534,7 +534,7 @@ const sortedProducts = computed(() => {
                                 <th scope="row"
                                     class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     {{ capitalizeInitialWords(product.name ?? '-') }}</th>
-                                <td class="px-4 py-3">
+                                <!-- <td class="px-4 py-3">
                                     <span v-if="product.category.name">{{ capitalizeInitialWords(product.category.name)
                                         }}</span>
                                     <span v-else>-</span>
@@ -545,7 +545,7 @@ const sortedProducts = computed(() => {
                                     <span v-else>-</span>
                                 </td>
                                 <td class="px-4 py-3">{{ capitalizeInitialWords(product.service ? product.service.name :
-                                    '-') }}</td>
+                                    '-') }}</td> -->
                                 <td class="px-4 py-3">{{ product.quantity }}</td>
                                 <td class="px-4 py-3 whitespace-nowrap">
                                     <span v-if="product.price">RM {{ product.price }}</span>

@@ -69,7 +69,7 @@ class ProductController extends Controller
         $rules = [
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
-            'promo_price' => ['required', 'numeric', function ($attribute, $value, $fail) {
+            'promo_price' => ['required', 'numeric', function ($value, $fail) {
                 if ($value != 0 && $value < 2) {
                     $fail('The promo price must be 0 or at least 2.');
                 }
@@ -164,7 +164,7 @@ class ProductController extends Controller
         $rules = [
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
-            'promo_price' => ['required', 'numeric', function ($attribute, $value, $fail) {
+            'promo_price' => ['required', 'numeric', function ($value, $fail) {
                 if ($value != 0 && $value < 2) {
                     $fail('The promo price must be 0 or at least 2.');
                 }

@@ -213,15 +213,28 @@ const capitalizeInitialWords = (str) => {
 <template>
     <section class="  p-3 sm:p-5">
         <div class="pb-4 mx-auto max-w-screen-xl px-4 lg:px-12 flex items-center">
-            <button @click="searchServices" class="mr-2">
+            <button @click="searchProducts" class="absolute ml-2">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="size-5">
+                    stroke="currentColor" class="size-5 ">
+                    <defs>
+                        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
+                            <feOffset dx="1" dy="1" result="offsetblur" />
+                            <feFlood flood-color="rgba(0, 0, 0, 0.5)" />
+                            <feComposite in2="offsetblur" operator="in" />
+                            <feMerge>
+                                <feMergeNode />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                    </defs>
                     <path stroke-linecap="round" stroke-linejoin="round"
-                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                        filter="url(#shadow)" />
                 </svg>
             </button>
             <input v-model="search" placeholder="Search by name" @keyup.enter="searchServices"
-                class="rounded-lg text-xs pl-6 border border-gray-300" />
+                class="rounded-lg text-xs  border border-gray-300 shadow-md text-center" />
         </div>
         <!-- dialog for adding product or editing product -->
         <el-dialog v-model="dialogVisible" :title="editMode ? 'Edit Service' : 'Add Service'" class="max-w-md">
