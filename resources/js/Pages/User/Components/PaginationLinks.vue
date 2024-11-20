@@ -4,7 +4,7 @@
         <button
             :disabled="!pagination.prev_page_url"
             @click="fetchPage(pagination.prev_page_url)"
-            class="px-4 py-2 bg-[#1a1a1a] text-white rounded disabled:opacity-50 shadow-md"
+            class="px-4 py-2 bg-[#1a1a1a] hover:bg-[#0f0f0f] text-white rounded disabled:opacity-50 shadow-md"
         >
             Previous
         </button>
@@ -14,8 +14,8 @@
             :key="page"
             :class="{
                 'px-4 py-2 rounded': true,
-                'bg-yellow-500 text-white shadow-lg': page === pagination.current_page,
-                'bg-[#1a1a1a] text-white shadow-lg': page !== pagination.current_page,
+                'bg-yellow-500 hover:bg-yellow-600 text-white shadow-lg': page === pagination.current_page,
+                'bg-[#1a1a1a] hover:bg-[#0f0f0f] text-white shadow-lg': page !== pagination.current_page,
             }"
             @click="fetchPage(routeWithPage(page))"
         >
@@ -25,7 +25,7 @@
         <button
             :disabled="!pagination.next_page_url"
             @click="fetchPage(pagination.next_page_url)"
-            class="px-4 py-2 bg-[#1a1a1a] text-white shadow-lg rounded disabled:opacity-50"
+            class="px-4 py-2 bg-[#1a1a1a] hover:bg-[#0f0f0f] text-white shadow-lg rounded disabled:opacity-50"
         >
             Next
         </button>

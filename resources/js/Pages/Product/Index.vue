@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-defineProps({
+const props = defineProps({
     products: Array,
     categories: Array,
     services: Array,

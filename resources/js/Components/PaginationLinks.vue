@@ -14,7 +14,7 @@
             :key="page"
             :class="{
                 'px-4 py-2 text-xs rounded': true,
-                'bg-[#1a1a1a] text-white shadow-lg': page === pagination.current_page,
+                'bg-[#1a1a1a] hover:bg-[#0f0f0f] text-white shadow-lg': page === pagination.current_page,
                 'bg-white text-[#1a1a1a] shadow-lg hover:bg-gray-200': page !== pagination.current_page,
             }"
             @click="fetchPage(routeWithPage(page))"

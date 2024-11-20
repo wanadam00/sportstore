@@ -78,7 +78,7 @@ const resetFormData = () => {
                                 class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 h-32 text-base outline-none text-gray-700 py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out"></textarea>
                         </div>
                         <button type="submit"
-                            class="text-white bg-yellow-500 hover:bg-yellow-600 border-0 py-2 px-6 focus:outline-none rounded text-lg">Submit</button>
+                            class="text-white bg-[#1a1a1a] hover:bg-[#0f0f0f] border-0 py-2 px-6 focus:outline-none rounded text-lg">Submit</button>
                         <p class="text-xs text-gray-500 mt-3"></p>
                     </div>
                 </div>
