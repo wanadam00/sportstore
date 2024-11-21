@@ -18,7 +18,7 @@ class ProductListController extends Controller
         $products = Product::with('category', 'brand', 'product_images')
             ->filtered()
             ->orderBy('name')
-            ->paginate(8)
+            ->paginate(9)
             ->withQueryString();
         // $filterProducts = $products->filtered()->paginate(20)->withQueryString();
 

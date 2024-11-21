@@ -14,7 +14,7 @@ const props = defineProps({
 });
 
 // Limit the products to the first 4
-const limitedProducts = props.products.slice(0, 4);
+const limitedProducts = props.products.slice(0, 3);
 </script>
 <template>
     <UserLayouts>

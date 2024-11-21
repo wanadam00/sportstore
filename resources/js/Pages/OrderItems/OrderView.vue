@@ -44,11 +44,11 @@
                 </div>
             </div>
 
-            <div class="flex justify-between">
+            <div class="flex justify-between mb-2">
                 <h2 class="text-xl font-semibold mb-3">Order Items</h2>
                 <!-- Print Button -->
                 <div v-if="order.status === 'paid'" class="">
-                    <button @click="printInvoice" class="bg-yellow-500 text-sm px-2 py-1 rounded hover:bg-yellow-600">
+                    <button @click="printInvoice" class="bg-[#1a1a1a] text-sm text-white px-2 py-1 rounded hover:bg-[#0f0f0f]">
                         Print Invoice
                     </button>
                 </div>

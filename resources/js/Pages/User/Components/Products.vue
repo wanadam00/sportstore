@@ -33,7 +33,7 @@ const getImageClass = (width, height) => {
 };
 </script>
 <template>
-    <div class="mt-6 grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4 lg:grid-cols-4 xl:gap-x-8">
+    <div class="mt-6 grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4 lg:grid-cols-3 xl:gap-x-8">
         <div v-for="product in products" :key="product.id" class="group relative">
             <div
                 class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-xl bg-transparent lg:aspect-none lg:h-80 transition duration-500 ease-in-out transform hover:-translate-y-2 hover:shadow-xl">

@@ -179,8 +179,33 @@ function updateFilteredProducts() {
                 </TransitionRoot>
 
                 <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div class="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-24">
+                    <div class="flex flex-col sm:flex-row items-baseline justify-between border-b border-gray-200 pb-6 pt-24">
                         <h1 class="text-4xl font-bold tracking-tight text-gray-900">New Arrivals</h1>
+                        <!-- <h2 id="products-heading" class="sr-only">Products</h2> -->
+                        <div class=" flex items-center pt-2">
+                            <button @click="searchProducts" class="absolute ml-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="size-6 ">
+                                    <defs>
+                                        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                                            <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
+                                            <feOffset dx="1" dy="1" result="offsetblur" />
+                                            <feFlood flood-color="rgba(0, 0, 0, 0.5)" />
+                                            <feComposite in2="offsetblur" operator="in" />
+                                            <feMerge>
+                                                <feMergeNode />
+                                                <feMergeNode in="SourceGraphic" />
+                                            </feMerge>
+                                        </filter>
+                                    </defs>
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                                        filter="url(#shadow)" />
+                                </svg>
+                            </button>
+                            <input v-model="search" placeholder="Search by name" @keyup.enter="searchProducts"
+                                class="rounded-lg text-sm  border border-gray-300 bg-gray-50 p-2.5 text-center" />
+                        </div>
 
                         <!-- <div class="flex items-center">
                             <Menu as="div" class="relative inline-block text-left">
@@ -225,31 +250,6 @@ function updateFilteredProducts() {
                         </div> -->
                     </div>
                     <section aria-labelledby="products-heading" class="pb-24 pt-6">
-                        <h2 id="products-heading" class="sr-only">Products</h2>
-                        <div class="pb-4 mx-auto max-w-screen-xl px-0 lg:px-0 flex items-center">
-                            <button @click="searchProducts" class="absolute ml-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" class="size-6 ">
-                                    <defs>
-                                        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                                            <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
-                                            <feOffset dx="1" dy="1" result="offsetblur" />
-                                            <feFlood flood-color="rgba(0, 0, 0, 0.5)" />
-                                            <feComposite in2="offsetblur" operator="in" />
-                                            <feMerge>
-                                                <feMergeNode />
-                                                <feMergeNode in="SourceGraphic" />
-                                            </feMerge>
-                                        </filter>
-                                    </defs>
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-                                        filter="url(#shadow)" />
-                                </svg>
-                            </button>
-                            <input v-model="search" placeholder="Search by name" @keyup.enter="searchProducts"
-                                class="rounded-lg text-sm  border border-gray-300 bg-gray-50 p-2.5 text-center" />
-                        </div>
                         <div class="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
                             <!-- Filters -->
                             <form class=" lg:block">
@@ -283,7 +283,7 @@ function updateFilteredProducts() {
                                         </SecondaryButtonVue>
                                         <input type="number" id="filters-price" placeholder="Enter max price"
                                             v-model="filterPrices.price" @keyup.enter="priceFilter"
-                                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-center focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" />
+                                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-center focus:border-primary-500 focus:ring-primary-500" />
                                     </div>
                                     <!-- <SecondaryButtonVue class="self-end" @click="priceFilter()">
                                         Ok
