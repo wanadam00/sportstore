@@ -265,9 +265,9 @@ const promptAddAddress = () => {
 
 
                     <form @submit.prevent="submit">
-                       error {{ form.errors }}
+                       <!-- error {{ form.errors }} -->
                         <div class="relative mb-4">
-                            <label for="name" class="leading-7 text-sm text-gray-600">Address 1</label>
+                            <label for="name" class="leading-7 text-sm text-gray-600">Address</label>
                             <input type="text" id="name" name="address1" v-model="form.address1"
                                 class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
                             <span v-if="form.errors.address1" class="text-red-500 text-xs">{{ form.errors.address1
@@ -280,17 +280,17 @@ const promptAddAddress = () => {
                             <span v-if="form.errors.city" class="text-red-500 text-xs">{{ form.errors.city }}</span>
                         </div>
                         <div class="relative mb-4">
-                            <label for="email" class="leading-7 text-sm text-gray-600">State</label>
-                            <input type="text" id="email" name="state" v-model="form.state"
-                                class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
-                            <span v-if="form.errors.state" class="text-red-500 text-xs">{{ form.errors.state }}</span>
-                        </div>
-                        <div class="relative mb-4">
                             <label for="email" class="leading-7 text-sm text-gray-600">Postcode</label>
                             <input type="number" id="email" name="postcode" v-model="form.postcode"
                                 class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
                             <span v-if="form.errors.postcode" class="text-red-500 text-xs">{{ form.errors.postcode
                                 }}</span>
+                        </div>
+                        <div class="relative mb-4">
+                            <label for="email" class="leading-7 text-sm text-gray-600">State</label>
+                            <input type="text" id="email" name="state" v-model="form.state"
+                                class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                            <span v-if="form.errors.state" class="text-red-500 text-xs">{{ form.errors.state }}</span>
                         </div>
                         <div class="relative mb-4">
                             <label for="email" class="leading-7 text-sm text-gray-600">Country</label>

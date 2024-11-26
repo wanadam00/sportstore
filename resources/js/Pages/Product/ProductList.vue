@@ -515,6 +515,7 @@ const sortedProducts = computed(() => {
                     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
+                                <th scope="col" class="pl-2 text-center">No.</th> <!-- Added numbering column -->
                                 <th scope="col" class="px-4 py-3">Product name</th>
                                 <!-- <th scope="col" class="px-4 py-3">Category</th>
                                 <th scope="col" class="px-4 py-3">Brand</th>
@@ -531,6 +532,7 @@ const sortedProducts = computed(() => {
                         </thead>
                         <tbody>
                             <tr v-for="(product, index) in products" :key="product.id" class="hover:bg-gray-200">
+                                <td class="pl-2 text-center">{{ index + 1 }}.</td> <!-- Displaying the numbering -->
                                 <th scope="row"
                                     class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     {{ capitalizeInitialWords(product.name ?? '-') }}</th>

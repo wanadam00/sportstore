@@ -9,7 +9,7 @@
                     <p class="font-semibold">Contact Number</p>
                     <p class="font-semibold">Customer</p>
                     <p class="font-semibold">Status</p>
-                    <p v-if="order.status === 'paid'" class="font-semibold">Total Price</p>
+                    <!-- <p v-if="order.status === 'paid'" class="font-semibold">Total Price</p> -->
                     <p class="font-semibold">Delivery Date</p>
                     <p class="font-semibold">Address </p>
                 </div>
@@ -22,11 +22,11 @@
                             'text-green-500': order.status === 'paid',
                             'text-red-500': order.status === 'unpaid',
                             'text-gray-500': order.status !== 'paid' && order.status !== 'unpaid' // Optional: for other statuses
-                        }" class="ml-1 uppercase">
+                        }" class="ml-1 uppercase font-semibold underline">
                             {{ capitalizeInitialWords(order.status || 'N/A') }}
                         </span>
                     </div>
-                    <div class="ml-2"><span>:</span>
+                    <!-- <div class="ml-2"><span>:</span>
                         <span :class="{
                             'text-green-500': order.status === 'paid',
                             'text-red-500': order.status === 'unpaid',
@@ -34,10 +34,10 @@
                         }" class="">
                             RM {{ order.total_price }}
                         </span>
-                    </div>
+                    </div> -->
                     <span v-if="order.status === 'paid'" class=" ml-2 uppercase">: {{
                         formatDate(order.estimated_delivery_date)
-                        }}</span>
+                    }}</span>
                     <div class="uppercase ml-2"><span>: </span><span
                             v-html="capitalizeInitialWords(order.user_address)"></span>
                     </div>
@@ -48,7 +48,8 @@
                 <h2 class="text-xl font-semibold mb-3">Order Items</h2>
                 <!-- Print Button -->
                 <div v-if="order.status === 'paid'" class="">
-                    <button @click="printInvoice" class="bg-[#1a1a1a] text-sm text-white px-2 py-1 rounded hover:bg-[#0f0f0f]">
+                    <button @click="printInvoice"
+                        class="bg-[#1a1a1a] text-sm text-white px-2 py-1 rounded hover:bg-[#0f0f0f]">
                         Print Invoice
                     </button>
                 </div>
@@ -87,6 +88,17 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">RM {{ item.quantity *
                                 item.unit_price }}</td>
                         </tr>
+                        <tr class="hover:bg-gray-200 border-y">
+                            <!-- Empty Cells for Alignment -->
+                            <td colspan="2" class="px-6 py-4 whitespace-nowrap"></td>
+                            <!-- Total Price -->
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-700 text-left border-l">
+                                Total
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-700 text-left">
+                                RM {{ order.total_price }}
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -96,12 +108,12 @@
             <div class="p-6">
                 <h1 class="text-2xl font-bold mb-4">Invoice</h1>
                 <p><strong>Order ID:</strong> #{{ order.order_id }}</p>
-                <p><strong>Customer Name:</strong> <span class="uppercase">{{ order.user_name }}</span></p>
+                <p><strong>Customer:</strong> <span class="uppercase">{{ order.user_name }}</span></p>
                 <p><strong>Contact Number:</strong> {{ order.phone_number }}</p>
                 <p><strong>Address:</strong><br> <span class="uppercase"
                         v-html="capitalizeInitialWords(order.user_address)"></span></p>
                 <!-- <p><strong>Status:</strong> {{ capitalizeInitialWords(order.status) }}</p> -->
-                <p><strong>Total Price:</strong> RM {{ order.total_price }}</p>
+                <!-- <p><strong>Total Price:</strong> RM {{ order.total_price }}</p> -->
 
                 <h2 class="text-lg font-semibold mt-4">Order Items:</h2>
                 <table class="min-w-full divide-y divide-gray-200 mt-2">
@@ -115,10 +127,21 @@
                     </thead>
                     <tbody>
                         <tr v-for="(item, index) in order.items" :key="index">
-                            <td class="px-4 py-2">{{ capitalizeInitialWords(item.product_name) }}</td>
+                            <td class="px-4 py-2 uppercase">{{ capitalizeInitialWords(item.product_name) }}</td>
                             <td class="px-4 py-2">{{ item.quantity }}</td>
                             <td class="px-4 py-2">RM {{ item.unit_price }}</td>
                             <td class="px-4 py-2">RM {{ item.quantity * item.unit_price }}</td>
+                        </tr>
+                        <tr class="hover:bg-gray-200 border-y">
+                            <!-- Empty Cells for Alignment -->
+                            <td colspan="2" class="px-6 py-4 whitespace-nowrap"></td>
+                            <!-- Total Price -->
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-700 text-left">
+                                Total
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-700 text-left">
+                                RM {{ order.total_price }}
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -193,6 +216,9 @@ const printInvoice = () => {
                 }
                 .text-right {
                     text-align: right;
+                }
+                .text-left {
+                    font-weight: bold;
                 }
             </style>
         </head>

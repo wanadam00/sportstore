@@ -278,12 +278,12 @@ const capitalizeInitialWords = (str) => {
                     </div>
                 </div>
                 <!-- Progress bar -->
-                <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700 mb-6">
+                <!-- <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700 mb-6">
                     <div class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-1 leading-none rounded-full transition-all duration-300"
                         :style="{ width: `${form.progress?.percentage || 0}%` }">
                         {{ form.processing ? `${form.progress.percentage}%` : '' }}
                     </div>
-                </div>
+                </div> -->
                 <!-- end -->
                 <button type="submit"
                     class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
@@ -418,7 +418,8 @@ const capitalizeInitialWords = (str) => {
                     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
-                                <th scope="col" class="px-4 py-3">Brand name</th>
+                                <th scope="col" class="pl-2 text-center">No.</th> <!-- Added numbering column -->
+                                <th scope="col" class="pr-96 pl-2 py-3">Brand name</th>
                                 <!-- <th scope="col" class="px-4 py-3">Category</th>
                                 <th scope="col" class="px-4 py-3">Brand</th>
                                 <th scope="col" class="px-4 py-3">Quantity</th>
@@ -432,8 +433,9 @@ const capitalizeInitialWords = (str) => {
                         </thead>
                         <tbody>
                             <tr v-for="(brand, index) in brands" :key="brand.id" class="hover:bg-gray-200">
+                                <td class=" text-center">{{ index + 1 }}.</td> <!-- Displaying the numbering -->
                                 <th scope="row"
-                                    class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    class="pr-96 pl-2 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     {{ capitalizeInitialWords(brand.name) }}</th>
                                 <!-- <td class="px-4 py-3">{{ product.category.name }}</td>
                                 <td class="px-4 py-3">{{ product.brand.name }}</td>
