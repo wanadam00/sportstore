@@ -71,12 +71,12 @@ const getImageClass = (width, height) => {
         <div class="relative bg-cover bg-center h-screen transition-opacity duration-1000" :style="{ backgroundImage: `url(${currentImage})`, opacity: imageOpacity }">
             <div class="absolute inset-0 bg-black opacity-20"></div>
             <div class="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-6">
-                <h1 class="text-5xl font-extrabold mb-4 tracking-tight">Gear Up For Your Next Adventure</h1>
-                <p class="text-lg font-light mb-8 max-w-md">Find the perfect gear from top brands like Nike, Adidas,
+                <h1 class="text-5xl font-extrabold mb-4 tracking-tight drop-shadow-lg">Gear Up For Your Next Adventure</h1>
+                <p class="text-lg font-light mb-8 max-w-md drop-shadow-lg">Find the perfect gear from top brands like Nike, Adidas,
                     Puma, and more.</p>
-                <a :href="route('products.list')"
+                <!-- <a :href="route('products.list')"
                     class="py-3 px-8 bg-yellow-500 text-gray-900 rounded-lg font-semibold hover:bg-yellow-600">Shop
-                    Now</a>
+                    Now</a> -->
             </div>
         </div>
 
@@ -136,19 +136,17 @@ const getImageClass = (width, height) => {
         </div> -->
         <!-- Category Section -->
         <div class="pt-16 pb-10 bg-white">
-            <h2 class="text-3xl font-bold text-center mb-8">Category</h2>
+            <h2 class="text-3xl font-bold text-center mb-8 drop-shadow-lg">Category</h2>
             <div class="container mx-auto flex flex-wrap justify-center gap-8">
                 <div v-for="category in categories" :key="category.id" class="group relative">
                     <img v-if="category.category_images?.length > 0" :src="`/${category.category_images[0].image}`"
                         :alt="category.imageAlt"
-                        class="h-20 w-20 object-contain object-center lg:size-28 rounded-full" />
+                        class="h-20 w-20 object-contain object-center lg:size-36 rounded-full" />
                     <img v-else
                         src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
                         :alt="category.imageAlt"
                         class="h-20 w-20 object-contain object-center lg:size-28 rounded-full" />
-                    <div class="text-gray-900 text-md text-center title-font font-medium mt-1">{{ category.name }}</div>
-                    <!-- <img src="/images/brands/underarmour-logo.png" alt="Under Armour" class="h-12">
-                    Add more brand logos -->
+                    <div class="text-gray-900 text-md text-center title-font font-medium mt-1 drop-shadow-lg">{{ category.name }}</div>
                 </div>
             </div>
         </div>

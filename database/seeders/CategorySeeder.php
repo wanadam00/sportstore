@@ -15,15 +15,15 @@ class CategorySeeder extends Seeder
     {
         Category::create([
             'name' => 'Shirt',
-            'slug'=>'dell'
+            'slug'=>'shirt'
         ]);
         Category::create([
             'name' => 'Shoes',
-            'slug'=>'dell'
+            'slug'=>'shoes'
         ]);
         Category::create([
             'name' => 'Pants',
-            'slug'=>'dell'
+            'slug'=>'pants'
         ]);
     }
 }

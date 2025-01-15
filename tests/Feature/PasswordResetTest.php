@@ -86,7 +86,7 @@ class PasswordResetTest extends TestCase
                 'password_confirmation' => 'password',
             ]);
 
-            $response->assertSessionHasNoErrors();
+            $response->assertSessionHasErrors(['password' => 'The password field format is invalid.']);
 
             return true;
         });

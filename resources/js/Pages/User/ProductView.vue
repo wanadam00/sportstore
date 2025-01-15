@@ -1,6 +1,6 @@
 <script setup>
 import UserLayouts from './Layouts/UserLayouts.vue';
-import { usePage } from '@inertiajs/vue3';
+import { usePage, useForm } from '@inertiajs/vue3';
 import { Link, router } from "@inertiajs/vue3";
 import { ref, computed } from 'vue';
 
@@ -8,10 +8,15 @@ import { ref, computed } from 'vue';
 const { props } = usePage();
 const product = props.products;
 
+const form = useForm ({
+    product: '',
+    products: '',
+});
+
 // Function to handle adding the product to the cart
 const addToCart = (product) => {
-    console.log(product);
-    router.post(route("cart.store", product), {
+    // console.log(product);
+    form.post(route("cart.store", product), {
         onSuccess: (page) => {
             if (page.props.flash.success) {
                 Swal.fire({
@@ -20,6 +25,8 @@ const addToCart = (product) => {
                     position: "top-end",
                     showConfirmButton: false,
                     title: page.props.flash.success,
+                    timer: 3000,
+                    timerProgressBar: true,
                 });
             }
         },

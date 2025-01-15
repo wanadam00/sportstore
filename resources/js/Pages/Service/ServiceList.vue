@@ -243,10 +243,10 @@ const capitalizeInitialWords = (str) => {
             <form @submit.prevent="editMode ? updateService() : AddService()">
                 <div class="relative z-0 w-full mb-6 group">
                     <input v-model="form.name" type="text" name="floating_name" id="floating_name"
-                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                         placeholder=" " />
                     <label for="floating_name"
-                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">name</label>
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">name</label>
                     <span v-if="form.errors.name" class="text-red-500 text-xs">{{ form.errors.name }}</span>
                 </div>
                 <!-- multiple images upload -->
@@ -269,29 +269,29 @@ const capitalizeInitialWords = (str) => {
                     <div v-for="(pimage, index) in form.service_images" :key="pimage.id" class="relative w-32 h-32 ">
                         <img class="w-24 h-20 object-contain rounded" :src="`${pimage.url}`" alt="">
                         <span
-                            class="absolute top-0 right-8 transform -translate-y-1/2 w-3.5 h-3.5 bg-red-400 border-2 border-white dark:border-gray-800 rounded-full">
+                            class="absolute top-0 right-8 transform -translate-y-1/2 w-3.5 h-3.5 bg-red-400 border-2 border-white rounded-full">
                             <span @click="deleteImage(pimage, index)"
                                 class="text-white text-xs font-bold absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">x</span>
                         </span>
                     </div>
                 </div>
                 <!-- Progress bar -->
-                <!-- <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700 mb-6">
+                <!-- <div class="w-full bg-gray-200 rounded-full mb-6">
                     <div class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-1 leading-none rounded-full transition-all duration-300"
                         :style="{ width: `${form.progress?.percentage || 0}%` }">
                         {{ form.processing ? `${form.progress?.percentage}%` : '' }}
                     </div>
                 </div> -->
                 <!-- end -->
-                <button type="submit"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
+                <button type="submit" :class="{ 'opacity-25': form.processing }" :disabled="form.processing"
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Submit</button>
             </form>
             <!-- end -->
         </el-dialog>
         <!-- end -->
         <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
             <!-- Start coding here -->
-            <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+            <div class="bg-white relative shadow-md sm:rounded-lg overflow-hidden">
                 <div
                     class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
                     <div class="w-full md:w-1/2">
@@ -300,7 +300,7 @@ const capitalizeInitialWords = (str) => {
                             <label for="simple-search" class="sr-only">Search</label>
                             <div class="relative w-full">
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400"
+                                    <svg aria-hidden="true" class="w-5 h-5 text-gray-500"
                                         fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
@@ -308,7 +308,7 @@ const capitalizeInitialWords = (str) => {
                                     </svg>
                                 </div>
                                 <input type="text" id="simple-search"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2"
                                     placeholder="Search" required="">
                             </div>
                         </form> -->
@@ -316,8 +316,8 @@ const capitalizeInitialWords = (str) => {
                     <div
                         class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
                         <button type="button" @click="openAddModal"
-                            class="flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                            <svg class="w-5 h-5 mr-2 text-gray-800 dark:text-white" aria-hidden="true"
+                            class="flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 focus:outline-none">
+                            <svg class="w-5 h-5 mr-2 text-gray-800" aria-hidden="true"
                                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                                 viewBox="0 0 24 24">
                                 <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -327,7 +327,7 @@ const capitalizeInitialWords = (str) => {
                         </button>
                         <!-- <div class="flex items-center space-x-3 w-full md:w-auto">
                             <button id="actionsDropdownButton" data-dropdown-toggle="actionsDropdown"
-                                class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                                class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200"
                                 type="button">
                                 <svg class="-ml-1 mr-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20"
                                     xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -337,8 +337,8 @@ const capitalizeInitialWords = (str) => {
                                 Actions
                             </button>
                             <div id="actionsDropdown"
-                                class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
-                                <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
+                                class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:divide-gray-600">
+                                <ul class="py-1 text-sm text-gray-700"
                                     aria-labelledby="actionsDropdownButton">
                                     <li>
                                         <a href="#"
@@ -348,12 +348,12 @@ const capitalizeInitialWords = (str) => {
                                 </ul>
                                 <div class="py-1">
                                     <a href="#"
-                                        class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete
+                                        class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Delete
                                         all</a>
                                 </div>
                             </div>
                             <button id="filterDropdownButton" data-dropdown-toggle="filterDropdown"
-                                class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                                class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200"
                                 type="button">
                                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
                                     class="h-4 w-4 mr-2 text-gray-400" viewbox="0 0 20 20" fill="currentColor">
@@ -369,8 +369,8 @@ const capitalizeInitialWords = (str) => {
                                 </svg>
                             </button>
                             <div id="filterDropdown"
-                                class="z-10 hidden w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700">
-                                <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Choose service</h6>
+                                class="z-10 hidden w-48 p-3 bg-white rounded-lg shadow">
+                                <h6 class="mb-3 text-sm font-medium text-gray-900">Choose service</h6>
                                 <ul class="space-y-2 text-sm" aria-labelledby="filterDropdownButton">
                                     <li class="flex items-center">
                                         <input id="apple" type="checkbox" value=""
@@ -413,8 +413,8 @@ const capitalizeInitialWords = (str) => {
                     </div>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <table class="w-full text-sm text-left text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-4 py-3">Service name</th>
                                 <!-- <th scope="col" class="px-4 py-3">Category</th>
@@ -431,7 +431,7 @@ const capitalizeInitialWords = (str) => {
                         <tbody>
                             <tr v-for="(service, index) in services" :key="service.id" class="hover:bg-gray-200">
                                 <th scope="row"
-                                    class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap">
                                     {{ capitalizeInitialWords(service.name) }}</th>
                                 <!-- <td class="px-4 py-3">{{ product.category.name }}</td>
                                 <td class="px-4 py-3">{{ product.brand.name }}</td>
@@ -453,7 +453,7 @@ const capitalizeInitialWords = (str) => {
                                 </td> -->
                                 <td class="px-4 py-3 flex items-center justify-end">
                                     <button :id="`${service.id}-button`" :data-dropdown-toggle="`${service.id}`"
-                                        class="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100"
+                                        class="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none"
                                         type="button">
                                         <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20"
                                             xmlns="http://www.w3.org/2000/svg">
@@ -462,17 +462,17 @@ const capitalizeInitialWords = (str) => {
                                         </svg>
                                     </button>
                                     <div :id="`${service.id}`"
-                                        class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
-                                        <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
+                                        class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow">
+                                        <ul class="py-1 text-sm text-gray-700"
                                             :aria-labelledby="`${service.id}-button`">
                                             <li>
                                                 <a href="#" @click="openEditModal(service)"
-                                                    class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</a>
+                                                    class="block py-2 px-4 hover:bg-gray-100">Edit</a>
                                             </li>
                                         </ul>
                                         <div class="py-1">
                                             <a href="#" @click="deleteService(service, index)"
-                                                class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete</a>
+                                                class="block py-2 px-4 text-sm text-red-700 hover:bg-gray-100">Delete</a>
                                         </div>
                                     </div>
                                 </td>
@@ -482,16 +482,16 @@ const capitalizeInitialWords = (str) => {
                 </div>
                 <!-- <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4"
                     aria-label="Table navigation">
-                    <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
+                    <span class="text-sm font-normal text-gray-500">
                         Showing
-                        <span class="font-semibold text-gray-900 dark:text-white">1-10</span>
+                        <span class="font-semibold text-gray-900">1-10</span>
                         of
-                        <span class="font-semibold text-gray-900 dark:text-white">1000</span>
+                        <span class="font-semibold text-gray-900">1000</span>
                     </span>
                     <ul class="inline-flex items-stretch -space-x-px">
                         <li>
                             <a href="#"
-                                class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700">
                                 <span class="sr-only">Previous</span>
                                 <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20"
                                     xmlns="http://www.w3.org/2000/svg">
@@ -503,27 +503,27 @@ const capitalizeInitialWords = (str) => {
                         </li>
                         <li>
                             <a href="#"
-                                class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
+                                class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700">1</a>
                         </li>
                         <li>
                             <a href="#"
-                                class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">2</a>
+                                class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700">2</a>
                         </li>
                         <li>
                             <a href="#" aria-current="page"
-                                class="flex items-center justify-center text-sm z-10 py-2 px-3 leading-tight text-primary-600 bg-primary-50 border border-primary-300 hover:bg-primary-100 hover:text-primary-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">3</a>
+                                class="flex items-center justify-center text-sm z-10 py-2 px-3 leading-tight text-primary-600 bg-primary-50 border border-primary-300 hover:bg-primary-100 hover:text-primary-700 dark:border-gray-700">3</a>
                         </li>
                         <li>
                             <a href="#"
-                                class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">...</a>
+                                class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700">...</a>
                         </li>
                         <li>
                             <a href="#"
-                                class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">100</a>
+                                class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700">100</a>
                         </li>
                         <li>
                             <a href="#"
-                                class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700">
                                 <span class="sr-only">Next</span>
                                 <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20"
                                     xmlns="http://www.w3.org/2000/svg">

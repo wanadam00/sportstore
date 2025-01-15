@@ -35,7 +35,6 @@ class CheckoutController extends Controller
         $validate = Validator::make($inputs, $rules)->validateWithBag('createOrder');
 
         // dd($validate);
-
         $user = $request->user();
         $carts = $inputs['carts'] ?? [];
         $products = $inputs['products'] ?? [];
@@ -81,6 +80,7 @@ class CheckoutController extends Controller
         }
 
         $checkout_session = $stripe->checkout->sessions->create([
+            'payment_method_types' => ['fpx', 'card', 'grabpay'],
             'line_items' => $lineItems,
             'mode' => 'payment',
             'success_url' => route('checkout.success') . '?session_id={CHECKOUT_SESSION_ID}',
@@ -203,6 +203,7 @@ class CheckoutController extends Controller
         // Stripe payment session
         $stripe = new \Stripe\StripeClient(env('STRIPE_KEY'));
         $checkout_session = $stripe->checkout->sessions->create([
+            'payment_method_types' => ['fpx', 'card', 'grabpay'],
             'line_items' => $lineItems,
             'mode' => 'payment',
             'success_url' => route('checkout.success') . '?session_id={CHECKOUT_SESSION_ID}',

@@ -36,8 +36,7 @@ const form = useForm({
     phone_number: props.userAddress?.phone_number,
     carts: carts,
     products: products,
-    total: total
-
+    total: total,
 })
 const formFilled = computed(() => {
     return (form.address1 !== null &&
@@ -58,9 +57,28 @@ const update = (product, quantity) =>
         quantity,
     });
 //remove form cart
-const remove = (product) => router.delete(route('cart.delete', product));
+// const remove = (product) => {
+//     form.delete(route('cart.delete', product))
+// };
 
-
+const remove = (product) => {
+    // console.log(product);
+    form.delete(route("cart.delete", product), {
+        onSuccess: (page) => {
+            if (page.props.flash.success) {
+                Swal.fire({
+                    toast: true,
+                    icon: "success",
+                    position: "top-end",
+                    showConfirmButton: false,
+                    title: page.props.flash.success,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+            }
+        },
+    });
+};
 //confirm order
 
 function submit() {
@@ -247,9 +265,8 @@ const promptAddAddress = () => {
                     <div v-if="userAddress">
                         <h2 class="text-gray-900 text-lg mb-1 font-medium title-font">Shipping Address</h2>
                         <p class="leading-relaxed mb-5 text-gray-600">{{ capitalizeInitialWords(userAddress.address1)
-                            }},<br>{{ capitalizeInitialWords(userAddress.city) }},<br>{{ (userAddress.postcode)
-                            }}, {{
-                                capitalizeInitialWords(userAddress.country_name) }}</p>
+                            }},<br>{{ capitalizeInitialWords(userAddress.city) }}, {{ (userAddress.postcode)
+                            }}, {{ capitalizeInitialWords(userAddress.state) }}, <br>{{ capitalizeInitialWords(userAddress.country_name) }}</p>
                         <h2 class="text-gray-900 text-lg mb-1 font-medium title-font">Contact Number</h2>
                         <p class="leading-relaxed mb-5 text-gray-600">{{
                             capitalizeInitialWords(userAddress.phone_number) }}
@@ -265,7 +282,7 @@ const promptAddAddress = () => {
 
 
                     <form @submit.prevent="submit">
-                       <!-- error {{ form.errors }} -->
+                        <!-- error {{ form.errors }} -->
                         <div class="relative mb-4">
                             <label for="name" class="leading-7 text-sm text-gray-600">Address</label>
                             <input type="text" id="name" name="address1" v-model="form.address1"
@@ -298,7 +315,7 @@ const promptAddAddress = () => {
                                 class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
                             <span v-if="form.errors.country_name" class="text-red-500 text-xs">{{
                                 form.errors.country_name
-                            }}</span>
+                                }}</span>
                         </div>
                         <div class="relative mb-4">
                             <label for="email" class="leading-7 text-sm text-gray-600">Contact Number</label>
@@ -323,9 +340,11 @@ const promptAddAddress = () => {
                         </div> -->
 
                         <button v-if="formFilled || userAddress" type="submit"
+                            :class="{ 'opacity-25': form.processing }" :disabled="form.processing"
                             class="text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg">Checkout</button>
 
-                        <button v-else type="submit"
+                        <button v-else type="submit" :class="{ 'opacity-25': form.processing }"
+                            :disabled="form.processing"
                             class="text-white bg-gray-500 border-0 py-2 px-6 focus:outline-none hover:bg-gray-600 rounded text-lg">Add
                             Address to continue</button>
 

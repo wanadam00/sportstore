@@ -459,12 +459,12 @@ const sortedProducts = computed(() => {
                     <progress max="100" :value="form.progress?.percentage" />
                 </div> -->
                 <!-- Progress bar -->
-                <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700 mb-6">
+                <!-- <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700 mb-6">
                     <div class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-1 leading-none rounded-full transition-all duration-300"
                         :style="{ width: `${form.progress?.percentage || 0}%` }">
                         {{ form.processing ? `${form.progress?.percentage}%` : '' }}
                     </div>
-                </div>
+                </div> -->
 
                 <!-- end -->
                 <button type="submit" :class="{ 'opacity-25': form.processing }" :disabled="form.processing"
@@ -601,7 +601,7 @@ const sortedProducts = computed(() => {
                                         </ul>
                                         <div class="py-1">
                                             <a href="#" @click="deleteProduct(product, index)"
-                                                class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete</a>
+                                                class="block py-2 px-4 text-sm text-red-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete</a>
                                         </div>
                                     </div>
                                 </td>

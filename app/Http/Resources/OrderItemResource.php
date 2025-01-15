@@ -26,7 +26,7 @@ class OrderItemResource extends JsonResource
             'tracking_number' => $this->order->tracking_number,
             'shipment_status' => $this->order->shipment_status,
             'user_name' => $this->order->userAddress->user->name ?? 'N/A',
-            'created_at' => $this->created_at,
+            'updated_at' => $this->order->updated_at,
         ];
     }
 }

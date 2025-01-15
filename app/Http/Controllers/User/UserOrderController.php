@@ -31,7 +31,7 @@ class UserOrderController extends Controller
             ->whereHas('userAddress', function ($query) {
                 $query->where('user_id', auth()->id());
             })
-            ->orderBy('created_at', 'desc')
+            ->orderBy('updated_at', 'desc')
             ->get()
             ->map(function ($order) {
                 // Calculate total price based on promo price or unit price for each item
@@ -45,7 +45,7 @@ class UserOrderController extends Controller
                     'id' => $order->id,
                     'status' => $order->status,
                     'total_price' => (float) $calculatedTotalPrice, // Calculated total price
-                    'order_date' => $order->created_at->format('Y-m-d'),
+                    'order_date' => $order->updated_at->format('Y-m-d'),
                     'estimated_delivery_date' => $order->estimated_delivery_date,
                     'tracking_number' => $order->tracking_number ?? 'N/A',
                     'shipment_status' => $order->shipment_status ?? 'N/A',

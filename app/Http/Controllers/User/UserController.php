@@ -52,45 +52,52 @@ class UserController extends Controller
 
     private function calculateDashboardStats()
     {
-        // Filter only 'paid' orders
         $paidOrders = Order::where('status', 'paid');
 
-        // Total Sales for 'paid' orders
+        // Total Sales
         $totalSales = (clone $paidOrders)->sum('total_price');
 
-        // Sales Growth (Monthly Comparison) for 'paid' orders
-        $currentMonthSales = (clone $paidOrders)->whereBetween('created_at', [
+        // Current Month Sales
+        $currentMonthSales = (clone $paidOrders)->whereBetween('updated_at', [
             Carbon::now()->startOfMonth(),
             Carbon::now()->endOfMonth()
         ])->sum('total_price');
 
-        $previousMonthSales = (clone $paidOrders)->whereBetween('created_at', [
+        // Previous Month Sales
+        $previousMonthSales = (clone $paidOrders)->whereBetween('updated_at', [
             Carbon::now()->subMonth()->startOfMonth(),
             Carbon::now()->subMonth()->endOfMonth()
         ])->sum('total_price');
 
-        $salesGrowth = $previousMonthSales > 0
-            ? (($currentMonthSales - $previousMonthSales) / $previousMonthSales) * 100
-            : null;
+        // Calculate Sales Growth
+        if ($currentMonthSales > 0 && $previousMonthSales > 0) {
+            $salesGrowth = (($currentMonthSales - $previousMonthSales) / $previousMonthSales) * 100;
+        } elseif ($currentMonthSales == 0 && $previousMonthSales > 0) {
+            $salesGrowth = -100; // Explicitly set to -100% for no current sales
+        } elseif ($previousMonthSales == 0) {
+            $salesGrowth = $currentMonthSales > 0 ? 100 : null; // 100% growth if sales start, null otherwise
+        } else {
+            $salesGrowth = null; // Default case for no data
+        }
 
-        // Total Orders for 'paid' orders
+        // Total Orders
         $totalOrders = (clone $paidOrders)->count();
 
-        // Average Order Value for 'paid' orders
+        // Average Order Value
         $averageOrderValue = $totalOrders > 0 ? $totalSales / $totalOrders : 0;
 
-        // Sales This Week (from start of the week to now) for 'paid' orders
-        $salesThisWeek = (clone $paidOrders)->whereBetween('created_at', [
+        // Sales This Week
+        $salesThisWeek = (clone $paidOrders)->whereBetween('updated_at', [
             Carbon::now()->startOfWeek(),
             Carbon::now()->endOfWeek()
         ])->sum('total_price');
 
         return [
             'totalSales' => round($totalSales, 2),
-            'salesGrowth' => $salesGrowth ? round($salesGrowth, 2) : null,
+            'salesGrowth' => $salesGrowth !== null ? round($salesGrowth, 2) : null,
             'averageOrderValue' => round($averageOrderValue, 2),
             'totalOrders' => (int) $totalOrders,
-            'salesThisWeek' => round($salesThisWeek, 2), // New key for weekly sales
+            'salesThisWeek' => round($salesThisWeek, 2),
         ];
     }
 
@@ -101,8 +108,8 @@ class UserController extends Controller
 
         // Fetch daily sales for each day in the current week
         $dailySalesData = Order::where('status', 'paid')
-            ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
-            ->selectRaw('DATE(created_at) as date, SUM(total_price) as total_sales')
+            ->whereBetween('updated_at', [$startOfWeek, $endOfWeek])
+            ->selectRaw('DATE(updated_at) as date, SUM(total_price) as total_sales')
             ->groupBy('date')
             ->orderBy('date', 'asc')
             ->get();

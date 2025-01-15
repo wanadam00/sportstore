@@ -37,7 +37,7 @@ class UserAddress extends Model
     {
         return "{$this->address1}<br>" .
                ($this->address2 ? "{$this->address2}<br>" : "") .
-               "{$this->city} {$this->state}<br>{$this->postcode} {$this->country_name}";
+               "{$this->postcode} {$this->city} <br> {$this->state} {$this->country_name}";
     }
 
 }

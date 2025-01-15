@@ -21,10 +21,11 @@ class OrderController extends Controller
 {
     public function index()
     {
-        // Fetch paginated order items ordered by 'created_at' in descending order
+        // Fetch paginated order items ordered by 'updated_at' from the related Order table
         $orderItems = OrderItem::with(['order', 'product', 'order.userAddress.user'])
-            ->filtered()
-            ->orderBy('created_at', 'desc')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id') // Join with the orders table
+            // ->select('order_items.*') // Select only fields from the order_items table
+            ->orderBy('orders.updated_at', 'desc') // Order by updated_at from the orders table
             ->paginate(10)
             ->withQueryString();
 
@@ -42,7 +43,7 @@ class OrderController extends Controller
                 'tracking_number' => $item->order->tracking_number,
                 'shipment_status' => $item->order->shipment_status,
                 'user_name' => $item->order->userAddress->user->name ?? 'N/A',
-                'created_at' => $item->created_at,
+                'updated_at' => $item->order->updated_at, // Ensure this reflects the order's updated_at
             ];
         });
 
@@ -62,8 +63,6 @@ class OrderController extends Controller
         ]);
     }
 
-
-
     public function show($id)
     {
         $order = Order::with(['orderItems.product', 'userAddress.user'])->findOrFail($id);
@@ -81,7 +80,7 @@ class OrderController extends Controller
             'user_address' => $order->userAddress->full_address ?? 'N/A',
             'phone_number' => $order->userAddress->phone_number ?? 'N/A',
             'user_name' => $order->userAddress && $order->userAddress->user ? $order->userAddress->user->name : 'N/A',
-            'created_at' => $order->created_at,
+            'updated_at' => $order->updated_at,
             'estimated_delivery_date' => $order->estimated_delivery_date ?? '',
             'items' => $order->orderItems->map(function ($item) {
                 return [

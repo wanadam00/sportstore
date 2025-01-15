@@ -327,7 +327,7 @@ const formatDate = (dateString) => {
                                     #{{ orderItem.id }}
                                 </th>
                                 <td class="px-4 py-3 uppercase">{{ orderItem.user_name }}</td> <!-- Display User Name -->
-                                <td class="px-4 py-3">{{ formatDate(orderItem.created_at) }}</td>
+                                <td class="px-4 py-3">{{ formatDate(orderItem.updated_at) }}</td>
                                 <!-- Display User Name -->
                                 <td class="px-4 py-3">{{ orderItem.total_quantity }}</td>
                                 <td class="px-4 py-3 whitespace-nowrap">RM {{ orderItem.total_price.toFixed(2) }}</td>
@@ -428,7 +428,7 @@ const formatDate = (dateString) => {
                         </label>
                         <!-- Action Buttons -->
                         <div class="flex justify-end space-x-2">
-                            <button @click="submitUpdateShipment"
+                            <button @click="submitUpdateShipment" :class="{ 'opacity-25': form.processing }" :disabled="form.processing"
                                 class="px-4 py-2 bg-blue-600 text-white rounded-lg">Save</button>
                             <button @click="closeUpdateModal" class="px-4 py-2 bg-gray-300 rounded-lg">Cancel</button>
                         </div>

@@ -44,7 +44,7 @@ const limitedProducts = props.products.slice(0, 3);
                     <div v-for="brand in brands" :key="brand.id" class="group relative">
                         <img v-if="brand.brand_images?.length > 0" :src="`/${brand.brand_images[0].image}`"
                             :alt="brand.imageAlt"
-                            class="h-20 w-20 object-contain object-center lg:h-20 lg:w-20 rounded-ld" />
+                            class="h-20 w-20 object-contain object-center lg:h-20 lg:w-20 rounded-ld drop-shadow-lg" />
                         <img v-else
                             src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
                             :alt="brand.imageAlt"
@@ -56,7 +56,7 @@ const limitedProducts = props.products.slice(0, 3);
                 </div>
             </div>
         </div>
-        <div class="pt-16 pb-24 bg-yellow-500 text-white">
+        <div class="pt-16 pb-24 bg-[#0f0f0f] text-white">
             <div class="container mx-auto text-center">
                 <h2 class="text-3xl font-bold mb-4">Join Our Newsletter</h2>
                 <p class="text-lg mb-6">Sign up for exclusive deals and be the first to know about new product releases.

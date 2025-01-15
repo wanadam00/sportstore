@@ -26,9 +26,9 @@ class ProductController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        $brands = Brand::all();
-        $categories = Category::all();
-        $services = Service::all();
+        $brands = Brand::orderBy('name', 'asc')->get();
+        $categories = Category::orderBy('name', 'asc')->get();
+        $services = Service::orderBy('name', 'asc')->get();
 
         return Inertia::render('Product/Index', [
             'products' => $products->items(), // Pass only the data array for the products
@@ -45,8 +45,6 @@ class ProductController extends Controller
             'filters' => request()->only(['search']), // Pass search filters to the front end
         ]);
     }
-
-
 
     public function store(Request $request)
     {
@@ -69,7 +67,7 @@ class ProductController extends Controller
         $rules = [
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
-            'promo_price' => ['required', 'numeric', function ($value, $fail) {
+            'promo_price' => ['required', 'numeric', function ($attribute, $value, $fail) {
                 if ($value != 0 && $value < 2) {
                     $fail('The promo price must be 0 or at least 2.');
                 }
@@ -164,7 +162,7 @@ class ProductController extends Controller
         $rules = [
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
-            'promo_price' => ['required', 'numeric', function ($value, $fail) {
+            'promo_price' => ['required', 'numeric', function ($attribute, $value, $fail) {
                 if ($value != 0 && $value < 2) {
                     $fail('The promo price must be 0 or at least 2.');
                 }

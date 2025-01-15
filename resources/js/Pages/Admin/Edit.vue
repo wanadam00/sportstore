@@ -4,7 +4,7 @@
         <form @submit.prevent="updateUser">
             <input v-model="form.name" placeholder="Name" required />
             <input v-model="form.email" type="email" placeholder="Email" required />
-            <button type="submit">Save</button>
+            <button type="submit" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">Save</button>
         </form>
     </div>
 </template>

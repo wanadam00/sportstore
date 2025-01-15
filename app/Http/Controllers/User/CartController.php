@@ -82,7 +82,7 @@ class CartController extends Controller
         }
         // dd($quantity);
 
-        return redirect()->back()->with('success', 'cart added successfully');
+        return redirect()->back()->with('success', 'Product added to cart successfully!');
     }
     public function update(Request $request, Product $product)
     {
@@ -135,7 +135,7 @@ class CartController extends Controller
             if (count($cartItems) <= 0) {
                 return redirect()->route('welcome')->with('info', 'Your cart is empty');
             } else {
-                return redirect()->back()->with('success', 'Item removed successfully');
+                return redirect()->back()->with('success', 'Item removed from cart successfully!');
             }
         }
     }

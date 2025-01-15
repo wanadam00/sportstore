@@ -85,7 +85,7 @@
                 <!-- Conditional form for unpaid orders -->
                 <div v-if="order.status === 'unpaid'" class="mt-4">
                     <form @submit.prevent="checkout(order)">
-                        <button type="submit"
+                        <button type="submit" :class="{ 'opacity-25': form.processing }" :disabled="form.processing"
                             class="bg-yellow-500 hover:bg-yellow-700 text-gray-900 font-semibold px-4 py-2 rounded">
                             Make Payment
                         </button>
