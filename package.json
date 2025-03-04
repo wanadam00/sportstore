@@ -17,7 +17,7 @@
         "tailwindcss": "^3.4.0",
         "unplugin-auto-import": "^0.18.3",
         "unplugin-vue-components": "^0.27.4",
-        "vite": "^0.10.3",
+        "vite": "^4.5.6",
         "vue": "^3.3.13"
     },
     "dependencies": {
